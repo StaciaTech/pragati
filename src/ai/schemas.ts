@@ -129,7 +129,7 @@ export const ValidationReportSchema = z.object({
   validationOutcome: z.string(),
   recommendationText: z.string(),
   submissionDate: z.string(),
-  pptUrl: z.string().url(),
+  pptUrl: z.string(),
   sections: z.object({
     executiveSummary: z.object({
       ideaName: z.string(),
