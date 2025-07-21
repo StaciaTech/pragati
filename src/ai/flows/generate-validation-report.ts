@@ -52,10 +52,11 @@ const SubParameterEvaluationSchema = z.object({
 });
 
 const ParameterEvaluationSchema = z.record(SubParameterEvaluationSchema);
+
 const ClusterEvaluationSchema = z.record(ParameterEvaluationSchema);
 
 const FullEvaluationResponseSchema = z.object({
-  evaluation: z.record(ClusterEvaluationSchema)
+    evaluation: z.record(ClusterEvaluationSchema)
     .describe('An object where keys are cluster names. Each cluster contains its parameters, which in turn contain evaluated sub-parameters with scores, explanations, and assumptions.'),
 });
 
