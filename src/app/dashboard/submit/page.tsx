@@ -49,8 +49,9 @@ import { INITIAL_CLUSTER_WEIGHTS, MOCK_IDEAS } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 import { ROLES } from '@/lib/constants';
 
-// Import the new AI flow and its types
-import { generateValidationReport, ValidationReport } from '@/ai/flows/generate-validation-report';
+// Import the AI flow and its types
+import { generateValidationReport } from '@/ai/flows/generate-validation-report';
+import { ValidationReport } from '@/ai/schemas';
 
 const clusterKeys = Object.keys(INITIAL_CLUSTER_WEIGHTS);
 const weightageSchema = clusterKeys.reduce((acc, key) => {
