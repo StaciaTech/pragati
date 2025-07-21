@@ -1,4 +1,4 @@
-import type { ValidationReport } from "@/ai/flows/generate-validation-report";
+import type { ValidationReport } from '@/ai/schemas';
 
 export const MOCK_INNOVATOR_USER = {
   id: 'innovator-001',
@@ -12,7 +12,6 @@ export const MOCK_INNOVATOR_USER = {
   role: 'Innovator',
 };
 
-// New comprehensive definitions from the prompt
 export const CLUSTER_WEIGHTS = {
   "Core Idea & Innovation": 0.20,
   "Market & Commercial Opportunity": 0.25,
@@ -233,9 +232,8 @@ export const VALIDATION_OUTCOMES = {
   }
 };
 
-export const MOCK_CLUSTER_DEFINITIONS = SUB_PARAMETER_DEFINITIONS; // Legacy compatibility
+export const MOCK_CLUSTER_DEFINITIONS = SUB_PARAMETER_DEFINITIONS;
 
-// The initial weights for the UI slider components on the "Submit Idea" page
 export const INITIAL_CLUSTER_WEIGHTS = {
   "Core Idea & Innovation": 20,
   "Market & Commercial Opportunity": 25,
@@ -245,6 +243,208 @@ export const INITIAL_CLUSTER_WEIGHTS = {
   "External Environment & Compliance": 10,
   "Risk & Future Outlook": 5,
 };
+
+const MOCK_SAMPLE_REPORT: ValidationReport = {
+  ideaName: 'AI-Powered Smart Farming',
+  ideaConcept: 'An intelligent system using AI to optimize crop yield and detect diseases early.',
+  overallScore: 3.8,
+  validationOutcome: 'MODERATE',
+  recommendationText: 'Requires AI-Guided Modification & Re-upload: Idea has potential but with notable weaknesses or missing information. Please review the detailed report and make necessary revisions.',
+  submissionDate: '2024-07-21',
+  pptUrl: 'https://placehold.co/400x200/A0C4FF/1E2A38?text=Mock+PPT',
+  sections: {
+    executiveSummary: {
+      ideaName: 'AI-Powered Smart Farming',
+      concept: 'An intelligent system using AI to optimize crop yield and detect diseases early.',
+      overallScore: 3.8,
+      validationOutcome: 'MODERATE',
+      recommendation: 'Requires AI-Guided Modification & Re-upload: Idea has potential but with notable weaknesses or missing information. Please review the detailed report and make necessary revisions.',
+      reportGeneratedOn: '2024-07-21',
+    },
+    pragatiAIServiceProcess: {
+      title: '2.0 Pragati AI Service Process',
+      description: 'The Pragati AI service is designed as a seamless, intuitive, and iterative journey for its users, leveraging AI at every critical juncture.',
+      sections: [
+        {
+          heading: '2.1 User Journey & AI Integration:',
+          content: 'The user journey begins with onboarding, where the AI uses NLP to refine the initial problem statement. It then synthesizes data for insights, offers personalized guidance, and learns from user feedback. A human-in-the-loop system allows for escalation on complex queries, ensuring quality and trust.'
+        }
+      ]
+    },
+    competitiveLandscape: {
+      title: '3.0 Competitive Landscape',
+      description: 'The market for academic and innovation support is diverse, comprising both traditional and emerging players. Pragati AI aims to carve a unique niche by blending AI\'s scalability with the depth of consultancy.',
+      sections: [
+        {
+          heading: '3.1 Key Competitor Categories:',
+          content: 'Key competitors include Traditional Human Consultancies (high cost, not scalable), Generic AI Tools (lack domain specificity), and Specialized EdTech Platforms (often focus on content, not personalized guidance). Pragati AI\'s advantage lies in its targeted, scalable, and data-driven consultancy model for the Indian context.'
+        },
+        {
+          heading: '3.2 Pragati AI\'s Competitive Advantage:',
+          content: 'The primary competitive advantage is the AI-driven, India-centric, holistic, and scalable approach that provides affordable, high-quality guidance on demand.'
+        }
+      ]
+    },
+    projectEvaluationFramework: {
+      title: '4.0 Project Evaluation Framework & Viability Assessment',
+      description: 'Our evaluation of AI-Powered Smart Farming employs a rigorous, multi-faceted scoring system to provide a comprehensive and quantifiable assessment of its viability.',
+      sections: [
+        {
+          heading: '4.1 Scoring Rubric',
+          content: 'Each sub-parameter is scored on a scale of 1 to 5, where 5 is Excellent and 1 is Poor. An N/A score is used for non-relevant parameters.'
+        },
+        {
+          heading: '4.2 Weightage Structure',
+          subsections: [
+            {
+              subheading: 'A. Cluster Weightage (Total 100%)',
+              content: 'Cluster weights are assigned based on their strategic importance. For instance, Market & Commercial Opportunity holds the highest weightage at 25% because market validation is critical for success.'
+            },
+            {
+              subheading: 'B. Parameter Weightage',
+              content: 'Within each cluster, parameters are weighted. For example, in Core Idea & Innovation, Problem-Solution Fit is weighted highest at 45%.'
+            },
+            {
+              subheading: 'C. Sub-Parameter Weightage',
+              content: 'Each parameter is further broken down into weighted sub-parameters to allow for granular analysis.'
+            }
+          ]
+        },
+        {
+          heading: '4.3 Scoring Calculation Flow (Weighted Average)',
+          content: 'The overall viability score is a weighted average of all sub-parameter scores, scaled to a final 1-5 score, providing a holistic assessment.'
+        },
+        {
+          heading: '4.4 Validation Thresholds',
+          content: 'Scores from 4.0-5.0 are considered GOOD, 2.5-3.9 MODERATE, and 1.0-2.4 NOT RECOMMENDED, each with a corresponding action plan.'
+        }
+      ]
+    },
+    detailedEvaluation: {
+      title: '4.5 Detailed Viability Assessment of AI-Powered Smart Farming',
+      description: 'Here is the granular breakdown of the scores for each sub-parameter.',
+      clusters: {
+        "Core Idea & Innovation": {
+          "Novelty & Uniqueness": {
+            "Originality": { assignedScore: 4, explanation: "The use of AI for early disease detection is not entirely new, but the proposed model for Indian crop types shows significant improvement over existing generic solutions.", assumptions: ["The AI model can be trained effectively on diverse Indian agricultural data."] },
+            "Differentiation": { assignedScore: 3, explanation: "Differentiation is moderate. While scalable, it competes with established agritech startups and government advisories. The key differentiator will be the accuracy and accessibility of the AI.", assumptions: ["The service can be delivered at a cost-effective price point for Indian farmers."] }
+          },
+          "Problem-Solution Fit & Market Need": {
+            "Problem Clarity & Severity": { assignedScore: 5, explanation: "Crop loss due to disease is a severe and well-documented problem in India, causing significant financial distress to farmers.", assumptions: [] },
+            "Target Audience Identification & Definition": { assignedScore: 4, explanation: "The target audience (small to medium-scale farmers in specific regions) is well-defined, though reaching them will require a tailored strategy.", assumptions: ["Digital literacy among the target audience is sufficient for app usage."] },
+            "Customer Pain Points Validation": { assignedScore: 4, explanation: "The pain points are clearly validated by numerous agricultural reports. The solution directly addresses the need for timely and accurate information.", assumptions: [] },
+            "Solution Efficacy": { assignedScore: 3, explanation: "The potential efficacy is high, but it depends heavily on the AI model's real-world accuracy, which is yet to be proven at scale.", assumptions: ["Sufficient high-quality, labeled image data is available for training."] },
+            "Customer Willingness to Pay": { assignedScore: 3, explanation: "Farmers are traditionally price-sensitive. A freemium or subscription model needs to demonstrate clear ROI to gain traction.", assumptions: ["The economic benefits of using the app will outweigh its cost."] },
+            "Jobs-to-Be-Done (JTBD) Alignment": { assignedScore: 4, explanation: "The solution aligns well with the farmer's core 'job' of protecting their yield and maximizing income.", assumptions: [] }
+          },
+          "User Experience (UX) & Usability Potential": {
+            "Intuitive Design": { assignedScore: 4, explanation: "A simple, image-based interface has high potential for intuitive use, even with varying literacy levels.", assumptions: ["The app will be available in multiple regional languages."] },
+            "Accessibility Compliance": { assignedScore: 3, explanation: "Accessibility for users with disabilities has not been explicitly addressed but is a crucial consideration for a wide-reaching public service.", assumptions: [] }
+          }
+        },
+        "Market & Commercial Opportunity": {
+          "Market Validation": {
+            "Market Size (TAM)": { "assignedScore": 5, "explanation": "The Indian agriculture market is vast, with millions of farmers. The Total Addressable Market is exceptionally large.", "assumptions": [] },
+            "Competitive Intensity": { "assignedScore": 3, "explanation": "The agritech space has several well-funded players and government initiatives, making the competitive landscape moderately intense.", "assumptions": [] }
+          },
+          "Geographic Specificity (India)": {
+            "Regulatory Landscape": { "assignedScore": 4, "explanation": "Government policies are generally supportive of agritech. There are no major regulatory hurdles, but data privacy laws for farmer data must be followed.", "assumptions": [] },
+            "Infrastructure Readiness": { "assignedScore": 3, "explanation": "Smartphone penetration is high, but rural internet connectivity can be inconsistent, which might affect real-time AI analysis.", "assumptions": ["The app can function in low-bandwidth or offline modes."] }
+          },
+          "Product-Market Fit": {
+            "User Engagement": { "assignedScore": 4, "explanation": "If the AI provides accurate and timely advice, engagement potential is high as farming is a daily activity.", "assumptions": ["The app provides tangible, recurring value."] },
+            "Retention Potential": { "assignedScore": 4, "explanation": "Retention will be high if the service proves reliable and leads to increased crop yield and income.", "assumptions": [] }
+          }
+        },
+        "Execution & Operations": {
+          "Technical Feasibility": {
+            "Technology Maturity": { "assignedScore": 4, "explanation": "Image recognition and machine learning are mature technologies. The primary challenge is adapting them to specific Indian agricultural contexts.", "assumptions": ["The team has access to the required AI/ML expertise."] },
+            "Scalability & Performance": { "assignedScore": 4, "explanation": "The cloud-based architecture is inherently scalable, capable of serving millions of users with proper design.", "assumptions": ["Cloud infrastructure costs are managed effectively."] }
+          },
+          "Operational Viability": {
+            "Resource Availability": { "assignedScore": 3, "explanation": "Access to high-quality, localized agricultural data for training is a significant challenge and a critical resource.", "assumptions": ["Partnerships with agricultural research institutes can be formed."] },
+            "Process Efficiency": { "assignedScore": 5, "explanation": "The AI-driven process is vastly more efficient than manual inspection or traditional extension services.", "assumptions": [] }
+          },
+          "Scalability Potential": {
+            "Business Model Scalability": { "assignedScore": 4, "explanation": "The business model is highly scalable, as serving an additional user has a low marginal cost.", "assumptions": [] },
+            "Market Expansion Potential": { "assignedScore": 5, "explanation": "The model can be expanded to different crops, regions, and even other countries with similar agricultural profiles.", "assumptions": [] }
+          }
+        },
+        "Business Model & Strategy": {
+          "Financial Viability": {
+            "Revenue Stream Diversity": { "assignedScore": 3, "explanation": "The model relies primarily on a subscription model. Diversifying with data analytics for institutions or a marketplace for supplies could strengthen it.", "assumptions": [] },
+            "Profitability & Margins": { "assignedScore": 3, "explanation": "Profitability depends on achieving a large scale of paid users to cover the initial R&D and ongoing cloud costs.", "assumptions": [] }
+          },
+          "Defensibility": {
+            "Intellectual Property (IP)": { "assignedScore": 2, "explanation": "The core AI algorithms may be hard to patent. Defensibility will likely come from proprietary data and brand trust rather than IP.", "assumptions": [] },
+            "Network Effects": { "assignedScore": 4, "explanation": "Strong network effects are possible: more user data improves the AI, which attracts more users, creating a virtuous cycle.", "assumptions": ["Users consent to their anonymized data being used for model improvement."] }
+          }
+        },
+        "Team & Organizational Health": {
+          "Founder-Fit": {
+            "Relevant Experience": { "assignedScore": 4, "explanation": "The team's background in technology is strong, but more deep-domain agricultural expertise would be beneficial.", "assumptions": ["The team can hire or partner with agricultural experts."] },
+            "Complementary Skills": { "assignedScore": 3, "explanation": "The team is tech-heavy and would benefit from adding skills in rural marketing, sales, and agricultural policy.", "assumptions": [] }
+          },
+          "Culture/Values": {
+            "Mission Alignment": { "assignedScore": 5, "explanation": "The team shows strong alignment with a mission to use technology for social good and empower farmers.", "assumptions": [] },
+            "Diversity & Inclusion": { "assignedScore": 3, "explanation": "Ensuring the AI model is trained on data that is inclusive of all regions and farming communities is a critical challenge to address.", "assumptions": [] }
+          }
+        },
+        "External Environment & Compliance": {
+          "Regulatory (India)": {
+            "Data Privacy Compliance": { "assignedScore": 3, "explanation": "Adherence to India's data privacy laws (DPDP Act) is crucial and requires careful implementation for handling farmer data.", "assumptions": ["Legal counsel will be sought for compliance."] },
+            "Sector-Specific Compliance": { "assignedScore": 4, "explanation": "There are no major sector-specific regulations that would block this idea. Alignment with government digital agriculture initiatives is a plus.", "assumptions": [] }
+          },
+          "Sustainability (ESG)": {
+            "Environmental Impact": { "assignedScore": 5, "explanation": "The idea has a strong positive environmental impact by promoting targeted pesticide use and improving resource management.", "assumptions": [] },
+            "Social Impact (SDGs)": { "assignedScore": 5, "explanation": "Directly aligns with SDGs for Zero Hunger (SDG 2), and Industry, Innovation, and Infrastructure (SDG 9).", "assumptions": [] }
+          },
+          "Ecosystem Support (India)": {
+            "Government & Institutional Support": { "assignedScore": 4, "explanation": "High potential for support from government initiatives like Startup India and agritech incubators.", "assumptions": ["The team will actively seek this support."] },
+            "Investor & Partner Landscape": { "assignedScore": 4, "explanation": "The Indian agritech sector is attracting significant investor interest, making the funding landscape favorable.", "assumptions": ["The business model is attractive to VCs."] }
+          }
+        },
+        "Risk & Future Outlook": {
+          "Risk Assessment": {
+            "Technical Risks": { "assignedScore": 3, "explanation": "The primary technical risk is the AI's accuracy and reliability across diverse real-world conditions.", "assumptions": [] },
+            "Market Risks": { "assignedScore": 3, "explanation": "Market risk includes user adoption challenges due to digital literacy and trust, and competition from other agritech players.", "assumptions": [] },
+            "Operational Risks": { "assignedScore": 2, "explanation": "Operational risks involve building a robust data pipeline and a support system for farmers.", "assumptions": [] }
+          },
+          "Investor Attractiveness": {
+            "ROI Potential": { "assignedScore": 4, "explanation": "High ROI potential if the model can achieve scale, given the large market size and scalable tech.", "assumptions": [] },
+            "Exit Strategy Feasibility": { "assignedScore": 4, "explanation": "A clear exit path exists through acquisition by larger agritech or agriculture input companies.", "assumptions": [] }
+          },
+          "Academic/National Alignment": {
+            "Research Synergy": { "assignedScore": 4, "explanation": "Strong potential for collaboration with agricultural universities for research and data.", "assumptions": [] },
+            "National Priority Alignment": { "assignedScore": 5, "explanation": "The idea aligns perfectly with national priorities of increasing agricultural productivity and farmer income.", "assumptions": [] }
+          }
+        }
+      }
+    },
+    conclusion: {
+      title: '5.0 Conclusion',
+      content: 'AI-Powered Smart Farming presents a compelling vision for leveraging AI to serve the critical needs of India\'s agricultural sector. Its core idea demonstrates good originality and targets clear problems within a vast market. However, the project currently stands at a "MODERATE" viability level due to challenges in data acquisition, competitive intensity, and ensuring real-world AI efficacy. With a focused pilot program and strategic partnerships, it has strong potential to become a highly viable and impactful venture.'
+    },
+    recommendations: {
+      title: '6.0 Recommendations',
+      description: 'To elevate the project\'s viability, the following strategic recommendations are crucial:',
+      items: [
+        'Initiate a pilot program in partnership with a local agricultural university to gather high-quality, localized training data and validate the AI model\'s efficacy in a controlled environment.',
+        'Develop a tiered business model (e.g., freemium) to build a large user base while offering premium, value-added services to larger farms or FPOs to ensure financial sustainability.',
+        'Focus on building a strong brand and community around the app to create a moat, as the core technology may be difficult to defend with patents alone.'
+      ]
+    },
+    appendix: {
+      title: '7.0 Appendix / Glossary',
+      items: [
+        'TAM: Total Addressable Market',
+        'SDG: Sustainable Development Goals',
+        'FPO: Farmer Producer Organisation'
+      ]
+    }
+  }
+};
+
 
 export let MOCK_IDEAS: Array<{
   id: string;
@@ -258,16 +458,14 @@ export let MOCK_IDEAS: Array<{
   status: string;
   dateSubmitted: string;
   version: string;
-  report: ValidationReport | null; // The new comprehensive report
-  clusterWeights?: Record<string, number>; // Legacy
-  feedback?: { overall: string; details: { aspect: string; score: number; comment: string }[] } | null; // Legacy
+  report: ValidationReport | null; 
+  clusterWeights?: Record<string, number>; 
+  feedback?: { overall: string; details: { aspect: string; score: number; comment: string }[] } | null;
   consultationStatus: string;
   consultationDate: string | null;
   consultationTime: string | null;
   ttcAssigned: string | null;
 }> = [
-  // Existing ideas can be left as is, new ideas will use the `report` field.
-  // Note: For existing ideas, the report page will show "not available".
   {
     id: 'IDEA-001',
     title: 'AI-Powered Smart Farming',
@@ -280,20 +478,9 @@ export let MOCK_IDEAS: Array<{
     status: 'Approved',
     dateSubmitted: '2024-07-01',
     version: 'V1.0',
-    report: null,
+    report: MOCK_SAMPLE_REPORT, // Assign the sample report here
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
-    feedback: {
-      overall: 'Excellent idea with strong market potential. Ready for MVP development.',
-      details: [
-        { aspect: 'Core Idea', score: 4.5, comment: 'Highly innovative approach to agriculture.' },
-        { aspect: 'Market Opportunity', score: 4.0, comment: 'Addresses a significant need in modern farming.' },
-        { aspect: 'Execution', score: 3.8, comment: 'Technical challenges exist but are surmountable.' },
-        { aspect: 'Business Model', score: 4.0, comment: 'Clear revenue streams and sustainable model.' },
-        { aspect: 'Team', score: 4.2, comment: 'Strong team with relevant expertise.' },
-        { aspect: 'Compliance', score: 4.5, comment: 'Good understanding of regulatory landscape.' },
-        { aspect: 'Risk & Strategy', score: 4.0, comment: 'Well-defined strategy and risk mitigation.' },
-      ],
-    },
+    feedback: null,
     consultationStatus: 'Scheduled',
     consultationDate: '2024-07-20',
     consultationTime: '10:00',

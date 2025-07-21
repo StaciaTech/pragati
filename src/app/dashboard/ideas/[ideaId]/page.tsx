@@ -57,10 +57,11 @@ export default function IdeaReportPage() {
       const canvasHeight = canvas.height;
       const ratio = canvasWidth / canvasHeight;
       const width = pdfWidth;
-      const height = width / ratio;
-
+      let height = width / ratio;
+      
       let position = 0;
-      let heightLeft = height;
+      let heightLeft = canvas.height * pdfWidth / canvas.width;
+
 
       pdf.addImage(imgData, 'PNG', 0, position, width, height);
       heightLeft -= pdfHeight;
@@ -189,6 +190,7 @@ export default function IdeaReportPage() {
                         <h4 className="text-lg font-semibold text-primary">{clusterName}</h4>
                         <Separator className="my-2" />
                         {Object.entries(clusterData).map(([paramName, paramData]) => {
+                          if (paramName === 'purpose' || paramName === 'common_terminologies') return null;
                           if (typeof paramData !== 'object' || paramData === null) return null;
                           return (
                             <div key={paramName} className="ml-4 mb-4">
@@ -197,9 +199,16 @@ export default function IdeaReportPage() {
                                  if (typeof subParamData !== 'object' || subParamData === null || !subParamData.hasOwnProperty('assignedScore')) return null;
                                  return (
                                     <Card key={subParamName} className="my-2 p-4 bg-background">
-                                    <p className="font-semibold">{subParamName}</p>
-                                    <p><strong>Score: </strong> <span className="font-bold">{subParamData.assignedScore}/5</span></p>
-                                    <p className="text-sm text-muted-foreground mt-1"><strong>Explanation: </strong>{subParamData.explanation}</p>
+                                      <div className="flex justify-between items-start">
+                                        <div>
+                                          <p className="font-semibold">{subParamName}</p>
+                                          <p className="text-sm text-muted-foreground mt-1"><strong>Explanation: </strong>{subParamData.explanation}</p>
+                                        </div>
+                                        <div className="text-right ml-4 flex-shrink-0">
+                                            <p className="font-bold text-lg">{subParamData.assignedScore}/5</p>
+                                        </div>
+                                      </div>
+
                                     {subParamData.assumptions && subParamData.assumptions.length > 0 && (
                                       <div className="mt-2">
                                         <p className="text-xs font-semibold">Assumptions:</p>
