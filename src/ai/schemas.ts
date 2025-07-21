@@ -18,12 +18,12 @@ export type GenerateValidationReportInput = z.infer<
 
 // Schemas for the detailed report structure
 const SubParameterEvaluationSchema = z.object({
-  assignedScore: z.union([z.number().int().min(1).max(5), z.string().refine(val => val === 'N/A')]),
-  explanation: z.string(),
-  assumptions: z.array(z.string()),
+  assignedScore: z.union([z.number().int().min(1).max(5), z.string().refine(val => val === 'N/A')]).describe("Score from 1-5 or 'N/A'"),
+  explanation: z.string().describe("Concise explanation for the score (1-3 sentences)"),
+  assumptions: z.array(z.string()).describe("List of assumptions made for this evaluation"),
 });
 
-const DetailedEvaluationClustersSchema = z.object({
+export const DetailedEvaluationClustersSchema = z.object({
   "Core Idea & Innovation": z.object({
     "Novelty & Uniqueness": z.object({
       "Originality": SubParameterEvaluationSchema,
