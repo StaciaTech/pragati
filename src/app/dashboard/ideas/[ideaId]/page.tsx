@@ -54,14 +54,14 @@ export default function IdeaReportPage() {
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
+      
       const canvasWidth = canvas.width;
       const canvasHeight = canvas.height;
-      const ratio = canvasWidth / canvasHeight;
-      let height = width / ratio;
+      const ratio = pdfWidth / canvasWidth;
+      const height = canvasHeight * ratio;
       
       let position = 0;
-      let heightLeft = canvas.height * pdfWidth / canvas.width;
-
+      let heightLeft = height;
 
       pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, height);
       heightLeft -= pdfHeight;
@@ -197,7 +197,7 @@ export default function IdeaReportPage() {
                             <div key={paramName} className="ml-4 mb-4">
                               <h5 className="font-medium text-md">{paramName}</h5>
                                {Object.entries(paramData).map(([subParamName, subParamData]) => {
-                                 if (typeof subParamData !== 'object' || subParamData === null || !subParamData.hasOwnProperty('assignedScore')) {
+                                 if (typeof subParamData !== 'object' || subParamData === null || !('assignedScore' in subParamData)) {
                                    return null;
                                  }
                                  const score = subParamData.assignedScore;
@@ -266,4 +266,3 @@ export default function IdeaReportPage() {
     </div>
   );
 }
-
