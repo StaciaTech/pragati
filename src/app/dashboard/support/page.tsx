@@ -9,6 +9,13 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+
 
 export default function SupportPage() {
   return (
@@ -51,38 +58,48 @@ export default function SupportPage() {
             </ul>
           </CardContent>
         </Card>
+      </div>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Video Tutorials</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground text-sm mb-4">
-              Watch our video tutorials to get started.
-            </p>
-            <div className="space-y-2">
-                <Button variant="link" className="p-0 h-auto">How to Submit an Idea (5 min)</Button><br/>
-                <Button variant="link" className="p-0 h-auto">Understanding Your Idea Report (7 min)</Button>
-            </div>
-          </CardContent>
+            <CardHeader><CardTitle>Frequently Asked Questions</CardTitle></CardHeader>
+            <CardContent>
+                <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="item-1">
+                        <AccordionTrigger>How long does validation take?</AccordionTrigger>
+                        <AccordionContent>
+                        The AI validation process is typically completed within a few minutes. You will receive an email notification once your report is ready.
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="item-2">
+                        <AccordionTrigger>What does the "Moderate" verdict mean?</AccordionTrigger>
+                        <AccordionContent>
+                        A "Moderate" verdict indicates that your idea has potential but also has some weaknesses that need to be addressed. The detailed report will provide specific recommendations for improvement.
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="item-3">
+                        <AccordionTrigger>Can I get more credits?</AccordionTrigger>
+                        <AccordionContent>
+                        Yes, innovators can request more credits from the "Request Credits" page, which will be sent to your TTC Coordinator for approval. College Principals can purchase additional credits in the "Plan & Payment" section.
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+            </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>FAQs & Contact</CardTitle>
+            <CardTitle>Contact Support</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground text-sm mb-4">
-              Have more questions? Check our comprehensive FAQ section or contact us directly.
+              Still have questions? Launch our chatbot for instant help or contact our support team directly.
             </p>
             <div className="flex flex-wrap gap-2">
-                <Button variant="outline">View FAQs</Button>
                 <Button variant="outline">Launch Chatbot</Button>
                 <Button>Contact Support</Button>
             </div>
           </CardContent>
         </Card>
-      </div>
     </div>
   );
 }
