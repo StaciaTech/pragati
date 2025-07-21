@@ -181,6 +181,43 @@ export const MOCK_CLUSTER_DEFINITIONS = {
   },
 };
 
+export const PARAMETER_WEIGHTS: Record<string, Record<string, number>> = {
+    "Core Idea": {
+        "Novelty & Uniqueness": 0.30,
+        "Problem-Solution Fit": 0.45,
+        "UX/Usability Potential": 0.25,
+    },
+    "Market Opportunity": {
+        "Market Validation": 0.40,
+        "Geographic Specificity (India)": 0.30,
+        "Product-Market Fit": 0.30,
+    },
+    "Execution": {
+        "Technical Feasibility": 0.40,
+        "Operational Viability": 0.30,
+        "Scalability Potential": 0.30,
+    },
+    "Business Model": {
+        "Financial Viability": 0.60,
+        "Defensibility": 0.40,
+    },
+    "Team": {
+        "Founder-Fit": 0.60,
+        "Culture/Values": 0.40,
+    },
+    "Compliance": {
+        "Regulatory (India)": 0.40,
+        "Sustainability (ESG)": 0.30,
+        "Ecosystem Support (India)": 0.30,
+    },
+    "Risk & Strategy": {
+        "Risk Assessment": 0.40,
+        "Investor Attractiveness": 0.30,
+        "Academic/National Alignment": 0.30,
+    },
+};
+
+
 export const INITIAL_CLUSTER_WEIGHTS = {
   "Core Idea": 15,
   "Market Opportunity": 20,
@@ -275,6 +312,11 @@ export let MOCK_IDEAS = [
     id: 'IDEA-004',
     title: 'Personalized Mental Wellness App',
     description: 'An app providing tailored mental health exercises and support based on user input.',
+    collegeId: 'COL003',
+    collegeName: 'Tech University Chennai',
+    domain: 'HealthTech',
+    innovatorName: 'Chris Lee',
+    innovatorEmail: 'chris.lee@example.com',
     status: 'Rejected',
     dateSubmitted: '2024-07-12',
     version: 'V1.0',
@@ -354,7 +396,7 @@ export let MOCK_INNOVATORS = [
   { id: 'INV004', name: 'Bob Brown', email: 'bob.b@example.com', collegeId: 'COL001', credits: 0, status: 'Inactive' },
 ];
 
-export let MOCK_PRINCIPAL_USERS = [
+export const MOCK_PRINCIPAL_USERS = [
     { email: 'principal.pit@pragati.com', password: 'principalpass', name: 'Principal PIT', collegeId: 'COL001' },
     { email: 'principal.gsi@pragati.com', password: 'principalpass', name: 'Principal GSI', collegeId: 'COL002' },
     { email: 'principal.tuc@pragati.com', password: 'principalpass', name: 'Principal TUC', collegeId: 'COL003' },

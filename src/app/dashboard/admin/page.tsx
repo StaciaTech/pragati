@@ -11,11 +11,12 @@ export default function AdminDashboardPage() {
   const totalInnovators = MOCK_INNOVATORS.length;
 
   const approvedIdeas = MOCK_IDEAS.filter(idea => idea.status === 'Approved').length;
-  const approvalRate = totalIdeas > 0 ? ((approvedIdeas / totalIdeas) * 100).toFixed(1) : '0';
+  const ideasValidated = MOCK_IDEAS.filter(idea => idea.status !== 'Validating').length;
+  const approvalRate = ideasValidated > 0 ? ((approvedIdeas / ideasValidated) * 100).toFixed(1) : '0';
   
   const revenueByPlan = MOCK_COLLEGES.reduce((acc, college) => {
       const plan = MOCK_PLANS.find(p => p.id === college.currentPlanId);
-      if (plan) {
+      if (plan && plan.enabled) {
           acc[plan.name] = (acc[plan.name] || 0) + plan.totalAmount;
       }
       return acc;
@@ -47,7 +48,7 @@ export default function AdminDashboardPage() {
         </Card>
         <Card>
             <CardHeader><CardTitle>Total Ideas Validated</CardTitle></CardHeader>
-            <CardContent><p className="text-4xl font-bold">{totalIdeas}</p></CardContent>
+            <CardContent><p className="text-4xl font-bold">{ideasValidated}</p></CardContent>
         </Card>
         <Card>
             <CardHeader><CardTitle>System Approval Rate</CardTitle></CardHeader>

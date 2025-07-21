@@ -45,7 +45,10 @@ import {
 } from '@/components/ui/stepper';
 import { SpiderChart } from '@/components/spider-chart';
 import { MOCK_CLUSTER_DEFINITIONS, INITIAL_CLUSTER_WEIGHTS } from '@/lib/mock-data';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
+
+// New: Import the AI flow
+import { generateValidationReport } from '@/ai/flows/generate-validation-report';
 
 const clusterKeys = Object.keys(INITIAL_CLUSTER_WEIGHTS);
 const weightageSchema = clusterKeys.reduce((acc, key) => {
@@ -62,7 +65,7 @@ const submitIdeaSchema = z.object({
   // Step 2
   title: z.string().min(1, 'Title is required.'),
   description: z.string().min(1, 'Description is required.'),
-  pptFile: z.any().refine((file) => file, 'PPT file is required.'),
+  pptFile: z.any().optional(), // Making PPT optional for now
   validationPurpose: z.string().min(1, 'Validation purpose is required.'),
   domain: z.string().min(1, 'Project domain is required.'),
 });
@@ -102,6 +105,7 @@ const clusters = Object.keys(INITIAL_CLUSTER_WEIGHTS);
 
 function Step1({ form }: { form: any }) {
   const { stepper, ...stepperProps } = useStepper();
+  const { toast } = useToast();
   const preset = form.watch('preset');
   const watchedWeights = form.watch(clusters);
   const totalWeight = clusters.reduce((acc, cluster, i) => acc + (watchedWeights[i] || 0), 0);
@@ -291,7 +295,7 @@ function Step3({ form }: { form: any }) {
                     <CardContent className="text-sm space-y-2">
                         <p><span className="font-medium text-muted-foreground">Title:</span> {allValues.title}</p>
                         <p><span className="font-medium text-muted-foreground">Description:</span> {allValues.description}</p>
-                        <p><span className="font-medium text-muted-foreground">PPT File:</span> {allValues.pptFile?.name}</p>
+                        <p><span className="font-medium text-muted-foreground">PPT File:</span> {allValues.pptFile?.name || 'Not provided'}</p>
                         <p><span className="font-medium text-muted-foreground">Purpose:</span> {allValues.validationPurpose}</p>
                         <p><span className="font-medium text-muted-foreground">Domain:</span> {allValues.domain}</p>
                     </CardContent>
@@ -321,17 +325,52 @@ function Step3({ form }: { form: any }) {
 }
 
 export default function SubmitIdeaPage() {
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
   const form = useForm<SubmitIdeaForm>({
     resolver: zodResolver(submitIdeaSchema),
     defaultValues,
   });
 
-  const onSubmit = (data: SubmitIdeaForm) => {
-    console.log(data);
+  const onSubmit = async (data: SubmitIdeaForm) => {
+    setIsSubmitting(true);
     toast({
-        title: "Idea Submitted!",
-        description: "Your idea has been successfully submitted for validation.",
+      title: "Submitting Idea...",
+      description: "The AI is validating your idea. This may take a moment.",
     });
+
+    try {
+      const clusterWeights = clusters.reduce((acc, key) => {
+        acc[key] = data[key as keyof typeof data] as number;
+        return acc;
+      }, {} as Record<string, number>);
+
+      const result = await generateValidationReport({
+        ideaTitle: data.title,
+        ideaDescription: data.description,
+        clusterWeights,
+      });
+
+      console.log('Validation Result:', result);
+
+      toast({
+        title: "Validation Complete!",
+        description: `Your idea has been evaluated with a status of: ${result.status}`,
+      });
+      // Here you would typically redirect the user or update a list of ideas
+      // For now, we'll just log and show a success message.
+
+    } catch (error) {
+      console.error("Validation failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Submission Failed",
+        description: "There was an error validating your idea. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -350,6 +389,14 @@ export default function SubmitIdeaPage() {
               <Step2 form={form} />
               <Step3 form={form} />
             </Stepper>
+             {isSubmitting && (
+                <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-50">
+                    <div className="flex items-center space-x-2">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        <p className="text-muted-foreground">AI is thinking...</p>
+                    </div>
+                </div>
+            )}
           </form>
         </Form>
       </CardContent>
