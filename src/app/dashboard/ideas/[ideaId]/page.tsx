@@ -12,20 +12,69 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { SpiderChart } from '@/components/spider-chart';
 import { MOCK_IDEAS, STATUS_COLORS } from '@/lib/mock-data';
 import { ROLES } from '@/lib/constants';
-import { ArrowLeft, Download } from 'lucide-react';
-import type { ValidationReport } from '@/ai/flows/generate-validation-report';
+import { ArrowLeft, Download, FileText } from 'lucide-react';
+import type { ValidationReport } from '@/ai/schemas';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import { useRef } from 'react';
+
+const SectionCard = ({ title, description, children }: { title: string, description?: string, children: React.ReactNode }) => (
+    <Card>
+        <CardHeader>
+            <CardTitle>{title}</CardTitle>
+            {description && <CardDescription>{description}</CardDescription>}
+        </CardHeader>
+        <CardContent>{children}</CardContent>
+    </Card>
+);
+
 
 export default function IdeaReportPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const ideaId = params.ideaId as string;
   const role = searchParams.get('role');
+  const reportRef = useRef<HTMLDivElement>(null);
 
   const idea = MOCK_IDEAS.find((i) => i.id === ideaId);
   const report = idea?.report as ValidationReport | null;
+
+  const handleDownload = () => {
+    const input = reportRef.current;
+    if (!input) {
+      console.error("Report element not found for PDF generation.");
+      return;
+    }
+
+    html2canvas(input, { scale: 2 }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+      const ratio = canvasWidth / canvasHeight;
+      const width = pdfWidth;
+      const height = width / ratio;
+
+      let position = 0;
+      let heightLeft = height;
+
+      pdf.addImage(imgData, 'PNG', 0, position, width, height);
+      heightLeft -= pdfHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - height;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, width, height);
+        heightLeft -= pdfHeight;
+      }
+      
+      pdf.save(`${ideaId}-report.pdf`);
+    });
+  };
 
   if (!idea) {
     return (
@@ -54,111 +103,144 @@ export default function IdeaReportPage() {
     verdictColor = 'text-red-600';
   }
 
-  const handleDownload = () => {
-    if (!report) return;
-    // This is a placeholder for a proper PDF generation service
-    // For now, we'll open the raw HTML in a new tab.
-    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${idea.id}-report.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
 
   return (
     <div className="space-y-6">
-        <Button variant="outline" asChild>
-            <Link href={`/dashboard/ideas?role=${role || ROLES.INNOVATOR}`}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to My Ideas
-            </Link>
-        </Button>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Idea Report: {idea.title}</CardTitle>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2">
-            <span>ID: {idea.id}</span>
-            <span>Version: {idea.version}</span>
-            <span>Submitted: {idea.dateSubmitted}</span>
-            <span>Status: <Badge className={STATUS_COLORS[status]}>{status}</Badge></span>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {report ? (
-            <div className="space-y-8">
-              <Card className="bg-muted/50">
-                <CardHeader>
-                  <CardTitle className={`text-xl ${verdictColor}`}>
-                    {verdictIcon} Verdict: {report.validationOutcome}
-                  </CardTitle>
-                  <CardDescription>Overall Score: {report.overallScore.toFixed(1)}/5.0</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="font-semibold">Overall Feedback:</p>
-                  <p className="text-muted-foreground">{report.recommendationText}</p>
-                </CardContent>
-              </Card>
+        <div className="flex justify-between items-center">
+             <Button variant="outline" asChild>
+                <Link href={`/dashboard/ideas?role=${role || ROLES.INNOVATOR}`}>
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back to My Ideas
+                </Link>
+            </Button>
+             <Button onClick={handleDownload}>
+                <Download className="mr-2 h-4 w-4" />
+                Download PDF
+            </Button>
+        </div>
 
-              {/* Spider Chart for Cluster Scores - Note: Need to calculate this from report */}
-              {/* This is a placeholder as the new report doesn't directly provide cluster scores */}
-              <Card>
-                <CardHeader>
-                    <CardTitle>AI Evaluation Overview</CardTitle>
-                    <CardDescription>This chart represents a visual summary of the AI's scoring across different clusters.</CardDescription>
-                </CardHeader>
-                <CardContent className="flex justify-center">
-                   <p className="text-muted-foreground">Spider chart placeholder - data structure changed.</p>
-                </CardContent>
-              </Card>
-              
-              <div>
-                <h3 className="text-xl font-semibold mb-4">{report.sections.detailedEvaluation.title}</h3>
-                {Object.entries(report.sections.detailedEvaluation.clusters).map(([clusterName, clusterData]) => (
-                  <div key={clusterName} className="mb-6">
-                    <h4 className="text-lg font-semibold text-primary">{clusterName}</h4>
-                    <Separator className="my-2" />
-                    {Object.entries(clusterData).map(([paramName, paramData]) => (
-                      <div key={paramName} className="ml-4 mb-4">
-                        <h5 className="font-medium text-md">{paramName}</h5>
-                        {Object.entries(paramData).map(([subParamName, subParamData]) => (
-                          <Card key={subParamName} className="my-2 p-4 bg-background">
-                            <p className="font-semibold">{subParamName}</p>
-                            <p><strong>Score: </strong> <span className="font-bold">{subParamData.assignedScore}/5</span></p>
-                            <p className="text-sm text-muted-foreground mt-1"><strong>Explanation: </strong>{subParamData.explanation}</p>
-                            {subParamData.assumptions.length > 0 && (
-                               <div className="mt-2">
-                                 <p className="text-xs font-semibold">Assumptions:</p>
-                                 <ul className="list-disc list-inside text-xs text-muted-foreground">
-                                    {subParamData.assumptions.map((assumption, i) => <li key={i}>{assumption}</li>)}
-                                 </ul>
-                               </div>
-                            )}
-                          </Card>
+        <div ref={reportRef} className="p-4 bg-background">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">Idea Report: {idea.title}</CardTitle>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2">
+                <span>ID: {idea.id}</span>
+                <span>Version: {idea.version}</span>
+                <span>Submitted: {idea.dateSubmitted}</span>
+                <span>Status: <Badge className={STATUS_COLORS[status]}>{status}</Badge></span>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {report ? (
+                <div className="space-y-8">
+                  <SectionCard title="Executive Summary" description={report.sections.executiveSummary.concept}>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className={`p-4 rounded-lg bg-muted/50`}>
+                           <p className="text-sm font-medium">Overall Score</p>
+                           <p className={`text-2xl font-bold ${verdictColor}`}>{report.overallScore.toFixed(1)}/5.0</p>
+                        </div>
+                        <div className={`p-4 rounded-lg bg-muted/50`}>
+                           <p className="text-sm font-medium">Validation Outcome</p>
+                           <p className={`text-2xl font-bold ${verdictColor}`}>{verdictIcon} {report.validationOutcome}</p>
+                        </div>
+                      </div>
+                      <div className="mt-4">
+                        <p className="font-semibold">Recommendation:</p>
+                        <p className="text-muted-foreground">{report.recommendationText}</p>
+                      </div>
+                  </SectionCard>
+                  
+                  <SectionCard title={report.sections.pragatiAIServiceProcess.title} description={report.sections.pragatiAIServiceProcess.description}>
+                      {report.sections.pragatiAIServiceProcess.sections.map((sec, i) => (
+                          <div key={i}>
+                              <h4 className="font-semibold">{sec.heading}</h4>
+                              <p className="text-sm text-muted-foreground">{sec.content}</p>
+                          </div>
+                      ))}
+                  </SectionCard>
+
+                  <SectionCard title={report.sections.competitiveLandscape.title} description={report.sections.competitiveLandscape.description}>
+                      {report.sections.competitiveLandscape.sections.map((sec, i) => (
+                          <div key={i} className="mb-4">
+                              <h4 className="font-semibold">{sec.heading}</h4>
+                              <p className="text-sm text-muted-foreground">{sec.content}</p>
+                          </div>
+                      ))}
+                  </SectionCard>
+
+                  <SectionCard title={report.sections.projectEvaluationFramework.title} description={report.sections.projectEvaluationFramework.description}>
+                      {report.sections.projectEvaluationFramework.sections.map((sec, i) => (
+                          <div key={i} className="mb-4">
+                            <h4 className="font-semibold">{sec.heading}</h4>
+                            {sec.content && <p className="text-sm text-muted-foreground">{sec.content}</p>}
+                            {sec.subsections && sec.subsections.map((subsec, j) => (
+                                <div key={j} className="ml-4 mt-2">
+                                    <h5 className="font-medium">{subsec.subheading}</h5>
+                                    <p className="text-sm text-muted-foreground">{subsec.content}</p>
+                                </div>
+                            ))}
+                          </div>
+                      ))}
+                  </SectionCard>
+
+                  <SectionCard title={report.sections.detailedEvaluation.title} description={report.sections.detailedEvaluation.description}>
+                    {Object.entries(report.sections.detailedEvaluation.clusters).map(([clusterName, clusterData]) => (
+                      <div key={clusterName} className="mb-6">
+                        <h4 className="text-lg font-semibold text-primary">{clusterName}</h4>
+                        <Separator className="my-2" />
+                        {Object.entries(clusterData).map(([paramName, paramData]) => (
+                          <div key={paramName} className="ml-4 mb-4">
+                            <h5 className="font-medium text-md">{paramName}</h5>
+                            {Object.entries(paramData).map(([subParamName, subParamData]) => (
+                              <Card key={subParamName} className="my-2 p-4 bg-background">
+                                <p className="font-semibold">{subParamName}</p>
+                                <p><strong>Score: </strong> <span className="font-bold">{subParamData.assignedScore}/5</span></p>
+                                <p className="text-sm text-muted-foreground mt-1"><strong>Explanation: </strong>{subParamData.explanation}</p>
+                                {subParamData.assumptions.length > 0 && (
+                                   <div className="mt-2">
+                                     <p className="text-xs font-semibold">Assumptions:</p>
+                                     <ul className="list-disc list-inside text-xs text-muted-foreground">
+                                        {subParamData.assumptions.map((assumption, i) => <li key={i}>{assumption}</li>)}
+                                     </ul>
+                                   </div>
+                                )}
+                              </Card>
+                            ))}
+                          </div>
                         ))}
                       </div>
                     ))}
-                  </div>
-                ))}
-              </div>
+                  </SectionCard>
 
-              <div className="flex justify-end gap-2">
-                  <Button onClick={handleDownload}>
-                    <Download className="mr-2 h-4 w-4" />
-                    Download JSON Report
-                  </Button>
-              </div>
-            </div>
-          ) : (
-             <div className="text-center py-20">
-                <p className="text-muted-foreground">Report is being generated or is not available. Status: {idea.status}</p>
-             </div>
-          )}
-        </CardContent>
-      </Card>
+                   <SectionCard title={report.sections.conclusion.title}>
+                        <p className="text-sm text-muted-foreground">{report.sections.conclusion.content}</p>
+                   </SectionCard>
+
+                   <SectionCard title={report.sections.recommendations.title} description={report.sections.recommendations.description}>
+                        <ul className="list-disc list-inside space-y-2">
+                            {report.sections.recommendations.items.map((item, i) => (
+                                <li key={i} className="text-sm text-muted-foreground">{item}</li>
+                            ))}
+                        </ul>
+                   </SectionCard>
+
+                   <SectionCard title={report.sections.appendix.title}>
+                        <ul className="list-disc list-inside space-y-2">
+                            {report.sections.appendix.items.map((item, i) => (
+                                <li key={i} className="text-sm text-muted-foreground">{item}</li>
+                            ))}
+                        </ul>
+                   </SectionCard>
+
+                </div>
+              ) : (
+                 <div className="text-center py-20">
+                    <p className="text-muted-foreground">Report is being generated or is not available. Status: {idea.status}</p>
+                 </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
     </div>
   );
 }
