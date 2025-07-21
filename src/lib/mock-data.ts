@@ -196,6 +196,11 @@ export let MOCK_IDEAS = [
     id: 'IDEA-001',
     title: 'AI-Powered Smart Farming',
     description: 'An intelligent system using AI to optimize crop yield and detect diseases early.',
+    collegeId: 'COL001',
+    collegeName: 'Pragati Institute of Technology',
+    domain: 'Agriculture',
+    innovatorName: 'Jane Doe',
+    innovatorEmail: 'jane.doe@example.com',
     status: 'Approved',
     dateSubmitted: '2024-07-01',
     version: 'V1.0',
@@ -212,11 +217,20 @@ export let MOCK_IDEAS = [
         { aspect: 'Risk & Strategy', score: 4.0, comment: 'Well-defined strategy and risk mitigation.' },
       ],
     },
+    consultationStatus: 'Scheduled',
+    consultationDate: '2024-07-20',
+    consultationTime: '10:00',
+    ttcAssigned: 'TTC_001',
   },
   {
     id: 'IDEA-002',
     title: 'Decentralized Education Platform',
     description: 'A blockchain-based platform for peer-to-peer learning with verified credentials.',
+    collegeId: 'COL002',
+    collegeName: 'Global School of Innovation',
+    domain: 'EdTech',
+    innovatorName: 'John Smith',
+    innovatorEmail: 'john.smith@example.com',
     status: 'Moderate',
     dateSubmitted: '2024-07-05',
     version: 'V1.0',
@@ -233,16 +247,29 @@ export let MOCK_IDEAS = [
         { aspect: 'Risk & Strategy', score: 3.0, comment: 'Scalability risks are significant.' },
       ],
     },
+    consultationStatus: 'Pending',
+    consultationDate: null,
+    consultationTime: null,
+    ttcAssigned: null,
   },
   {
     id: 'IDEA-003',
     title: 'Eco-Friendly Waste Sorting Robot',
     description: 'A robotic system for automated and precise sorting of recyclable materials.',
+    collegeId: 'COL001',
+    collegeName: 'Pragati Institute of Technology',
+    domain: 'Smart Cities',
+    innovatorName: 'Alice Johnson',
+    innovatorEmail: 'alice.j@example.com',
     status: 'Validating',
     dateSubmitted: '2024-07-10',
     version: 'V1.0',
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
+    consultationStatus: 'Not Requested',
+    consultationDate: null,
+    consultationTime: null,
+    ttcAssigned: null,
   },
   {
     id: 'IDEA-004',
@@ -264,6 +291,10 @@ export let MOCK_IDEAS = [
         { aspect: 'Risk & Strategy', score: 2.8, comment: 'Market saturation makes rapid scaling difficult.' },
       ],
     },
+    consultationStatus: 'Not Requested',
+    consultationDate: null,
+    consultationTime: null,
+    ttcAssigned: null,
   },
 ];
 
@@ -297,6 +328,43 @@ export let MOCK_CREDIT_REQUESTS = [
   { id: 'CR-INV-001', requesterType: 'Innovator', requesterId: 'innovator-001', requesterName: 'Jane Doe', amount: 1, status: 'Pending', date: '2024-07-15', purpose: 'Need 1 credit for new idea submission' },
 ];
 
+export let MOCK_COLLEGES = [
+  { id: 'COL001', name: 'Pragati Institute of Technology', principalEmail: 'principal.pit@pragati.com', ttcLimit: 5, creditsAvailable: 100, currentPlanId: 'PLAN001' },
+  { id: 'COL002', name: 'Global School of Innovation', principalEmail: 'principal.gsi@pragati.com', ttcLimit: 3, creditsAvailable: 75, currentPlanId: 'PLAN001' },
+  { id: 'COL003', name: 'Tech University Chennai', principalEmail: 'principal.tuc@pragati.com', ttcLimit: 7, creditsAvailable: 120, currentPlanId: 'PLAN002' },
+];
+
+export let MOCK_PLANS = [
+  { id: 'PLAN001', name: 'Essential', pricePerCredit: 500, minCredits: 20, totalAmount: 10000, features: ['20 Idea Submissions', 'Basic Feedback', '5 TTCs'], enabled: true },
+  { id: 'PLAN002', name: 'Advance', pricePerCredit: 490, minCredits: 50, totalAmount: 24500, features: ['50 Idea Submissions', 'Detailed Feedback', '10 TTCs', '2 Consultations'], enabled: true },
+  { id: 'PLAN003', name: 'Advance Pro', pricePerCredit: 475, minCredits: 100, totalAmount: 47500, features: ['Unlimited Idea Submissions', 'Premium Feedback', '15 TTCs', 'Unlimited Consultations'], enabled: true },
+  { id: 'PLAN004', name: 'Enterprises', pricePerCredit: 0, minCredits: 0, totalAmount: 0, features: ['Custom Limits', 'Dedicated Support', 'Tailored Solutions', 'Contact Us for Pricing'], enabled: true },
+];
+
+export let MOCK_TTCS = [
+  { id: 'TTC_001', name: 'Dr. Priya Sharma', email: 'priya.sharma@pragati.com', collegeId: 'COL001', expertise: ['AI', 'Machine Learning'], maxConsultations: 3, currentConsultations: 1 },
+  { id: 'TTC_002', name: 'Mr. Rahul Verma', email: 'rahul.verma@pragati.com', collegeId: 'COL001', expertise: ['Blockchain', 'FinTech'], maxConsultations: 2, currentConsultations: 0 },
+  { id: 'TTC_003', name: 'Ms. Sneha Reddy', email: 'sneha.reddy@pragati.com', collegeId: 'COL002', expertise: ['Robotics', 'IoT'], maxConsultations: 4, currentConsultations: 0 },
+];
+
+export let MOCK_INNOVATORS = [
+  { id: 'INV001', name: 'Jane Doe', email: 'jane.doe@example.com', collegeId: 'COL001', credits: 50, status: 'Active' },
+  { id: 'INV002', name: 'John Smith', email: 'john.smith@example.com', collegeId: 'COL002', credits: 30, status: 'Active' },
+  { id: 'INV003', name: 'Alice Johnson', email: 'alice.j@example.com', collegeId: 'COL001', credits: 20, status: 'Active' },
+  { id: 'INV004', name: 'Bob Brown', email: 'bob.b@example.com', collegeId: 'COL001', credits: 0, status: 'Inactive' },
+];
+
+export let MOCK_CREDIT_ASSIGNMENT_HISTORY = [
+  { id: 1, date: '2024-07-10', ttcId: 'TTC_001', innovatorId: 'INV001', amount: 10, action: 'Assigned' },
+  { id: 2, date: '2024-07-12', ttcId: 'TTC_001', innovatorId: 'INV003', amount: 5, action: 'Assigned' },
+];
+
+export let MOCK_TTC_AUDIT_TRAIL = [
+  { id: 1, timestamp: '2024-07-15 11:00 AM', ttc: 'Dr. Priya Sharma', action: 'Scheduled consultation for IDEA-001' },
+  { id: 2, timestamp: '2024-07-15 11:30 AM', ttc: 'Dr. Priya Sharma', action: 'Added feedback for IDEA-001' },
+  { id: 3, timestamp: '2024-07-14 02:00 PM', ttc: 'Mr. Rahul Verma', action: 'Viewed Idea IDEA-002 report' },
+];
+
 export const STATUS_COLORS: { [key: string]: string } = {
     Validating: 'bg-gray-500 text-white',
     Approved: 'bg-green-500 text-white',
@@ -305,4 +373,23 @@ export const STATUS_COLORS: { [key: string]: string } = {
     Pending: 'bg-blue-500 text-white',
     Scheduled: 'bg-indigo-500 text-white',
     Completed: 'bg-green-600 text-white',
+    Active: 'bg-green-500 text-white',
+    Inactive: 'bg-gray-500 text-white',
+    Locked: 'bg-red-600 text-white',
+    'Not Requested': 'bg-gray-400 text-white',
+  };
+
+  export const MOCK_SCORING_PRESETS = {
+    "Balanced": {
+      "Core Idea": 15, "Market Opportunity": 20, "Execution": 20,
+      "Business Model": 15, "Team": 10, "Compliance": 10, "Risk & Strategy": 10
+    },
+    "Research": {
+      "Core Idea": 30, "Market Opportunity": 10, "Execution": 15,
+      "Business Model": 15, "Team": 10, "Compliance": 10, "Risk & Strategy": 10
+    },
+    "Commercialization": {
+      "Core Idea": 10, "Market Opportunity": 30, "Execution": 15,
+      "Business Model": 15, "Team": 10, "Compliance": 10, "Risk & Strategy": 10
+    },
   };

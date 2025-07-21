@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Building, Lightbulb, Shield, Users } from 'lucide-react';
+import { Building, Lightbulb, Shield, Users, Briefcase } from 'lucide-react';
 
 import {
   Card,
@@ -27,6 +27,22 @@ const roleDescriptions = {
   [ROLES.SUPER_ADMIN]: 'Manage the platform, users, and system settings.',
 };
 
+const getDashboardLink = (role: string) => {
+    switch (role) {
+        case ROLES.INNOVATOR:
+            return `/dashboard?role=${role}`;
+        case ROLES.PRINCIPAL:
+            return `/dashboard/principal?role=${role}`;
+        case ROLES.COORDINATOR:
+            return `/dashboard/coordinator?role=${role}`;
+        case ROLES.SUPER_ADMIN:
+            return `/dashboard/admin?role=${role}`;
+        default:
+            return `/dashboard?role=${ROLES.INNOVATOR}`;
+    }
+}
+
+
 export default function LoginPage() {
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background p-4">
@@ -49,7 +65,7 @@ export default function LoginPage() {
           {Object.values(ROLES).map((role) => {
             const Icon = roleIcons[role];
             return (
-              <Link href={`/dashboard?role=${role}`} key={role} passHref>
+              <Link href={getDashboardLink(role)} key={role} passHref>
                 <Card className="h-full transform-gpu cursor-pointer transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:bg-card/95">
                   <CardHeader className="items-center">
                     <div className="rounded-full bg-primary/10 p-3">

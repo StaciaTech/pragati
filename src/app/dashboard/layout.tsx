@@ -64,7 +64,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:h-16 sm:px-6">
           <SidebarTrigger className="sm:hidden" />
           <div className="flex-1">
-            <h1 className="text-lg font-semibold">{role} Dashboard</h1>
+            <h1 className="text-lg font-semibold">{role} Portal</h1>
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />

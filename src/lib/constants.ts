@@ -1,4 +1,4 @@
-import { Home, LayoutGrid, Lightbulb, Settings, Users, Shield, FileText, PlusCircle, MessageSquare, CreditCard, LifeBuoy } from "lucide-react";
+import { Home, LayoutGrid, Lightbulb, Settings, Users, Shield, FileText, PlusCircle, MessageSquare, CreditCard, LifeBuoy, BrainCircuit, Briefcase, BarChart3, Receipt } from "lucide-react";
 
 export const ROLES = {
   INNOVATOR: "Innovator",
@@ -60,66 +60,106 @@ export const NAV_LINKS: Record<
     {
       title: "Dashboard",
       icon: Home,
-      href: `/dashboard?role=${ROLES.PRINCIPAL}`,
+      href: `/dashboard/principal?role=${ROLES.PRINCIPAL}`,
     },
     {
-      title: "All Ideas",
-      icon: LayoutGrid,
-      href: `/dashboard/ideas/all?role=${ROLES.PRINCIPAL}`,
+      title: "TTC Management",
+      icon: Users,
+      href: `/dashboard/principal/ttc-management?role=${ROLES.PRINCIPAL}`,
     },
     {
-      title: "Reports",
+      title: "Plan & Payment",
+      icon: Receipt,
+      href: `/dashboard/principal/plan-payment?role=${ROLES.PRINCIPAL}`,
+    },
+    {
+      title: "College Analytics",
+      icon: BarChart3,
+      href: `/dashboard/principal/analytics?role=${ROLES.PRINCIPAL}`,
+    },
+    {
+        title: "Credit Requests",
+        icon: CreditCard,
+        href: `/dashboard/principal/credit-requests?role=${ROLES.PRINCIPAL}`,
+    },
+    {
+      title: "Audit Trail",
       icon: FileText,
-      href: `/dashboard/reports?role=${ROLES.PRINCIPAL}`,
-    },
-    {
-      title: "Profile",
-      icon: Settings,
-      href: `/dashboard/profile?role=${ROLES.PRINCIPAL}`,
+      href: `/dashboard/principal/audit-trail?role=${ROLES.PRINCIPAL}`,
     },
   ],
   [ROLES.COORDINATOR]: [
     {
       title: "Dashboard",
       icon: Home,
-      href: `/dashboard?role=${ROLES.COORDINATOR}`,
+      href: `/dashboard/coordinator?role=${ROLES.COORDINATOR}`,
     },
     {
-      title: "Idea Validation",
+      title: "Innovator Management",
+      icon: Users,
+      href: `/dashboard/coordinator/innovator-management?role=${ROLES.COORDINATOR}`,
+    },
+    {
+      title: "Consultations",
+      icon: MessageSquare,
+      href: `/dashboard/coordinator/consultations?role=${ROLES.COORDINATOR}`,
+    },
+    {
+      title: "Idea Feedback",
       icon: Lightbulb,
-      href: `/dashboard/validation?role=${ROLES.COORDINATOR}`,
+      href: `/dashboard/coordinator/feedback?role=${ROLES.COORDINATOR}`,
     },
     {
-      title: "Reports",
-      icon: FileText,
-      href: `/dashboard/reports?role=${ROLES.COORDINATOR}`,
+      title: "Analytics",
+      icon: BarChart3,
+      href: `/dashboard/coordinator/analytics?role=${ROLES.COORDINATOR}`,
     },
     {
-      title: "Profile",
-      icon: Settings,
-      href: `/dashboard/profile?role=${ROLES.COORDINATOR}`,
-    },
+        title: "Logs & Requests",
+        icon: FileText,
+        href: `/dashboard/coordinator/logs?role=${ROLES.COORDINATOR}`,
+    }
   ],
   [ROLES.SUPER_ADMIN]: [
     {
       title: "Dashboard",
       icon: Home,
-      href: `/dashboard?role=${ROLES.SUPER_ADMIN}`,
+      href: `/dashboard/admin?role=${ROLES.SUPER_ADMIN}`,
     },
     {
-      title: "User Management",
-      icon: Users,
-      href: `/dashboard/users?role=${ROLES.SUPER_ADMIN}`,
+      title: "Institution Management",
+      icon: Briefcase,
+      href: `/dashboard/admin/institutions?role=${ROLES.SUPER_ADMIN}`,
     },
     {
-      title: "System Settings",
+      title: "Plan Configuration",
       icon: Settings,
-      href: `/dashboard/settings?role=${ROLES.SUPER_ADMIN}`,
+      href: `/dashboard/admin/plans?role=${ROLES.SUPER_ADMIN}`,
     },
     {
-      title: "Platform Analytics",
+        title: "Idea Oversight",
+        icon: Lightbulb,
+        href: `/dashboard/admin/ideas?role=${ROLES.SUPER_ADMIN}`,
+    },
+    {
+        title: "AI Engine Control",
+        icon: BrainCircuit,
+        href: `/dashboard/admin/ai-engine?role=${ROLES.SUPER_ADMIN}`,
+    },
+    {
+        title: "Advanced Analytics",
+        icon: BarChart3,
+        href: `/dashboard/admin/analytics?role=${ROLES.SUPER_ADMIN}`,
+    },
+    {
+        title: "Notifications",
+        icon: MessageSquare,
+        href: `/dashboard/admin/notifications?role=${ROLES.SUPER_ADMIN}`,
+    },
+    {
+      title: "Security & Logs",
       icon: Shield,
-      href: `/dashboard/analytics?role=${ROLES.SUPER_ADMIN}`,
+      href: `/dashboard/admin/security?role=${ROLES.SUPER_ADMIN}`,
     },
   ],
 };
