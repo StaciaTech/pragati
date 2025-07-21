@@ -20,10 +20,9 @@ export function SpiderChart({ data, maxScore = 100, size = 200 }: SpiderChartPro
 
   const getPoint = (angle: number, value: number) => {
     const r = (value / maxScore) * radius;
-    return {
-      x: centerX + r * Math.sin(angle),
-      y: centerY - r * Math.cos(angle),
-    };
+    const x = centerX + r * Math.sin(angle);
+    const y = centerY - r * Math.cos(angle);
+    return { x, y };
   };
 
   const points = angles.map((angle, i) => {
