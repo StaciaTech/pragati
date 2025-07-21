@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { FileUp, BrainCircuit } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -44,11 +45,12 @@ import {
   useStepper,
 } from '@/components/ui/stepper';
 import { SpiderChart } from '@/components/spider-chart';
-import { INITIAL_CLUSTER_WEIGHTS } from '@/lib/mock-data';
+import { INITIAL_CLUSTER_WEIGHTS, MOCK_IDEAS } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
+import { ROLES } from '@/lib/constants';
 
-// New: Import the AI flow
-import { generateValidationReport } from '@/ai/flows/generate-validation-report';
+// Import the new AI flow and its types
+import { generateValidationReport, ValidationReport } from '@/ai/flows/generate-validation-report';
 
 const clusterKeys = Object.keys(INITIAL_CLUSTER_WEIGHTS);
 const weightageSchema = clusterKeys.reduce((acc, key) => {
@@ -58,7 +60,7 @@ const weightageSchema = clusterKeys.reduce((acc, key) => {
 
 
 const submitIdeaSchema = z.object({
-  // Step 1
+  // Step 1 - We will handle weightage separately as it's not part of the main AI input anymore
   ...weightageSchema,
   preset: z.string().default('Balanced'),
 
@@ -81,23 +83,23 @@ const defaultValues: Partial<SubmitIdeaForm> = {
 
 const presets = {
   Balanced: INITIAL_CLUSTER_WEIGHTS,
-  Research: {
-    "Core Idea": 30,
-    "Market Opportunity": 10,
-    "Execution": 15,
-    "Business Model": 15,
-    "Team": 10,
-    "Compliance": 10,
-    "Risk & Strategy": 10,
+  "Research-Focused": {
+    "Core Idea & Innovation": 30,
+    "Market & Commercial Opportunity": 10,
+    "Execution & Operations": 20,
+    "Business Model & Strategy": 10,
+    "Team & Organizational Health": 10,
+    "External Environment & Compliance": 10,
+    "Risk & Future Outlook": 10
   },
-  Commercialization: {
-    "Core Idea": 10,
-    "Market Opportunity": 30,
-    "Execution": 15,
-    "Business Model": 15,
-    "Team": 10,
-    "Compliance": 10,
-    "Risk & Strategy": 10,
+  "Commercialization-Focused": {
+    "Core Idea & Innovation": 10,
+    "Market & Commercial Opportunity": 30,
+    "Execution & Operations": 15,
+    "Business Model & Strategy": 20,
+    "Team & Organizational Health": 10,
+    "External Environment & Compliance": 5,
+    "Risk & Future Outlook": 10
   },
 };
 
@@ -108,9 +110,9 @@ function Step1({ form }: { form: any }) {
   const { toast } = useToast();
   const preset = form.watch('preset');
   const watchedWeights = form.watch(clusters);
-  const totalWeight = clusters.reduce((acc, cluster, i) => acc + (watchedWeights[i] || 0), 0);
+  const totalWeight = clusters.reduce((acc, cluster, i) => acc + (form.getValues(cluster) || 0), 0);
 
-  const handlePresetChange = (presetKey: 'Balanced' | 'Research' | 'Commercialization' | 'Manual') => {
+  const handlePresetChange = (presetKey: keyof typeof presets | 'Manual') => {
       form.setValue('preset', presetKey);
       if (presetKey !== 'Manual') {
         const presetValues = presets[presetKey as keyof typeof presets];
@@ -144,8 +146,8 @@ function Step1({ form }: { form: any }) {
           <div className="md:col-span-2 space-y-6">
             <div className="flex flex-wrap gap-2">
                 <Button size="sm" variant={preset === 'Balanced' ? 'default' : 'outline'} onClick={() => handlePresetChange('Balanced')}>Balanced</Button>
-                <Button size="sm" variant={preset === 'Research' ? 'default' : 'outline'} onClick={() => handlePresetChange('Research')}>Research</Button>
-                <Button size="sm" variant={preset === 'Commercialization' ? 'default' : 'outline'} onClick={() => handlePresetChange('Commercialization')}>Commercialization</Button>
+                <Button size="sm" variant={preset === 'Research-Focused' ? 'default' : 'outline'} onClick={() => handlePresetChange('Research-Focused')}>Research-Focused</Button>
+                <Button size="sm" variant={preset === 'Commercialization-Focused' ? 'default' : 'outline'} onClick={() => handlePresetChange('Commercialization-Focused')}>Commercialization-Focused</Button>
                 <Button size="sm" variant={preset === 'Manual' ? 'default' : 'outline'} onClick={() => handlePresetChange('Manual')}>Manual</Button>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
@@ -174,7 +176,7 @@ function Step1({ form }: { form: any }) {
                 />
               ))}
             </div>
-            <div className={`text-sm font-medium p-3 border rounded-lg flex justify-between items-center ${ totalWeight === 100 ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 border-green-500' : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 border-red-500'}`}>
+             <div className={`text-sm font-medium p-3 border rounded-lg flex justify-between items-center ${ totalWeight === 100 ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 border-green-500' : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 border-red-500'}`}>
                 <span>Total Weight:</span>
                 <span className="font-bold text-xl">{totalWeight}%</span>
             </div>
@@ -334,6 +336,7 @@ function Step3({ form, isSubmitting }: { form: any, isSubmitting: boolean }) {
 
 export default function SubmitIdeaPage() {
   const { toast } = useToast();
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const form = useForm<SubmitIdeaForm>({
@@ -349,25 +352,48 @@ export default function SubmitIdeaPage() {
     });
 
     try {
-      const clusterWeights = clusters.reduce((acc, key) => {
-        acc[key] = data[key as keyof typeof data] as number;
-        return acc;
-      }, {} as Record<string, number>);
-
-      const result = await generateValidationReport({
-        ideaTitle: data.title,
-        ideaDescription: data.description,
-        clusterWeights,
+      // The new AI flow takes the core idea details.
+      // Weights are now part of the AI's internal context via the prompt.
+      const result: ValidationReport = await generateValidationReport({
+        ideaName: data.title,
+        ideaConcept: data.description,
+        category: data.domain,
+        institution: "Pragati University (Mock)", // This would come from user context
       });
 
-      console.log('Validation Result:', result);
+      console.log('Validation Report:', result);
+
+      // Add the new idea with its report to our mock data
+      const newIdea = {
+        id: `IDEA-${String(MOCK_IDEAS.length + 1).padStart(3, '0')}`,
+        title: result.ideaName,
+        description: result.ideaConcept,
+        collegeId: 'COL001',
+        collegeName: 'Pragati Institute of Technology',
+        domain: data.domain,
+        innovatorName: 'Jane Doe',
+        innovatorEmail: 'jane.doe@example.com',
+        status: result.validationOutcome,
+        dateSubmitted: new Date().toISOString().split('T')[0],
+        version: 'V1.0',
+        report: result, // Store the full report object
+        clusterWeights: {}, // This is now embedded in the report, can be removed
+        feedback: null, // Legacy feedback is replaced by the new report
+        consultationStatus: 'Not Requested',
+        consultationDate: null,
+        consultationTime: null,
+        ttcAssigned: null,
+      };
+      MOCK_IDEAS.unshift(newIdea); // Add to the beginning of the list
+
 
       toast({
         title: "Validation Complete!",
-        description: `Your idea has been evaluated with a status of: ${result.status}`,
+        description: `Your idea "${result.ideaName}" has been evaluated with a status of: ${result.validationOutcome}`,
       });
-      // Here you would typically redirect the user or update a list of ideas
-      // For now, we'll just log and show a success message.
+      
+      // Redirect to the new idea's report page
+      router.push(`/dashboard/ideas/${newIdea.id}?role=${ROLES.INNOVATOR}`);
 
     } catch (error) {
       console.error("Validation failed:", error);

@@ -1,3 +1,5 @@
+import type { ValidationReport } from "@/ai/flows/generate-validation-report";
+
 export const MOCK_INNOVATOR_USER = {
   id: 'innovator-001',
   name: 'Jane Doe',
@@ -10,339 +12,262 @@ export const MOCK_INNOVATOR_USER = {
   role: 'Innovator',
 };
 
-export const MOCK_CLUSTER_DEFINITIONS = {
-  "Core Idea": {
-    description: "Evaluates the novelty, originality, and uniqueness of the idea.",
-    parameters: {
-      "Novelty & Uniqueness": {
-        description: "Innovation, Uniqueness, Distinctiveness, USP",
-        subParameters: {
-          "Originality": {
-            weight: 0.60,
-            objective: "To determine if the core idea is genuinely new, a significant improvement, or a disruptive concept compared to existing solutions globally."
-          },
-          "Differentiation": {
-             weight: 0.40,
-            objective: "To identify how the proposed solution stands out from direct and indirect competitors, highlighting its unique selling propositions (USPs)."
-          }
-        }
-      },
-      "Problem-Solution Fit": {
-        description: "Customer Needs, Existence, Pain Points, Value Proposition, Market Demand",
-        subParameters: {
-          "Problem Severity": {
-            weight: 0.50,
-            objective: "Does the idea effectively solve a clearly defined problem?"
-          },
-          "Solution Effectiveness": {
-            weight: 0.50,
-            objective: "How well does the solution address the problem?"
-          }
-        }
-      },
-      "UX/Usability Potential": {
-        description: "User Interface, Ease of Use, Accessibility, Human-Computer Interaction",
-        subParameters: {
-          "Intuitive Design": {
-            weight: 0.60,
-            objective: "Is the design easy to understand and navigate?"
-          },
-          "Accessibility Compliance": {
-            weight: 0.40,
-            objective: "Does it meet accessibility standards?"
-          },
-        }
-      },
-    }
-  },
-  "Market Opportunity": {
-    description: "Assesses how well the idea addresses a real market need and its potential for adoption.",
-    parameters: {
-      "Market Validation": {
-        description: "Market Sizing, Competitive Analysis, Industry Trends, Demand Analysis, Sunrise / Mature",
-        subParameters: {
-          "Market Size (TAM,SAM,SOM)": {
-            weight: 0.60,
-            objective: "Total, Serviceable, and Obtainable Market."
-          },
-          "Competitive Intensity": {
-            weight: 0.40,
-            objective: "How strong is the competition?"
-          },
-        }
-      },
-      "Geographic Specificity (India)": {
-        description: "Local Market, Regional Factors, India Market, Regulatory Environment (Local)",
-        subParameters: {
-          "Regulatory Landscape": {
-            weight: 0.50,
-            objective: "Understanding local regulations."
-          },
-          "Infrastructure Readiness": {
-            weight: 0.50,
-            objective: "Availability of necessary infrastructure."
-          },
-        }
-      },
-      "Product-Market Fit": {
-        description: "User Adoption, Customer Satisfaction, Retention, Engagement Metrics",
-        subParameters: {
-          "User Engagement": {
-            weight: 0.50,
-            objective: "How engaged are potential users?"
-          },
-          "Retention Potential": {
-            weight: 0.50,
-            objective: "Ability to retain users over time."
-          },
-        }
-      },
-    }
-  },
-  "Execution": {
-    description: "Implementation, Development, Logistics, Scalability, Efficiency, Operations",
-    parameters: {
-      "Technical Feasibility": {
-        description: "Tech Stack, Development Capabilities, System Architecture, Performance, Engineering",
-        subParameters: {
-          "Technology Maturity": {
-            weight: 0.50,
-            objective: "How mature is the technology required?"
-          },
-          "Scalability & Performance": {
-            weight: 0.50,
-            objective: "Can the system handle growth and perform well?"
-          },
-        }
-      },
-      "Operational Viability": {
-        description: "Resource Management, Workflow Optimization, Supply Chain, Talent Acquisition",
-        subParameters: {
-          "Resource Availability": {
-            weight: 0.50,
-            objective: "Are necessary resources readily available?"
-          },
-          "Process Efficiency": {
-            weight: 0.50,
-            objective: "How efficient are the operational processes?"
-          },
-        }
-      },
-      "Scalability Potential": {
-        description: "Growth Capacity, Expansion Strategy, Business Model Scaling",
-        subParameters: {
-          "Business Model Scalability": {
-            weight: 0.50,
-            objective: "Can the business model scale effectively?"
-          },
-          "Market Expansion Potential": {
-            weight: 0.50,
-            objective: "Ease of expanding into new markets."
-          },
-        }
-      },
-    }
-  },
-  "Business Model": {
-    description: "Monetization, Financial Planning, Competitive Advantage, Sustainability, Revenue Strategy",
-    parameters: {
-      "Financial Viability": {
-        description: "Revenue Models, Cost Structure, Profitability, Funding Needs",
-        subParameters: {
-          "Revenue Stream Diversity": {
-            weight: 0.50,
-            objective: "Multiple ways to generate income."
-          },
-          "Profitability & Margins": {
-            weight: 0.50,
-            objective: "Potential for profit and healthy margins."
-          },
-        }
-      },
-      "Defensibility": {
-        description: "Moats, Barriers to Entry, Sustainable Advantage, Competitive Edge",
-        subParameters: {
-          "Intellectual Property (IP)": {
-            weight: 0.50,
-            objective: "Protection of intellectual assets."
-          },
-          "Network Effects": {
-            weight: 0.50,
-            objective: "Does the product benefit from more users?"
-          },
-        }
-      },
-    }
-  },
-  "Team": {
-    description: "Human Capital, Leadership, Culture, Talent Management, Organizational Structure",
-    parameters: {
-      "Founder-Fit": {
-        description: "Team Capabilities, Leadership Qualities, Entrepreneurial Experience",
-        subParameters: {
-          "Relevant Experience": {
-            weight: 0.50,
-            objective: "Experience relevant to the idea/industry."
-          },
-          "Complementary Skills": {
-            weight: 0.50,
-            objective: "Do team members have diverse and complementary skills?"
-          },
-        }
-      },
-      "Culture/Values": {
-        description: "Organizational Values, DEI, Mission-Driven, Work Environment",
-        subParameters: {
-          "Mission Alignment": {
-            weight: 0.50,
-            objective: "Are team values aligned with the mission?"
-          },
-          "Diversity & Inclusion": {
-            weight: 0.50,
-            objective: "Commitment to diversity and inclusion."
-          },
-        }
-      },
-    }
-  },
-  "Compliance": {
-    description: "Regulatory Affairs, Legal Framework, ESG, Ecosystem Support, Governance",
-    parameters: {
-      "Regulatory (India)": {
-        description: "Legal Compliance, Data Protection, Sectoral Laws, Governance",
-        subParameters: {
-          "Data Privacy Compliance": {
-            weight: 0.50,
-            objective: "Adherence to data protection laws."
-          },
-          "Sector-Specific Compliance": {
-            weight: 0.50,
-            objective: "Compliance with industry-specific regulations."
-          },
-        }
-      },
-      "Sustainability (ESG)": {
-        description: "Environmental Impact, Social Responsibility, Governance Practices, Ethical Business",
-        subParameters: {
-          "Environmental Impact": {
-            weight: 0.50,
-            objective: "Positive or negative environmental effects."
-          },
-          "Social Impact (SDGs)": {
-            weight: 0.50,
-            objective: "Contribution to Sustainable Development Goals."
-          },
-        }
-      },
-      "Ecosystem Support (India)": {
-        description: "Government Support, Investor Relations, Partnerships, Industry Associations",
-        subParameters: {
-          "Government & Institutional Support": {
-            weight: 0.50,
-            objective: "Support from government bodies and institutions."
-          },
-          "Investor & Partner Landscape": {
-            weight: 0.50,
-            objective: "Potential for attracting investors and partners."
-          },
-        }
-      },
-    }
-  },
-  "Risk & Strategy": {
-    description: "Risk Management, Strategic Planning, Investment Appeal, Future Trends, Outlook",
-    parameters: {
-      "Risk Assessment": {
-        description: "Risk Identification, Mitigation Strategy, Vulnerability Analysis",
-        subParameters: {
-          "Technical Risks": {
-            weight: 0.50,
-            objective: "Potential technical hurdles or failures."
-          },
-          "Market Risks": {
-            weight: 0.50,
-            objective: "Risks related to market changes or competition."
-          },
-        }
-      },
-      "Investor Attractiveness": {
-        description: "Funding Potential, Valuation, Exit Strategy, Investor Relations",
-        subParameters: {
-          "Valuation Potential": {
-            weight: 0.50,
-            objective: "Potential valuation for investors."
-          },
-          "Exit Strategy Viability": {
-            weight: 0.50,
-            objective: "Feasibility of investor exit."
-          },
-        }
-      },
-      "Academic/National Alignment": {
-        description: "Policy Alignment, Research Contribution, National Development Goals",
-        subParameters: {
-          "National Policy Alignment (India)": {
-            weight: 0.50,
-            objective: "Alignment with national policies and initiatives."
-          },
-          "Academic/Research Contribution": {
-            weight: 0.50,
-            objective: "Contribution to academic research or knowledge."
-          },
-        }
-      },
-    }
-  },
+// New comprehensive definitions from the prompt
+export const CLUSTER_WEIGHTS = {
+  "Core Idea & Innovation": 0.20,
+  "Market & Commercial Opportunity": 0.25,
+  "Execution & Operations": 0.15,
+  "Business Model & Strategy": 0.15,
+  "Team & Organizational Health": 0.10,
+  "External Environment & Compliance": 0.10,
+  "Risk & Future Outlook": 0.05,
 };
 
 export const PARAMETER_WEIGHTS: Record<string, Record<string, number>> = {
-    "Core Idea": {
-        "Novelty & Uniqueness": 0.30,
-        "Problem-Solution Fit": 0.45,
-        "UX/Usability Potential": 0.25,
-    },
-    "Market Opportunity": {
-        "Market Validation": 0.40,
-        "Geographic Specificity (India)": 0.30,
-        "Product-Market Fit": 0.30,
-    },
-    "Execution": {
-        "Technical Feasibility": 0.40,
-        "Operational Viability": 0.30,
-        "Scalability Potential": 0.30,
-    },
-    "Business Model": {
-        "Financial Viability": 0.60,
-        "Defensibility": 0.40,
-    },
-    "Team": {
-        "Founder-Fit": 0.60,
-        "Culture/Values": 0.40,
-    },
-    "Compliance": {
-        "Regulatory (India)": 0.40,
-        "Sustainability (ESG)": 0.30,
-        "Ecosystem Support (India)": 0.30,
-    },
-    "Risk & Strategy": {
-        "Risk Assessment": 0.40,
-        "Investor Attractiveness": 0.30,
-        "Academic/National Alignment": 0.30,
-    },
+  "Core Idea & Innovation": {
+    "Novelty & Uniqueness": 0.30,
+    "Problem-Solution Fit & Market Need": 0.45,
+    "User Experience (UX) & Usability Potential": 0.25,
+  },
+  "Market & Commercial Opportunity": {
+    "Market Validation": 0.40,
+    "Geographic Specificity (India)": 0.30,
+    "Product-Market Fit": 0.30,
+  },
+  "Execution & Operations": {
+    "Technical Feasibility": 0.40,
+    "Operational Viability": 0.30,
+    "Scalability Potential": 0.30,
+  },
+  "Business Model & Strategy": {
+    "Financial Viability": 0.60,
+    "Defensibility": 0.40,
+  },
+  "Team & Organizational Health": {
+    "Founder-Fit": 0.60,
+    "Culture/Values": 0.40,
+  },
+  "External Environment & Compliance": {
+    "Regulatory (India)": 0.40,
+    "Sustainability (ESG)": 0.30,
+    "Ecosystem Support (India)": 0.30,
+  },
+  "Risk & Future Outlook": {
+    "Risk Assessment": 0.40,
+    "Investor Attractiveness": 0.30,
+    "Academic/National Alignment": 0.30,
+  },
 };
 
+export const SUB_PARAMETER_DEFINITIONS = {
+  "Core Idea & Innovation": {
+    parameters: {
+      "Novelty & Uniqueness": {
+        subParameters: {
+          "Originality": { weight: 0.60, objective: "To determine if the core idea is genuinely new, a significant improvement, or a disruptive concept compared to existing solutions globally." },
+          "Differentiation": { weight: 0.40, objective: "To identify how the proposed solution stands out from direct and indirect competitors, highlighting its unique selling propositions (USPs)." }
+        }
+      },
+      "Problem-Solution Fit & Market Need": {
+        subParameters: {
+          "Problem Clarity & Severity": { weight: 0.20, objective: "To gauge the intensity and prevalence of the problem being addressed for the target users/customers." },
+          "Target Audience Identification & Definition": { weight: 0.15, objective: "To clearly define the specific demographic, professional role, and context of the primary target users." },
+          "Customer Pain Points Validation": { weight: 0.20, objective: "To validate that the identified pain points are genuinely experienced and severe enough for customers to seek and pay for a solution." },
+          "Solution Efficacy": { weight: 0.20, objective: "To evaluate how well the proposed product or service truly solves the identified problem, meeting user needs and expectations." },
+          "Customer Willingness to Pay": { weight: 0.15, objective: "To assess the target customers' readiness and ability to pay for the proposed solution." },
+          "Jobs-to-Be-Done (JTBD) Alignment": { weight: 0.10, objective: "To ensure the solution aligns with the fundamental 'jobs' customers are trying to get done, including functional, emotional, and social aspects." }
+        }
+      },
+      "User Experience (UX) & Usability Potential": {
+        subParameters: {
+          "Intuitive Design": { weight: 0.60, objective: "To assess how easy and natural it is for users to understand, learn, and interact with the product or service without extensive training." },
+          "Accessibility Compliance": { weight: 0.40, objective: "To ensure the product adheres to standards that make it usable by people with disabilities, promoting inclusivity and legal compliance." }
+        }
+      }
+    }
+  },
+  "Market & Commercial Opportunity": {
+    parameters: {
+      "Market Validation": {
+        subParameters: {
+          "Market Size (TAM)": { weight: 0.60, objective: "To estimate the total potential revenue if 100% of the target market adopted the solution (TAM), the portion accessible (SAM), and the realistic share obtainable (SOM)." },
+          "Competitive Intensity": { weight: 0.40, objective: "To analyze the number, size, and aggressiveness of existing competitors in the market." }
+        }
+      },
+      "Geographic Specificity (India)": {
+        subParameters: {
+          "Regulatory Landscape": { weight: 0.50, objective: "To understand the legal and policy environment in India that affects the project's operation, including licensing, data, and industry-specific laws." },
+          "Infrastructure Readiness": { weight: 0.50, objective: "To evaluate if the necessary physical and digital infrastructure is adequately developed in India to support the solution." }
+        }
+      },
+      "Product-Market Fit": {
+        subParameters: {
+          "User Engagement": { weight: 0.50, objective: "To predict how deeply and frequently users will interact with the product or service after initial adoption." },
+          "Retention Potential": { weight: 0.50, objective: "To estimate the likelihood of users continuing to use the product over an extended period." }
+        }
+      }
+    }
+  },
+  "Execution & Operations": {
+    parameters: {
+      "Technical Feasibility": {
+        subParameters: {
+          "Technology Maturity": { weight: 0.50, objective: "To assess the stability, reliability, and widespread adoption of the core technologies proposed for the solution, and identify associated R&D risks." },
+          "Scalability & Performance": { weight: 0.50, objective: "To determine if the technical architecture and underlying systems can efficiently handle increasing user numbers, data volumes, or transaction loads." }
+        }
+      },
+      "Operational Viability": {
+        subParameters: {
+          "Resource Availability": { weight: 0.50, objective: "To check if the necessary human talent (skilled professionals), financial capital, and material supplies are readily accessible to execute the project." },
+          "Process Efficiency": { weight: 0.50, objective: "To evaluate how streamlined and optimized the internal processes (e.g., AI model training, content generation, customer service, delivery) will be, minimizing waste and maximizing output." }
+        }
+      },
+      "Scalability Potential": {
+        subParameters: {
+          "Business Model Scalability": { weight: 0.50, objective: "To assess if the revenue model allows revenue to grow disproportionately faster than costs as the business expands." },
+          "Market Expansion Potential": { weight: 0.50, objective: "To identify how easily the product/service can be introduced into new geographic markets, demographics, or use cases beyond the initial target." }
+        }
+      }
+    }
+  },
+  "Business Model & Strategy": {
+    parameters: {
+      "Financial Viability": {
+        subParameters: {
+          "Revenue Stream Diversity": { weight: 0.50, objective: "To identify how many distinct and sustainable ways the project plans to generate income." },
+          "Profitability & Margins": { weight: 0.50, objective: "To project the percentage of revenue that turns into profit after accounting for all costs (gross and net margins)." }
+        }
+      },
+      "Defensibility": {
+        subParameters: {
+          "Intellectual Property (IP)": { weight: 0.50, objective: "To assess the strength and breadth of legal protection for the project's unique innovations." },
+          "Network Effects": { weight: 0.50, objective: "To determine if the value of the product or service increases for existing users as more new users join." }
+        }
+      }
+    }
+  },
+  "Team & Organizational Health": {
+    parameters: {
+      "Founder-Fit": {
+        subParameters: {
+          "Relevant Experience": { weight: 0.50, objective: "To evaluate if the founding team possesses direct, hands-on experience in the industry, technology, or business model proposed." },
+          "Complementary Skills": { weight: 0.50, objective: "To assess if the team has a balanced mix of essential skills (e.g., technical, business development, marketing, operations) needed for holistic execution." }
+        }
+      },
+      "Culture/Values": {
+        subParameters: {
+          "Mission Alignment": { weight: 0.50, objective: "To understand how deeply the team members' personal values and goals resonate with the project's core mission and purpose." },
+          "Diversity & Inclusion": { weight: 0.50, objective: "To assess the presence of diverse perspectives (gender, ethnicity, background, thought) within the team and a commitment to inclusive practices." }
+        }
+      }
+    }
+  },
+  "External Environment & Compliance": {
+    parameters: {
+      "Regulatory (India)": {
+        subParameters: {
+          "Data Privacy Compliance": { weight: 0.50, objective: "To ensure the project's handling of user data adheres to relevant Indian data protection laws (e.g., DPDP Act) and international standards." },
+          "Sector-Specific Compliance": { weight: 0.50, objective: "To verify adherence to regulations unique to the project's industry in India (e.g., UGC for EdTech, specific AI guidelines)." }
+        }
+      },
+      "Sustainability (ESG)": {
+        subParameters: {
+          "Environmental Impact": { weight: 0.50, objective: "To assess the project's footprint on the natural environment (e.g., carbon emissions, waste generation, resource consumption)." },
+          "Social Impact (SDGs)": { weight: 0.50, objective: "To evaluate how the project contributes to or impacts the United Nations Sustainable Development Goals (SDGs) and broader social well-being." }
+        }
+      },
+      "Ecosystem Support (India)": {
+        subParameters: {
+          "Government & Institutional Support": { weight: 0.50, objective: "To identify potential assistance from government programs, incubators, accelerators, or other institutional bodies in India." },
+          "Investor & Partner Landscape": { weight: 0.50, objective: "To understand the availability and appetite of investors (VCs, angels) and potential strategic partners for the project in India." }
+        }
+      }
+    }
+  },
+  "Risk & Future Outlook": {
+    parameters: {
+      "Risk Assessment": {
+        subParameters: {
+          "Technical Risks": { weight: 0.34, objective: "To identify potential challenges and failure points related to the technology development, implementation, or long-term maintenance." },
+          "Market Risks": { weight: 0.33, objective: "To assess external uncertainties that could negatively impact the project's market success." },
+          "Operational Risks": { weight: 0.33, objective: "To identify potential failures in the day-to-day running of the business." }
+        }
+      },
+      "Investor Attractiveness": {
+        subParameters: {
+          "ROI Potential": { weight: 0.50, objective: "To estimate the potential return on investment for financiers." },
+          "Exit Strategy Feasibility": { weight: 0.50, objective: "To identify clear and attractive paths for investors to realize a return on their investment." }
+        }
+      },
+      "Academic/National Alignment": {
+        subParameters: {
+          "Research Synergy": { weight: 0.50, objective: "To assess if the project contributes new knowledge, methods, or insights that can advance academic research." },
+          "National Priority Alignment": { weight: 0.50, objective: "To determine how well the project aligns with broader national policies and initiatives in India." }
+        }
+      }
+    }
+  }
+};
 
+export const SCORING_RUBRIC = {
+  "5": "Excellent: Strong evidence, highly aligned with success factors, minimal risk, clear advantage.",
+  "4": "Good: Positive evidence, generally aligned, minor areas for improvement/risk.",
+  "3": "Moderate: Mixed evidence, some clear challenges/risks, requires attention.",
+  "2": "Weak: Significant gaps, major challenges/risks, requires substantial rework.",
+  "1": "Poor: No evidence, fundamental flaws, highly problematic, major red flags.",
+  "N/A": "Not Applicable: The sub-parameter is not relevant to this specific idea."
+};
+
+export const VALIDATION_OUTCOMES = {
+  "GOOD": {
+    "range": "4.0 - 5.0",
+    "recommendation": "Approved for Next Step (Consultancy): Idea has strong potential, minimal significant red flags. Focus on execution and scaling."
+  },
+  "MODERATE": {
+    "range": "2.5 - 3.9",
+    "recommendation": "Requires AI-Guided Modification & Re-upload: Idea has potential but with notable weaknesses or missing information. Please review the detailed report and make necessary revisions."
+  },
+  "NOT RECOMMENDED": {
+    "range": "1.0 - 2.4",
+    "recommendation": "Idea Not Viable (at this stage): Idea has fundamental flaws or significant unaddressed risks. Please consider a fundamental re-evaluation of the core concept."
+  }
+};
+
+export const MOCK_CLUSTER_DEFINITIONS = SUB_PARAMETER_DEFINITIONS; // Legacy compatibility
+
+// The initial weights for the UI slider components on the "Submit Idea" page
 export const INITIAL_CLUSTER_WEIGHTS = {
-  "Core Idea": 15,
-  "Market Opportunity": 20,
-  "Execution": 20,
-  "Business Model": 15,
-  "Team": 10,
-  "Compliance": 10,
-  "Risk & Strategy": 10,
+  "Core Idea & Innovation": 20,
+  "Market & Commercial Opportunity": 25,
+  "Execution & Operations": 15,
+  "Business Model & Strategy": 15,
+  "Team & Organizational Health": 10,
+  "External Environment & Compliance": 10,
+  "Risk & Future Outlook": 5,
 };
 
-export let MOCK_IDEAS = [
+export let MOCK_IDEAS: Array<{
+  id: string;
+  title: string;
+  description: string;
+  collegeId: string;
+  collegeName: string;
+  domain: string;
+  innovatorName: string;
+  innovatorEmail: string;
+  status: string;
+  dateSubmitted: string;
+  version: string;
+  report: ValidationReport | null; // The new comprehensive report
+  clusterWeights?: Record<string, number>; // Legacy
+  feedback?: { overall: string; details: { aspect: string; score: number; comment: string }[] } | null; // Legacy
+  consultationStatus: string;
+  consultationDate: string | null;
+  consultationTime: string | null;
+  ttcAssigned: string | null;
+}> = [
+  // Existing ideas can be left as is, new ideas will use the `report` field.
+  // Note: For existing ideas, the report page will show "not available".
   {
     id: 'IDEA-001',
     title: 'AI-Powered Smart Farming',
@@ -355,6 +280,7 @@ export let MOCK_IDEAS = [
     status: 'Approved',
     dateSubmitted: '2024-07-01',
     version: 'V1.0',
+    report: null,
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: {
       overall: 'Excellent idea with strong market potential. Ready for MVP development.',
@@ -385,6 +311,7 @@ export let MOCK_IDEAS = [
     status: 'Moderate',
     dateSubmitted: '2024-07-05',
     version: 'V1.0',
+    report: null,
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: {
       overall: 'Interesting concept, but scalability and user adoption are concerns. Requires refinement.',
@@ -399,55 +326,6 @@ export let MOCK_IDEAS = [
       ],
     },
     consultationStatus: 'Pending',
-    consultationDate: null,
-    consultationTime: null,
-    ttcAssigned: null,
-  },
-  {
-    id: 'IDEA-003',
-    title: 'Eco-Friendly Waste Sorting Robot',
-    description: 'A robotic system for automated and precise sorting of recyclable materials.',
-    collegeId: 'COL001',
-    collegeName: 'Pragati Institute of Technology',
-    domain: 'Smart Cities',
-    innovatorName: 'Alice Johnson',
-    innovatorEmail: 'alice.j@example.com',
-    status: 'Validating',
-    dateSubmitted: '2024-07-10',
-    version: 'V1.0',
-    clusterWeights: INITIAL_CLUSTER_WEIGHTS,
-    feedback: null,
-    consultationStatus: 'Not Requested',
-    consultationDate: null,
-    consultationTime: null,
-    ttcAssigned: null,
-  },
-  {
-    id: 'IDEA-004',
-    title: 'Personalized Mental Wellness App',
-    description: 'An app providing tailored mental health exercises and support based on user input.',
-    collegeId: 'COL003',
-    collegeName: 'Tech University Chennai',
-    domain: 'HealthTech',
-    innovatorName: 'Chris Lee',
-    innovatorEmail: 'chris.lee@example.com',
-    status: 'Rejected',
-    dateSubmitted: '2024-07-12',
-    version: 'V1.0',
-    clusterWeights: INITIAL_CLUSTER_WEIGHTS,
-    feedback: {
-      overall: 'While the problem is relevant, the proposed solution lacks differentiation and clear value proposition compared to existing solutions.',
-      details: [
-        { aspect: 'Core Idea', score: 2.0, comment: 'Similar apps already exist with established user bases.' },
-        { aspect: 'Market Opportunity', score: 2.2, comment: 'Does not offer a unique selling proposition.' },
-        { aspect: 'Execution', score: 3.5, comment: 'Technically feasible, but market entry is challenging.' },
-        { aspect: 'Business Model', score: 2.5, comment: 'Weak monetization strategy given competition.' },
-        { aspect: 'Team', score: 3.0, comment: 'Team lacks specific mental health domain expertise.' },
-        { aspect: 'Compliance', score: 3.8, comment: 'General compliance is fine, but ethical AI use needs more thought.' },
-        { aspect: 'Risk & Strategy', score: 2.8, comment: 'Market saturation makes rapid scaling difficult.' },
-      ],
-    },
-    consultationStatus: 'Not Requested',
     consultationDate: null,
     consultationTime: null,
     ttcAssigned: null,
@@ -530,8 +408,11 @@ export let MOCK_TTC_AUDIT_TRAIL = [
 export const STATUS_COLORS: { [key: string]: string } = {
     Validating: 'bg-gray-500 text-white',
     Approved: 'bg-green-500 text-white',
+    GOOD: 'bg-green-500 text-white',
     Moderate: 'bg-yellow-500 text-white',
+    MODERATE: 'bg-yellow-500 text-white',
     Rejected: 'bg-red-500 text-white',
+    'NOT RECOMMENDED': 'bg-red-500 text-white',
     Pending: 'bg-blue-500 text-white',
     Scheduled: 'bg-indigo-500 text-white',
     Completed: 'bg-green-600 text-white',

@@ -32,10 +32,17 @@ export default function IdeasPage() {
   const ideas = MOCK_IDEAS;
 
   const getOverallScore = (idea: (typeof ideas)[0]) => {
+    if (idea.report) {
+      return idea.report.overallScore.toFixed(1);
+    }
     if (!idea.feedback) return 'N/A';
     const total = idea.feedback.details.reduce((sum, d) => sum + d.score, 0);
     return (total / idea.feedback.details.length).toFixed(1);
   };
+  
+  const getStatus = (idea: (typeof ideas)[0]) => {
+    return idea.report?.validationOutcome || idea.status;
+  }
 
   return (
     <Card>
@@ -64,35 +71,38 @@ export default function IdeasPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {ideas.map((idea) => (
-                <TableRow key={idea.id}>
-                  <TableCell className="font-medium">{idea.id}</TableCell>
-                  <TableCell>{idea.title}</TableCell>
-                  <TableCell>{idea.dateSubmitted}</TableCell>
-                  <TableCell>
-                    <Badge className={STATUS_COLORS[idea.status]}>{idea.status}</Badge>
-                  </TableCell>
-                  <TableCell>{getOverallScore(idea)}</TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">More actions</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild>
-                           <Link href={`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`}>View Report</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>Resubmit</DropdownMenuItem>
-                        <DropdownMenuItem>Download</DropdownMenuItem>
-                        <DropdownMenuItem>Track History</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {ideas.map((idea) => {
+                const status = getStatus(idea);
+                return (
+                  <TableRow key={idea.id}>
+                    <TableCell className="font-medium">{idea.id}</TableCell>
+                    <TableCell>{idea.title}</TableCell>
+                    <TableCell>{idea.dateSubmitted}</TableCell>
+                    <TableCell>
+                      <Badge className={STATUS_COLORS[status]}>{status}</Badge>
+                    </TableCell>
+                    <TableCell>{getOverallScore(idea)}</TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">More actions</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem asChild>
+                             <Link href={`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`}>View Report</Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>Resubmit</DropdownMenuItem>
+                          <DropdownMenuItem>Download</DropdownMenuItem>
+                          <DropdownMenuItem>Track History</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
             </TableBody>
           </Table>
         )}
