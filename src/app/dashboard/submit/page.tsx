@@ -104,7 +104,7 @@ const presets = {
 const clusters = Object.keys(INITIAL_CLUSTER_WEIGHTS);
 
 function Step1({ form }: { form: any }) {
-  const { stepper, ...stepperProps } = useStepper();
+  const { activeStep, setActiveStep, ...stepperProps } = useStepper();
   const { toast } = useToast();
   const preset = form.watch('preset');
   const watchedWeights = form.watch(clusters);
@@ -129,7 +129,7 @@ function Step1({ form }: { form: any }) {
         });
         return;
     }
-    stepper.nextStep();
+    setActiveStep(activeStep + 1);
   }
 
   return (
