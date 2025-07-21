@@ -42,15 +42,16 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           <SidebarMenu>
             {navLinks.map((link) => (
               <SidebarMenuItem key={link.title}>
-                <Link href={link.href} legacyBehavior passHref>
-                  <SidebarMenuButton
-                    isActive={pathname === new URL(link.href, "http://a").pathname}
-                    tooltip={{ children: link.title }}
-                  >
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === new URL(link.href, "http://a").pathname}
+                  tooltip={{ children: link.title }}
+                >
+                  <Link href={link.href}>
                     <link.icon />
                     <span>{link.title}</span>
-                  </SidebarMenuButton>
-                </Link>
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
