@@ -12,16 +12,16 @@ import Link from 'next/link';
 
 export default function IdeaOversightPage() {
   const [searchTerm, setSearchTerm] = React.useState('');
-  const [filterCollege, setFilterCollege] = React.useState('');
-  const [filterDomain, setFilterDomain] = React.useState('');
+  const [filterCollege, setFilterCollege] = React.useState('all');
+  const [filterDomain, setFilterDomain] = React.useState('all');
 
   const uniqueDomains = [...new Set(MOCK_IDEAS.map(idea => idea.domain))];
   
   const filteredIdeas = MOCK_IDEAS.filter(idea => {
     const matchesSearch = idea.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           idea.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCollege = filterCollege === '' || idea.collegeName === filterCollege;
-    const matchesDomain = filterDomain === '' || idea.domain === filterDomain;
+    const matchesCollege = filterCollege === 'all' || idea.collegeName === filterCollege;
+    const matchesDomain = filterDomain === 'all' || idea.domain === filterDomain;
     return matchesSearch && matchesCollege && matchesDomain;
   });
 
@@ -41,14 +41,14 @@ export default function IdeaOversightPage() {
           <Select value={filterCollege} onValueChange={setFilterCollege}>
             <SelectTrigger><SelectValue placeholder="Filter by College..." /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Colleges</SelectItem>
+              <SelectItem value="all">All Colleges</SelectItem>
               {MOCK_COLLEGES.map(college => <SelectItem key={college.id} value={college.name}>{college.name}</SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={filterDomain} onValueChange={setFilterDomain}>
             <SelectTrigger><SelectValue placeholder="Filter by Domain..." /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Domains</SelectItem>
+              <SelectItem value="all">All Domains</SelectItem>
               {uniqueDomains.map(domain => <SelectItem key={domain} value={domain}>{domain}</SelectItem>)}
             </SelectContent>
           </Select>
