@@ -17,22 +17,40 @@ export const MOCK_CLUSTER_DEFINITIONS = {
       "Novelty & Uniqueness": {
         description: "Innovation, Uniqueness, Distinctiveness, USP",
         subParameters: {
-          "Originality": "Is the idea truly distinct from existing solutions?",
-          "Differentiation": "What sets this idea apart from competitors?",
+          "Originality": {
+            weight: 0.60,
+            objective: "To determine if the core idea is genuinely new, a significant improvement, or a disruptive concept compared to existing solutions globally."
+          },
+          "Differentiation": {
+             weight: 0.40,
+            objective: "To identify how the proposed solution stands out from direct and indirect competitors, highlighting its unique selling propositions (USPs)."
+          }
         }
       },
       "Problem-Solution Fit": {
         description: "Customer Needs, Existence, Pain Points, Value Proposition, Market Demand",
         subParameters: {
-          "Problem Severity": "Does the idea effectively solve a clearly defined problem?",
-          "Solution Effectiveness": "How well does the solution address the problem?",
+          "Problem Severity": {
+            weight: 0.50,
+            objective: "Does the idea effectively solve a clearly defined problem?"
+          },
+          "Solution Effectiveness": {
+            weight: 0.50,
+            objective: "How well does the solution address the problem?"
+          }
         }
       },
       "UX/Usability Potential": {
         description: "User Interface, Ease of Use, Accessibility, Human-Computer Interaction",
         subParameters: {
-          "Intuitive Design": "Is the design easy to understand and navigate?",
-          "Accessibility Compliance": "Does it meet accessibility standards?",
+          "Intuitive Design": {
+            weight: 0.60,
+            objective: "Is the design easy to understand and navigate?"
+          },
+          "Accessibility Compliance": {
+            weight: 0.40,
+            objective: "Does it meet accessibility standards?"
+          },
         }
       },
     }
@@ -43,22 +61,40 @@ export const MOCK_CLUSTER_DEFINITIONS = {
       "Market Validation": {
         description: "Market Sizing, Competitive Analysis, Industry Trends, Demand Analysis, Sunrise / Mature",
         subParameters: {
-          "Market Size (TAM,SAM,SOM)": "Total, Serviceable, and Obtainable Market.",
-          "Competitive Intensity": "How strong is the competition?",
+          "Market Size (TAM,SAM,SOM)": {
+            weight: 0.60,
+            objective: "Total, Serviceable, and Obtainable Market."
+          },
+          "Competitive Intensity": {
+            weight: 0.40,
+            objective: "How strong is the competition?"
+          },
         }
       },
       "Geographic Specificity (India)": {
         description: "Local Market, Regional Factors, India Market, Regulatory Environment (Local)",
         subParameters: {
-          "Regulatory Landscape": "Understanding local regulations.",
-          "Infrastructure Readiness": "Availability of necessary infrastructure.",
+          "Regulatory Landscape": {
+            weight: 0.50,
+            objective: "Understanding local regulations."
+          },
+          "Infrastructure Readiness": {
+            weight: 0.50,
+            objective: "Availability of necessary infrastructure."
+          },
         }
       },
       "Product-Market Fit": {
         description: "User Adoption, Customer Satisfaction, Retention, Engagement Metrics",
         subParameters: {
-          "User Engagement": "How engaged are potential users?",
-          "Retention Potential": "Ability to retain users over time.",
+          "User Engagement": {
+            weight: 0.50,
+            objective: "How engaged are potential users?"
+          },
+          "Retention Potential": {
+            weight: 0.50,
+            objective: "Ability to retain users over time."
+          },
         }
       },
     }
@@ -69,22 +105,40 @@ export const MOCK_CLUSTER_DEFINITIONS = {
       "Technical Feasibility": {
         description: "Tech Stack, Development Capabilities, System Architecture, Performance, Engineering",
         subParameters: {
-          "Technology Maturity": "How mature is the technology required?",
-          "Scalability & Performance": "Can the system handle growth and perform well?",
+          "Technology Maturity": {
+            weight: 0.50,
+            objective: "How mature is the technology required?"
+          },
+          "Scalability & Performance": {
+            weight: 0.50,
+            objective: "Can the system handle growth and perform well?"
+          },
         }
       },
       "Operational Viability": {
         description: "Resource Management, Workflow Optimization, Supply Chain, Talent Acquisition",
         subParameters: {
-          "Resource Availability": "Are necessary resources readily available?",
-          "Process Efficiency": "How efficient are the operational processes?",
+          "Resource Availability": {
+            weight: 0.50,
+            objective: "Are necessary resources readily available?"
+          },
+          "Process Efficiency": {
+            weight: 0.50,
+            objective: "How efficient are the operational processes?"
+          },
         }
       },
       "Scalability Potential": {
         description: "Growth Capacity, Expansion Strategy, Business Model Scaling",
         subParameters: {
-          "Business Model Scalability": "Can the business model scale effectively?",
-          "Market Expansion Potential": "Ease of expanding into new markets.",
+          "Business Model Scalability": {
+            weight: 0.50,
+            objective: "Can the business model scale effectively?"
+          },
+          "Market Expansion Potential": {
+            weight: 0.50,
+            objective: "Ease of expanding into new markets."
+          },
         }
       },
     }
@@ -95,15 +149,27 @@ export const MOCK_CLUSTER_DEFINITIONS = {
       "Financial Viability": {
         description: "Revenue Models, Cost Structure, Profitability, Funding Needs",
         subParameters: {
-          "Revenue Stream Diversity": "Multiple ways to generate income.",
-          "Profitability & Margins": "Potential for profit and healthy margins.",
+          "Revenue Stream Diversity": {
+            weight: 0.50,
+            objective: "Multiple ways to generate income."
+          },
+          "Profitability & Margins": {
+            weight: 0.50,
+            objective: "Potential for profit and healthy margins."
+          },
         }
       },
       "Defensibility": {
         description: "Moats, Barriers to Entry, Sustainable Advantage, Competitive Edge",
         subParameters: {
-          "Intellectual Property (IP)": "Protection of intellectual assets.",
-          "Network Effects": "Does the product benefit from more users?",
+          "Intellectual Property (IP)": {
+            weight: 0.50,
+            objective: "Protection of intellectual assets."
+          },
+          "Network Effects": {
+            weight: 0.50,
+            objective: "Does the product benefit from more users?"
+          },
         }
       },
     }
@@ -114,15 +180,27 @@ export const MOCK_CLUSTER_DEFINITIONS = {
       "Founder-Fit": {
         description: "Team Capabilities, Leadership Qualities, Entrepreneurial Experience",
         subParameters: {
-          "Relevant Experience": "Experience relevant to the idea/industry.",
-          "Complementary Skills": "Do team members have diverse and complementary skills?",
+          "Relevant Experience": {
+            weight: 0.50,
+            objective: "Experience relevant to the idea/industry."
+          },
+          "Complementary Skills": {
+            weight: 0.50,
+            objective: "Do team members have diverse and complementary skills?"
+          },
         }
       },
       "Culture/Values": {
         description: "Organizational Values, DEI, Mission-Driven, Work Environment",
         subParameters: {
-          "Mission Alignment": "Are team values aligned with the mission?",
-          "Diversity & Inclusion": "Commitment to diversity and inclusion.",
+          "Mission Alignment": {
+            weight: 0.50,
+            objective: "Are team values aligned with the mission?"
+          },
+          "Diversity & Inclusion": {
+            weight: 0.50,
+            objective: "Commitment to diversity and inclusion."
+          },
         }
       },
     }
@@ -133,22 +211,40 @@ export const MOCK_CLUSTER_DEFINITIONS = {
       "Regulatory (India)": {
         description: "Legal Compliance, Data Protection, Sectoral Laws, Governance",
         subParameters: {
-          "Data Privacy Compliance": "Adherence to data protection laws.",
-          "Sector-Specific Compliance": "Compliance with industry-specific regulations.",
+          "Data Privacy Compliance": {
+            weight: 0.50,
+            objective: "Adherence to data protection laws."
+          },
+          "Sector-Specific Compliance": {
+            weight: 0.50,
+            objective: "Compliance with industry-specific regulations."
+          },
         }
       },
       "Sustainability (ESG)": {
         description: "Environmental Impact, Social Responsibility, Governance Practices, Ethical Business",
         subParameters: {
-          "Environmental Impact": "Positive or negative environmental effects.",
-          "Social Impact (SDGs)": "Contribution to Sustainable Development Goals.",
+          "Environmental Impact": {
+            weight: 0.50,
+            objective: "Positive or negative environmental effects."
+          },
+          "Social Impact (SDGs)": {
+            weight: 0.50,
+            objective: "Contribution to Sustainable Development Goals."
+          },
         }
       },
       "Ecosystem Support (India)": {
         description: "Government Support, Investor Relations, Partnerships, Industry Associations",
         subParameters: {
-          "Government & Institutional Support": "Support from government bodies and institutions.",
-          "Investor & Partner Landscape": "Potential for attracting investors and partners.",
+          "Government & Institutional Support": {
+            weight: 0.50,
+            objective: "Support from government bodies and institutions."
+          },
+          "Investor & Partner Landscape": {
+            weight: 0.50,
+            objective: "Potential for attracting investors and partners."
+          },
         }
       },
     }
@@ -159,22 +255,40 @@ export const MOCK_CLUSTER_DEFINITIONS = {
       "Risk Assessment": {
         description: "Risk Identification, Mitigation Strategy, Vulnerability Analysis",
         subParameters: {
-          "Technical Risks": "Potential technical hurdles or failures.",
-          "Market Risks": "Risks related to market changes or competition.",
+          "Technical Risks": {
+            weight: 0.50,
+            objective: "Potential technical hurdles or failures."
+          },
+          "Market Risks": {
+            weight: 0.50,
+            objective: "Risks related to market changes or competition."
+          },
         }
       },
       "Investor Attractiveness": {
         description: "Funding Potential, Valuation, Exit Strategy, Investor Relations",
         subParameters: {
-          "Valuation Potential": "Potential valuation for investors.",
-          "Exit Strategy Viability": "Feasibility of investor exit.",
+          "Valuation Potential": {
+            weight: 0.50,
+            objective: "Potential valuation for investors."
+          },
+          "Exit Strategy Viability": {
+            weight: 0.50,
+            objective: "Feasibility of investor exit."
+          },
         }
       },
       "Academic/National Alignment": {
         description: "Policy Alignment, Research Contribution, National Development Goals",
         subParameters: {
-          "National Policy Alignment (India)": "Alignment with national policies and initiatives.",
-          "Academic/Research Contribution": "Contribution to academic research or knowledge.",
+          "National Policy Alignment (India)": {
+            weight: 0.50,
+            objective: "Alignment with national policies and initiatives."
+          },
+          "Academic/Research Contribution": {
+            weight: 0.50,
+            objective: "Contribution to academic research or knowledge."
+          },
         }
       },
     }

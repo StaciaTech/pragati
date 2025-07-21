@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { FileUp, BrainCircuit } from 'lucide-react';
 
@@ -44,7 +44,7 @@ import {
   useStepper,
 } from '@/components/ui/stepper';
 import { SpiderChart } from '@/components/spider-chart';
-import { MOCK_CLUSTER_DEFINITIONS, INITIAL_CLUSTER_WEIGHTS } from '@/lib/mock-data';
+import { INITIAL_CLUSTER_WEIGHTS } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 
 // New: Import the AI flow
@@ -104,7 +104,7 @@ const presets = {
 const clusters = Object.keys(INITIAL_CLUSTER_WEIGHTS);
 
 function Step1({ form }: { form: any }) {
-  const { activeStep, setActiveStep } = useStepper();
+  const { setActiveStep } = useStepper();
   const { toast } = useToast();
   const preset = form.watch('preset');
   const watchedWeights = form.watch(clusters);
@@ -121,6 +121,7 @@ function Step1({ form }: { form: any }) {
   };
 
   const handleNext = () => {
+    const totalWeight = clusters.reduce((acc, cluster) => acc + (form.getValues(cluster) || 0), 0);
     if (preset === 'Manual' && totalWeight !== 100) {
         toast({
             variant: "destructive",
@@ -129,7 +130,7 @@ function Step1({ form }: { form: any }) {
         });
         return;
     }
-    setActiveStep(activeStep + 1);
+    setActiveStep(1);
   }
 
   return (
