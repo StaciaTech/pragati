@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useParams, useSearchParams } from 'next/navigation';
@@ -56,20 +57,19 @@ export default function IdeaReportPage() {
       const canvasWidth = canvas.width;
       const canvasHeight = canvas.height;
       const ratio = canvasWidth / canvasHeight;
-      const width = pdfWidth;
       let height = width / ratio;
       
       let position = 0;
       let heightLeft = canvas.height * pdfWidth / canvas.width;
 
 
-      pdf.addImage(imgData, 'PNG', 0, position, width, height);
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, height);
       heightLeft -= pdfHeight;
 
       while (heightLeft > 0) {
-        position = heightLeft - height;
+        position = -heightLeft;
         pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, width, height);
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, height);
         heightLeft -= pdfHeight;
       }
       
@@ -190,30 +190,37 @@ export default function IdeaReportPage() {
                         <h4 className="text-lg font-semibold text-primary">{clusterName}</h4>
                         <Separator className="my-2" />
                         {Object.entries(clusterData).map(([paramName, paramData]) => {
-                          if (paramName === 'purpose' || paramName === 'common_terminologies') return null;
-                          if (typeof paramData !== 'object' || paramData === null) return null;
+                          if (paramName === 'purpose' || paramName === 'common_terminologies' || typeof paramData !== 'object' || paramData === null) {
+                            return null;
+                          }
                           return (
                             <div key={paramName} className="ml-4 mb-4">
                               <h5 className="font-medium text-md">{paramName}</h5>
                                {Object.entries(paramData).map(([subParamName, subParamData]) => {
-                                 if (typeof subParamData !== 'object' || subParamData === null || !subParamData.hasOwnProperty('assignedScore')) return null;
+                                 if (typeof subParamData !== 'object' || subParamData === null || !subParamData.hasOwnProperty('assignedScore')) {
+                                   return null;
+                                 }
+                                 const score = subParamData.assignedScore;
+                                 const explanation = subParamData.explanation;
+                                 const assumptions = subParamData.assumptions;
+
                                  return (
                                     <Card key={subParamName} className="my-2 p-4 bg-background">
                                       <div className="flex justify-between items-start">
                                         <div>
                                           <p className="font-semibold">{subParamName}</p>
-                                          <p className="text-sm text-muted-foreground mt-1"><strong>Explanation: </strong>{subParamData.explanation}</p>
+                                          <p className="text-sm text-muted-foreground mt-1"><strong>Explanation: </strong>{explanation}</p>
                                         </div>
                                         <div className="text-right ml-4 flex-shrink-0">
-                                            <p className="font-bold text-lg">{subParamData.assignedScore}/5</p>
+                                            <p className="font-bold text-lg">{score}/5</p>
                                         </div>
                                       </div>
 
-                                    {subParamData.assumptions && subParamData.assumptions.length > 0 && (
+                                    {assumptions && assumptions.length > 0 && (
                                       <div className="mt-2">
                                         <p className="text-xs font-semibold">Assumptions:</p>
                                         <ul className="list-disc list-inside text-xs text-muted-foreground">
-                                            {subParamData.assumptions.map((assumption, i) => <li key={i}>{assumption}</li>)}
+                                            {assumptions.map((assumption, i) => <li key={i}>{assumption}</li>)}
                                         </ul>
                                       </div>
                                     )}
@@ -259,3 +266,4 @@ export default function IdeaReportPage() {
     </div>
   );
 }
+
