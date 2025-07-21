@@ -1,4 +1,4 @@
-import { Home, LayoutGrid, Lightbulb, Settings, Users, Shield, FileText, PlusCircle } from "lucide-react";
+import { Home, LayoutGrid, Lightbulb, Settings, Users, Shield, FileText, PlusCircle, MessageSquare, CreditCard, LifeBuoy } from "lucide-react";
 
 export const ROLES = {
   INNOVATOR: "Innovator",
@@ -26,14 +26,29 @@ export const NAV_LINKS: Record<
       href: `/dashboard?role=${ROLES.INNOVATOR}`,
     },
     {
+      title: "Submit Idea",
+      icon: PlusCircle,
+      href: `/dashboard/submit?role=${ROLES.INNOVATOR}`,
+    },
+    {
       title: "My Ideas",
       icon: Lightbulb,
       href: `/dashboard/ideas?role=${ROLES.INNOVATOR}`,
     },
     {
-      title: "Submit Idea",
-      icon: PlusCircle,
-      href: `/dashboard/submit?role=${ROLES.INNOVATOR}`,
+        title: "Consultations",
+        icon: MessageSquare,
+        href: `/dashboard/consultations?role=${ROLES.INNOVATOR}`,
+    },
+    {
+        title: "Request Credits",
+        icon: CreditCard,
+        href: `/dashboard/request-credits?role=${ROLES.INNOVATOR}`,
+    },
+    {
+      title: "Support",
+      icon: LifeBuoy,
+      href: `/dashboard/support?role=${ROLES.INNOVATOR}`,
     },
     {
       title: "Profile",

@@ -1,19 +1,10 @@
-
 'use client';
 
 import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
-import {
-  FileUp,
-  Flame,
-  Lightbulb,
-  Mountain,
-  Package,
-  Target,
-  Users,
-} from 'lucide-react';
+import { FileUp } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -50,83 +41,284 @@ import {
   StepperNext,
   StepperPrevious,
   StepperTrigger,
+  useStepper,
 } from '@/components/ui/stepper';
+import { SpiderChart } from '@/components/spider-chart';
+import { MOCK_CLUSTER_DEFINITIONS, INITIAL_CLUSTER_WEIGHTS } from '@/lib/mock-data';
+import { toast } from '@/hooks/use-toast';
+
+const clusterKeys = Object.keys(INITIAL_CLUSTER_WEIGHTS);
+const weightageSchema = clusterKeys.reduce((acc, key) => {
+    acc[key] = z.number().min(0).max(100);
+    return acc;
+}, {} as Record<string, z.ZodNumber>);
+
 
 const submitIdeaSchema = z.object({
   // Step 1
-  innovation: z.number().min(0).max(100).default(20),
-  marketFit: z.number().min(0).max(100).default(20),
-  technicalFeasibility: z.number().min(0).max(100).default(20),
-  teamStrength: z.number().min(0).max(100).default(15),
-  scalability: z.number().min(0).max(100).default(15),
-  socialImpact: z.number().min(0).max(100).default(10),
+  ...weightageSchema,
+  preset: z.string().default('Balanced'),
 
   // Step 2
-  ideaDescription: z.string().min(1, 'Description is required.'),
+  title: z.string().min(1, 'Title is required.'),
+  description: z.string().min(1, 'Description is required.'),
   pptFile: z.any().refine((file) => file, 'PPT file is required.'),
   validationPurpose: z.string().min(1, 'Validation purpose is required.'),
-  projectDomain: z.string().min(1, 'Project domain is required.'),
+  domain: z.string().min(1, 'Project domain is required.'),
 });
 
 type SubmitIdeaForm = z.infer<typeof submitIdeaSchema>;
 
 const defaultValues: Partial<SubmitIdeaForm> = {
-  innovation: 20,
-  marketFit: 20,
-  technicalFeasibility: 20,
-  teamStrength: 15,
-  scalability: 15,
-  socialImpact: 10,
-  ideaDescription: '',
+  ...INITIAL_CLUSTER_WEIGHTS,
+  preset: 'Balanced',
+  title: '',
+  description: '',
 };
 
 const presets = {
-  balanced: {
-    innovation: 20,
-    marketFit: 20,
-    technicalFeasibility: 20,
-    teamStrength: 15,
-    scalability: 15,
-    socialImpact: 10,
+  Balanced: INITIAL_CLUSTER_WEIGHTS,
+  Research: {
+    "Core Idea": 30,
+    "Market Opportunity": 10,
+    "Execution": 15,
+    "Business Model": 15,
+    "Team": 10,
+    "Compliance": 10,
+    "Risk & Strategy": 10,
   },
-  'r&d': {
-    innovation: 30,
-    marketFit: 10,
-    technicalFeasibility: 30,
-    teamStrength: 15,
-    scalability: 5,
-    socialImpact: 10,
-  },
-  marketReady: {
-    innovation: 10,
-    marketFit: 30,
-    technicalFeasibility: 15,
-    teamStrength: 15,
-    scalability: 25,
-    socialImpact: 5,
-  },
-  impact: {
-    innovation: 15,
-    marketFit: 15,
-    technicalFeasibility: 15,
-    teamStrength: 15,
-    scalability: 10,
-    socialImpact: 30,
+  Commercialization: {
+    "Core Idea": 10,
+    "Market Opportunity": 30,
+    "Execution": 15,
+    "Business Model": 15,
+    "Team": 10,
+    "Compliance": 10,
+    "Risk & Strategy": 10,
   },
 };
 
-const clusters = [
-  { id: 'innovation', label: 'Innovation', icon: Lightbulb },
-  { id: 'marketFit', label: 'Market Fit', icon: Target },
-  {
-    id: 'technicalFeasibility',
-    label: 'Technical Feasibility',
-    icon: Flame,
-  },
-  { id: 'teamStrength', label: 'Team Strength', icon: Users },
-  { id: 'scalability', label: 'Scalability', icon: Mountain },
-  { id: 'socialImpact', label: 'Social Impact', icon: Package },
-] as const;
+const clusters = Object.keys(INITIAL_CLUSTER_WEIGHTS);
+
+function Step1({ form }: { form: any }) {
+  const { stepper, ...stepperProps } = useStepper();
+  const preset = form.watch('preset');
+  const watchedWeights = form.watch(clusters);
+  const totalWeight = clusters.reduce((acc, cluster, i) => acc + (watchedWeights[i] || 0), 0);
+
+  const handlePresetChange = (presetKey: 'Balanced' | 'Research' | 'Commercialization' | 'Manual') => {
+      form.setValue('preset', presetKey);
+      if (presetKey !== 'Manual') {
+        const presetValues = presets[presetKey as keyof typeof presets];
+        Object.entries(presetValues).forEach(([key, value]) => {
+            form.setValue(key, value);
+        });
+      }
+  };
+
+  const handleNext = () => {
+    if (preset === 'Manual' && totalWeight !== 100) {
+        toast({
+            variant: "destructive",
+            title: "Weightage Error",
+            description: "In Manual mode, the total weightage must sum to 100%.",
+        });
+        return;
+    }
+    stepper.nextStep();
+  }
+
+  return (
+    <StepperItem index={0} {...stepperProps}>
+      <StepperTrigger>
+        <CardTitle>Idea Settings - Cluster Weightage</CardTitle>
+        <CardDescription>Adjust weights to match your idea's focus.</CardDescription>
+      </StepperTrigger>
+      <StepperContent>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-6">
+          <div className="md:col-span-2 space-y-6">
+            <div className="flex flex-wrap gap-2">
+                <Button size="sm" variant={preset === 'Balanced' ? 'default' : 'outline'} onClick={() => handlePresetChange('Balanced')}>Balanced</Button>
+                <Button size="sm" variant={preset === 'Research' ? 'default' : 'outline'} onClick={() => handlePresetChange('Research')}>Research</Button>
+                <Button size="sm" variant={preset === 'Commercialization' ? 'default' : 'outline'} onClick={() => handlePresetChange('Commercialization')}>Commercialization</Button>
+                <Button size="sm" variant={preset === 'Manual' ? 'default' : 'outline'} onClick={() => handlePresetChange('Manual')}>Manual</Button>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
+              {clusters.map((key) => (
+                <FormField
+                  key={key}
+                  control={form.control}
+                  name={key}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center justify-between">
+                        <span>{key}</span>
+                        <span className="text-primary font-bold">{field.value}%</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Slider
+                          value={[field.value]}
+                          onValueChange={(value) => field.onChange(value[0])}
+                          max={100}
+                          step={1}
+                          disabled={preset !== 'Manual'}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              ))}
+            </div>
+            <div className={`text-sm font-medium p-3 border rounded-lg flex justify-between items-center ${ totalWeight === 100 ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 border-green-500' : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 border-red-500'}`}>
+                <span>Total Weight:</span>
+                <span className="font-bold text-xl">{totalWeight}%</span>
+            </div>
+          </div>
+          <div className="md:col-span-1 flex items-center justify-center">
+             <div className="w-full h-64 bg-muted/50 rounded-lg flex items-center justify-center">
+                 <SpiderChart data={form.getValues()} size={250} />
+             </div>
+          </div>
+        </div>
+        <div className="flex justify-end">
+            <Button onClick={handleNext}>Save & Next</Button>
+        </div>
+      </StepperContent>
+    </StepperItem>
+  );
+}
+
+function Step2({ form }: { form: any }) {
+    const { stepper, ...stepperProps } = useStepper();
+    return (
+        <StepperItem index={1} {...stepperProps}>
+        <StepperTrigger>
+          <CardTitle>Upload Idea Details</CardTitle>
+          <CardDescription>Provide your idea description and supporting documents.</CardDescription>
+        </StepperTrigger>
+        <StepperContent>
+          <div className="space-y-6 py-6">
+            <FormField control={form.control} name="title" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Idea Title</FormLabel>
+                    <FormControl><Input placeholder="e.g., AI-Powered Crop Disease Detection" {...field} /></FormControl>
+                    <FormMessage />
+                </FormItem>
+            )} />
+            <FormField control={form.control} name="description" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Short Idea Description</FormLabel>
+                  <FormControl><Textarea placeholder="Briefly describe the core concept of your idea..." {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+            )} />
+            <FormField control={form.control} name="pptFile" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Upload PPT</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <FileUp className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                      <Input type="file" className="pl-10" accept=".ppt, .pptx" onChange={(e) => field.onChange(e.target.files ? e.target.files[0] : null)} />
+                    </div>
+                  </FormControl>
+                  <FormDescription>Please adhere to the provided PPT format guidelines.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+            )} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+               <FormField control={form.control} name="validationPurpose" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Validation Purpose</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl><SelectTrigger><SelectValue placeholder="Select a purpose" /></SelectTrigger></FormControl>
+                      <SelectContent>
+                        <SelectItem value="Market Fit Analysis">Market Fit Analysis</SelectItem>
+                        <SelectItem value="Technical Feasibility Study">Technical Feasibility Study</SelectItem>
+                        <SelectItem value="Innovation Assessment">Innovation Assessment</SelectItem>
+                        <SelectItem value="Scalability Potential">Scalability Potential</SelectItem>
+                        <SelectItem value="Social Impact Evaluation">Social Impact Evaluation</SelectItem>
+                        <SelectItem value="Comprehensive Review">Comprehensive Review</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+               <FormField control={form.control} name="domain" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Project Domain/Category</FormLabel>
+                     <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl><SelectTrigger><SelectValue placeholder="Select a domain" /></SelectTrigger></FormControl>
+                      <SelectContent>
+                        <SelectItem value="HealthTech">HealthTech</SelectItem>
+                        <SelectItem value="EdTech">EdTech</SelectItem>
+                        <SelectItem value="FinTech">FinTech</SelectItem>
+                        <SelectItem value="Agriculture">Agriculture</SelectItem>
+                        <SelectItem value="Smart Cities">Smart Cities</SelectItem>
+                        <SelectItem value="Renewable Energy">Renewable Energy</SelectItem>
+                        <SelectItem value="SpaceTech">SpaceTech</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+            </div>
+          </div>
+          <div className="flex justify-between">
+              <StepperPrevious variant="outline" />
+              <StepperNext>Review & Submit</StepperNext>
+          </div>
+        </StepperContent>
+      </StepperItem>
+    );
+}
+
+function Step3({ form }: { form: any }) {
+    const { stepper, ...stepperProps } = useStepper();
+    const allValues = form.getValues();
+    const weights = clusters.reduce((acc, key) => ({...acc, [key]: allValues[key]}), {});
+
+    return (
+         <StepperItem index={2} {...stepperProps}>
+         <StepperTrigger>
+          <CardTitle>Review and Submit</CardTitle>
+          <CardDescription>Review your details before final submission.</CardDescription>
+        </StepperTrigger>
+         <StepperContent>
+            <div className="space-y-6 py-6">
+                <Card>
+                    <CardHeader><CardTitle className="text-lg">Idea Details</CardTitle></CardHeader>
+                    <CardContent className="text-sm space-y-2">
+                        <p><span className="font-medium text-muted-foreground">Title:</span> {allValues.title}</p>
+                        <p><span className="font-medium text-muted-foreground">Description:</span> {allValues.description}</p>
+                        <p><span className="font-medium text-muted-foreground">PPT File:</span> {allValues.pptFile?.name}</p>
+                        <p><span className="font-medium text-muted-foreground">Purpose:</span> {allValues.validationPurpose}</p>
+                        <p><span className="font-medium text-muted-foreground">Domain:</span> {allValues.domain}</p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader><CardTitle className="text-lg">Cluster Weightage</CardTitle></CardHeader>
+                    <CardContent>
+                        <p className="text-sm text-muted-foreground mb-4"><span className="font-medium">Preset:</span> {allValues.preset}</p>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                            {Object.entries(weights).map(([key, value]) => (
+                                <p key={key}><span className="font-medium text-muted-foreground">{key}:</span> {value as number}%</p>
+                            ))}
+                        </div>
+                        <div className="mt-4 flex justify-center">
+                            <SpiderChart data={weights} size={200} />
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+            <div className="flex justify-between">
+              <StepperPrevious variant="outline" />
+              <Button type="submit">Submit Idea (1 Credit)</Button>
+          </div>
+        </StepperContent>
+      </StepperItem>
+    )
+}
 
 export default function SubmitIdeaPage() {
   const form = useForm<SubmitIdeaForm>({
@@ -134,33 +326,12 @@ export default function SubmitIdeaPage() {
     defaultValues,
   });
 
-  const [totalWeight, setTotalWeight] = React.useState(100);
-
-  const watchFields = form.watch(clusters.map((c) => c.id));
-
-  React.useEffect(() => {
-    const subscription = form.watch((values) => {
-      const currentTotal = clusters.reduce(
-        (acc, cluster) => acc + (values[cluster.id] || 0),
-        0
-      );
-      setTotalWeight(currentTotal);
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
-  
-  const handlePresetChange = (
-    presetKey: 'balanced' | 'r&d' | 'marketReady' | 'impact'
-  ) => {
-    const presetValues = presets[presetKey];
-    Object.entries(presetValues).forEach(([key, value]) => {
-      form.setValue(key as keyof SubmitIdeaForm, value);
-    });
-  };
-
   const onSubmit = (data: SubmitIdeaForm) => {
     console.log(data);
-    // Handle form submission logic here
+    toast({
+        title: "Idea Submitted!",
+        description: "Your idea has been successfully submitted for validation.",
+    });
   };
 
   return (
@@ -174,250 +345,10 @@ export default function SubmitIdeaPage() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <Stepper>
-              <StepperItem>
-                <StepperTrigger>
-                  <CardTitle>Idea Settings - Cluster Weightage</CardTitle>
-                  <CardDescription>
-                    Adjust weights for each cluster to match your idea's focus.
-                  </CardDescription>
-                </StepperTrigger>
-                <StepperContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-6">
-                    <div className="md:col-span-2 space-y-6">
-                      <div className="flex justify-between items-center">
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handlePresetChange('balanced')}
-                          >
-                            Balanced
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handlePresetChange('r&d')}
-                          >
-                            R&D Focused
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handlePresetChange('marketReady')}
-                          >
-                            Market Ready
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handlePresetChange('impact')}
-                          >
-                            Impact
-                          </Button>
-                        </div>
-                        <div
-                          className={`text-sm font-medium ${
-                            totalWeight !== 100
-                              ? 'text-destructive'
-                              : 'text-muted-foreground'
-                          }`}
-                        >
-                          Total Weight: {totalWeight}%
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
-                        {clusters.map(({ id, label, icon: Icon }) => (
-                          <FormField
-                            key={id}
-                            control={form.control}
-                            name={id}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="flex items-center gap-2">
-                                  <Icon className="size-4" />
-                                  <span>{label}</span>
-                                  <span className="text-primary font-bold ml-auto">
-                                    {field.value}%
-                                  </span>
-                                </FormLabel>
-                                <FormControl>
-                                  <Slider
-                                    value={[field.value]}
-                                    onValueChange={(value) =>
-                                      field.onChange(value[0])
-                                    }
-                                    max={100}
-                                    step={1}
-                                  />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                        ))}
-                      </div>
-                       {totalWeight !== 100 && (
-                        <p className="text-sm text-destructive text-center">
-                          Total weightage must be equal to 100%.
-                        </p>
-                      )}
-                    </div>
-                    <div className="md:col-span-1 flex items-center justify-center">
-                       <div className="w-full h-64 bg-muted rounded-lg flex items-center justify-center">
-                        <p className="text-muted-foreground">Spider chart placeholder</p>
-                       </div>
-                    </div>
-                  </div>
-                </StepperContent>
-              </StepperItem>
-
-              <StepperItem>
-                <StepperTrigger>
-                  <CardTitle>Upload Idea Details</CardTitle>
-                  <CardDescription>
-                    Provide your idea description and supporting documents.
-                  </CardDescription>
-                </StepperTrigger>
-                <StepperContent>
-                  <div className="space-y-6 py-6">
-                    <FormField
-                      control={form.control}
-                      name="ideaDescription"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Short Idea Description</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Briefly describe the core concept of your idea..."
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="pptFile"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Upload PPT</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <FileUp className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                              <Input
-                                type="file"
-                                className="pl-10"
-                                accept=".ppt, .pptx"
-                                onChange={(e) =>
-                                  field.onChange(
-                                    e.target.files ? e.target.files[0] : null
-                                  )
-                                }
-                              />
-                            </div>
-                          </FormControl>
-                           <FormDescription>
-                            Please adhere to the provided PPT format guidelines.
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                       <FormField
-                        control={form.control}
-                        name="validationPurpose"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Validation Purpose</FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a purpose" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="market-fit">
-                                  Market Fit
-                                </SelectItem>
-                                <SelectItem value="novelty-check">
-                                  Novelty Check
-                                </SelectItem>
-                                <SelectItem value="mvp-readiness">
-                                  MVP Readiness
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                       <FormField
-                        control={form.control}
-                        name="projectDomain"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Project Domain/Category</FormLabel>
-                             <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a domain" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="health-tech">
-                                  HealthTech
-                                </SelectItem>
-                                <SelectItem value="ed-tech">
-                                  EdTech
-                                </SelectItem>
-                                <SelectItem value="fin-tech">
-                                  FinTech
-                                </SelectItem>
-                                <SelectItem value="agri-tech">
-                                  AgriTech
-                                </SelectItem>
-                                 <SelectItem value="saas">
-                                  SaaS
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                  </div>
-                </StepperContent>
-              </StepperItem>
-              <StepperItem>
-                 <StepperTrigger>
-                  <CardTitle>Submit</CardTitle>
-                  <CardDescription>
-                    Review and submit your idea for validation.
-                  </CardDescription>
-                </StepperTrigger>
-                 <StepperContent>
-                    <div className="flex h-48 items-center justify-center">
-                        <p className="text-muted-foreground">Ready to submit?</p>
-                    </div>
-                </StepperContent>
-              </StepperItem>
-              <CardFooter className="flex justify-end gap-2 pt-6">
-                <StepperPrevious variant="outline" />
-                <StepperNext />
-                {/* Submit button will be active on the last step */}
-                 <Button type="submit" className="hidden">Submit Idea</Button>
-              </CardFooter>
+            <Stepper initialStep={0} orientation="vertical">
+              <Step1 form={form} />
+              <Step2 form={form} />
+              <Step3 form={form} />
             </Stepper>
           </form>
         </Form>

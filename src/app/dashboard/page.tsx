@@ -2,19 +2,7 @@
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { BarChart, LineChart, TrendingUp, Users, Lightbulb, CheckCircle } from 'lucide-react';
-import {
-  Bar,
-  CartesianGrid,
-  Cell,
-  Line,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-  BarChart as RechartsBarChart,
-  LineChart as RechartsLineChart,
-} from 'recharts';
+import Link from 'next/link';
 
 import {
   Card,
@@ -32,142 +20,149 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { ROLES, type Role } from '@/lib/constants';
-
-const kpiData = {
-  [ROLES.INNOVATOR]: [
-    { title: 'My Ideas', value: '12', icon: Lightbulb, change: '+2 this month' },
-    { title: 'Approved', value: '3', icon: CheckCircle, change: '+1 this month' },
-    { title: 'Avg. Score', value: '8.2', icon: TrendingUp, change: '+0.5' },
-    { title: 'Pending Review', value: '4', icon: Users, change: '' },
-  ],
-  [ROLES.PRINCIPAL]: [
-    { title: 'Total Ideas', value: '152', icon: Lightbulb, change: '+20 this month' },
-    { title: 'Pending Validation', value: '34', icon: Users, change: '-5 from last week' },
-    { title: 'Approved Ideas', value: '48', icon: CheckCircle, change: '+10 this month' },
-    { title: 'Top Innovation Score', value: '9.8', icon: TrendingUp, change: 'New high' },
-  ],
-  [ROLES.COORDINATOR]: [
-    { title: 'Ideas to Validate', value: '25', icon: Lightbulb, change: '+5 new this week' },
-    { title: 'Validators Available', value: '15', icon: Users, change: '+2 new' },
-    { title: 'Avg. Validation Time', value: '7 days', icon: TrendingUp, change: '-1 day' },
-    { title: 'Completed Validations', value: '88', icon: CheckCircle, change: '+12 this week' },
-  ],
-  [ROLES.SUPER_ADMIN]: [
-    { title: 'Total Users', value: '2,350', icon: Users, change: '+120 this month' },
-    { title: 'Total Ideas', value: '5,820', icon: Lightbulb, change: '+500 this month' },
-    { title: 'Active Institutions', value: '45', icon: CheckCircle, change: '+3' },
-    { title: 'Platform Health', value: '99.9%', icon: TrendingUp, change: 'Stable' },
-  ],
-};
-
-const chartData = [
-  { name: 'Jan', total: 120 },
-  { name: 'Feb', total: 210 },
-  { name: 'Mar', total: 150 },
-  { name: 'Apr', total: 280 },
-  { name: 'May', total: 180 },
-  { name: 'Jun', total: 230 },
-  { name: 'Jul', total: 340 },
-  { name: 'Aug', total: 290 },
-  { name: 'Sep', total: 310 },
-  { name: 'Oct', total: 250 },
-  { name: 'Nov', total: 380 },
-  { name: 'Dec', total: 410 },
-];
-
-const recentIdeas = [
-  { id: 1, title: 'AI-Powered Personalized Learning Paths', status: 'Approved', score: 9.2 },
-  { id: 2, title: 'VR Campus Tours for Prospective Students', status: 'Pending', score: 8.5 },
-  { id: 3, title: 'Gamified Coding Challenges Platform', status: 'Rejected', score: 6.8 },
-  { id: 4, title: 'Blockchain for Secure Academic Records', status: 'Validating', score: 9.5 },
-  { id: 5, title: 'Student Mental Health Support Chatbot', status: 'Approved', score: 8.9 },
-];
-
-const statusColors: { [key: string]: string } = {
-  Approved: 'bg-green-500/20 text-green-700 border-green-500/30 dark:text-green-400',
-  Pending: 'bg-yellow-500/20 text-yellow-700 border-yellow-500/30 dark:text-yellow-400',
-  Rejected: 'bg-red-500/20 text-red-700 border-red-500/30 dark:text-red-400',
-  Validating: 'bg-blue-500/20 text-blue-700 border-blue-500/30 dark:text-blue-400',
-};
-
+import { MOCK_INNOVATOR_USER, MOCK_IDEAS, STATUS_COLORS } from '@/lib/mock-data';
 
 function DashboardPageContent() {
   const searchParams = useSearchParams();
   const role = (searchParams.get('role') as Role) || ROLES.INNOVATOR;
-  const kpis = kpiData[role] || kpiData[ROLES.INNOVATOR];
+
+  if (role !== ROLES.INNOVATOR) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>{role} Dashboard</CardTitle>
+          <CardDescription>This dashboard is under construction.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p>Please check back later!</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  const user = MOCK_INNOVATOR_USER;
+  const ideas = MOCK_IDEAS;
+  const recentIdeas = ideas.slice(0, 3);
+  const getOverallScore = (idea: (typeof ideas)[0]) => {
+    if (!idea.feedback) return "N/A";
+    const total = idea.feedback.details.reduce((sum, d) => sum + d.score, 0);
+    return (total / idea.feedback.details.length).toFixed(1);
+  };
+
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {kpis.map((kpi) => (
-          <Card key={kpi.title} className="transform-gpu transition-all duration-300 hover:shadow-lg">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{kpi.title}</CardTitle>
-              <kpi.icon className="h-4 w-4 text-muted-foreground" />
+       <h2 className="text-2xl font-bold">Welcome, {user.name}!</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Profile Card */}
+          <Card>
+            <CardHeader>
+                <CardTitle className="text-lg">Your Profile</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{kpi.value}</div>
-              <p className="text-xs text-muted-foreground">{kpi.change}</p>
+            <CardContent className="text-sm space-y-2">
+                <p><span className="font-medium text-muted-foreground">Name:</span> {user.name}</p>
+                <p><span className="font-medium text-muted-foreground">Role:</span> {user.role}</p>
+                <p><span className="font-medium text-muted-foreground">Email:</span> {user.email}</p>
+                <p><span className="font-medium text-muted-foreground">College:</span> {user.college}</p>
             </CardContent>
           </Card>
-        ))}
-      </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-        <Card className="col-span-1 lg:col-span-3">
-          <CardHeader>
-            <CardTitle>Idea Submission Trends</CardTitle>
-            <CardDescription>A look at the number of ideas submitted over the past year.</CardDescription>
-          </CardHeader>
-          <CardContent className="pl-2">
-            <ResponsiveContainer width="100%" height={350}>
-              <RechartsBarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'hsl(var(--background))',
-                    borderColor: 'hsl(var(--border))',
-                  }}
-                />
-                <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-              </RechartsBarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-        <Card className="col-span-1 lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Recent Idea Submissions</CardTitle>
-            <CardDescription>The latest ideas submitted for review.</CardDescription>
-          </CardHeader>
+          {/* Credits Card */}
+          <Card className="flex flex-col justify-between">
+            <CardHeader>
+              <CardTitle className="text-lg">Credits Available</CardTitle>
+              <CardDescription>Credits are used for submitting new ideas.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <p className="text-5xl font-bold text-primary">{user.credits}</p>
+            </CardContent>
+          </Card>
+
+          {/* Ideas Submitted Card */}
+          <Card className="flex flex-col justify-between">
+             <CardHeader>
+              <CardTitle className="text-lg">Ideas Submitted</CardTitle>
+              <CardDescription>Total ideas you've submitted so far.</CardDescription>
+            </CardHeader>
+            <CardContent>
+               <p className="text-5xl font-bold text-primary">{ideas.length}</p>
+            </CardContent>
+          </Card>
+
+          {/* Consultation Progress Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Consultation Progress</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <p className="text-sm">
+                <span className="font-medium text-muted-foreground">Next Consultation:</span> July 20, 2024 (IDEA-001)
+              </p>
+              <p className="text-sm">
+                <span className="font-medium text-muted-foreground">Assigned Mentor:</span> Dr. Emily White
+              </p>
+              <Button variant="link" asChild className="p-0 h-auto">
+                <Link href={`/dashboard/consultations?role=${ROLES.INNOVATOR}`}>View All Consultations</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* My Ideas List on Dashboard */}
+        <Card>
+            <CardHeader>
+                <CardTitle>My Recent Ideas</CardTitle>
+            </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Score</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {recentIdeas.map((idea) => (
-                  <TableRow key={idea.id}>
-                    <TableCell className="font-medium truncate max-w-40">{idea.title}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={statusColors[idea.status]}>
-                        {idea.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">{idea.score}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            {ideas.length === 0 ? (
+              <p className="text-muted-foreground">You haven't submitted any ideas yet. Go to "Submit Idea" to get started!</p>
+            ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Idea ID</TableHead>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Score</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {recentIdeas.map((idea) => (
+                      <TableRow key={idea.id}>
+                        <TableCell className="font-medium">{idea.id}</TableCell>
+                        <TableCell>{idea.title}</TableCell>
+                        <TableCell>{idea.dateSubmitted}</TableCell>
+                        <TableCell>
+                          <Badge className={STATUS_COLORS[idea.status]}>{idea.status}</Badge>
+                        </TableCell>
+                        <TableCell>{getOverallScore(idea)}</TableCell>
+                        <TableCell className="text-right">
+                          {idea.feedback ? (
+                            <Button variant="link" asChild className="p-0 h-auto">
+                                <Link href={`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`}>View Report</Link>
+                            </Button>
+                          ) : (
+                            <span className="text-muted-foreground italic text-xs">No feedback yet</span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+            )}
+            {ideas.length > 3 && (
+              <div className="text-center mt-4">
+                 <Button variant="link" asChild>
+                    <Link href={`/dashboard/ideas?role=${ROLES.INNOVATOR}`}>View All My Ideas</Link>
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
-      </div>
     </div>
   );
 }
@@ -179,4 +174,3 @@ export default function DashboardPage() {
         </Suspense>
     );
 }
-
