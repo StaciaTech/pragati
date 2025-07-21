@@ -12,9 +12,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { MOCK_IDEAS, STATUS_COLORS, type ValidationReport } from '@/lib/mock-data';
+import { MOCK_IDEAS, STATUS_COLORS } from '@/lib/mock-data';
+import type { ValidationReport } from '@/ai/schemas';
 import { ROLES } from '@/lib/constants';
-import { ArrowLeft, Download, FileText } from 'lucide-react';
+import { ArrowLeft, Download } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useRef } from 'react';
@@ -187,26 +188,32 @@ export default function IdeaReportPage() {
                       <div key={clusterName} className="mb-6">
                         <h4 className="text-lg font-semibold text-primary">{clusterName}</h4>
                         <Separator className="my-2" />
-                        {Object.entries(clusterData).map(([paramName, paramData]) => (
-                          <div key={paramName} className="ml-4 mb-4">
-                            <h5 className="font-medium text-md">{paramName}</h5>
-                            {Object.entries(paramData).map(([subParamName, subParamData]) => (
-                              <Card key={subParamName} className="my-2 p-4 bg-background">
-                                <p className="font-semibold">{subParamName}</p>
-                                <p><strong>Score: </strong> <span className="font-bold">{subParamData.assignedScore}/5</span></p>
-                                <p className="text-sm text-muted-foreground mt-1"><strong>Explanation: </strong>{subParamData.explanation}</p>
-                                {subParamData.assumptions.length > 0 && (
-                                   <div className="mt-2">
-                                     <p className="text-xs font-semibold">Assumptions:</p>
-                                     <ul className="list-disc list-inside text-xs text-muted-foreground">
-                                        {subParamData.assumptions.map((assumption, i) => <li key={i}>{assumption}</li>)}
-                                     </ul>
-                                   </div>
-                                )}
-                              </Card>
-                            ))}
-                          </div>
-                        ))}
+                        {Object.entries(clusterData).map(([paramName, paramData]) => {
+                          if (typeof paramData !== 'object' || paramData === null) return null;
+                          return (
+                            <div key={paramName} className="ml-4 mb-4">
+                              <h5 className="font-medium text-md">{paramName}</h5>
+                               {Object.entries(paramData).map(([subParamName, subParamData]) => {
+                                 if (typeof subParamData !== 'object' || subParamData === null || !subParamData.hasOwnProperty('assignedScore')) return null;
+                                 return (
+                                    <Card key={subParamName} className="my-2 p-4 bg-background">
+                                    <p className="font-semibold">{subParamName}</p>
+                                    <p><strong>Score: </strong> <span className="font-bold">{subParamData.assignedScore}/5</span></p>
+                                    <p className="text-sm text-muted-foreground mt-1"><strong>Explanation: </strong>{subParamData.explanation}</p>
+                                    {subParamData.assumptions && subParamData.assumptions.length > 0 && (
+                                      <div className="mt-2">
+                                        <p className="text-xs font-semibold">Assumptions:</p>
+                                        <ul className="list-disc list-inside text-xs text-muted-foreground">
+                                            {subParamData.assumptions.map((assumption, i) => <li key={i}>{assumption}</li>)}
+                                        </ul>
+                                      </div>
+                                    )}
+                                    </Card>
+                                );
+                               })}
+                            </div>
+                          );
+                        })}
                       </div>
                     ))}
                   </SectionCard>
