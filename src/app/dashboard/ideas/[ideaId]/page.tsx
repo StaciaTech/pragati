@@ -12,10 +12,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { MOCK_IDEAS, STATUS_COLORS } from '@/lib/mock-data';
+import { MOCK_IDEAS, STATUS_COLORS, type ValidationReport } from '@/lib/mock-data';
 import { ROLES } from '@/lib/constants';
 import { ArrowLeft, Download, FileText } from 'lucide-react';
-import type { ValidationReport } from '@/ai/schemas';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useRef } from 'react';
