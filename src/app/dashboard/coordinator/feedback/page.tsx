@@ -13,7 +13,7 @@ import Link from 'next/link';
 export default function IdeaFeedbackPage() {
     const userTTC = MOCK_TTCS[0];
     const [searchTerm, setSearchTerm] = React.useState('');
-    const [filterStatus, setFilterStatus] = React.useState('');
+    const [filterStatus, setFilterStatus] = React.useState('all');
   
     const assignedIdeasWithFeedback = MOCK_IDEAS.filter(idea =>
       idea.ttcAssigned === userTTC.id && idea.feedback
@@ -22,7 +22,7 @@ export default function IdeaFeedbackPage() {
     const filteredIdeas = assignedIdeasWithFeedback.filter(idea => {
         const matchesSearch = idea.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                               idea.innovatorName.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = filterStatus === '' || idea.status === filterStatus;
+        const matchesStatus = filterStatus === 'all' || idea.status === filterStatus;
         return matchesSearch && matchesStatus;
       });
 
@@ -42,7 +42,7 @@ export default function IdeaFeedbackPage() {
           <Select value={filterStatus} onValueChange={setFilterStatus}>
             <SelectTrigger><SelectValue placeholder="Filter by Status..." /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Statuses</SelectItem>
+              <SelectItem value="all">All Statuses</SelectItem>
               <SelectItem value="Approved">Approved</SelectItem>
               <SelectItem value="Moderate">Moderate</SelectItem>
               <SelectItem value="Rejected">Rejected</SelectItem>
