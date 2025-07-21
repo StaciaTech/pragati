@@ -2,10 +2,7 @@
 
 /**
  * @fileOverview AI flow that generates a validation report for a submitted idea.
- * This flow now orchestrates a multi-step process:
- * 1. Evaluates each sub-parameter of the idea using a dedicated AI prompt.
- * 2. Calculates weighted scores for parameters, clusters, and the overall idea.
- * 3. Determines a final validation outcome (Approved, Moderate, Rejected).
+ * This flow now orchestrates a single, comprehensive AI call to evaluate all parameters.
  *
  * - generateValidationReport - A function that generates the validation report.
  * - GenerateValidationReportInput - The input type for the generateValidationReport function.
@@ -54,6 +51,14 @@ const SubParameterEvaluationSchema = z.object({
     ),
 });
 
+const ParameterEvaluationSchema = z.record(SubParameterEvaluationSchema);
+const ClusterEvaluationSchema = z.record(ParameterEvaluationSchema);
+
+const FullEvaluationResponseSchema = z.object({
+  evaluation: z.record(ClusterEvaluationSchema)
+    .describe('An object where keys are cluster names. Each cluster contains its parameters, which in turn contain evaluated sub-parameters with scores, explanations, and assumptions.'),
+});
+
 const FeedbackDetailSchema = z.object({
   aspect: z.string(),
   score: z.number(),
@@ -79,41 +84,40 @@ export async function generateValidationReport(
   return generateValidationReportFlow(input);
 }
 
-// AI Prompt for evaluating a single sub-parameter
-const subParameterEvaluationPrompt = ai.definePrompt({
-  name: 'evaluateSubParameterPrompt',
-  input: {
-    schema: z.object({
-      ideaTitle: z.string(),
-      ideaDescription: z.string(),
-      clusterName: z.string(),
-      paramName: z.string(),
-      subParamName: z.string(),
-      subParamObjective: z.string(),
-    }),
-  },
-  output: {
-    schema: SubParameterEvaluationSchema,
-  },
-  prompt: `You are an expert AI idea validator for "Pragati - Idea to Impact Platform".
-Your task is to evaluate an innovative idea based on a specific sub-parameter from our validation framework.
-Provide an assigned score (1-5), a concise explanation for the score, and a brief assumption/consideration that justifies your evaluation.
+// AI Prompt for evaluating the entire idea at once
+const fullEvaluationPrompt = ai.definePrompt({
+    name: 'fullEvaluationPrompt',
+    input: {
+        schema: z.object({
+            ideaTitle: z.string(),
+            ideaDescription: z.string(),
+            framework: z.any().describe("The entire evaluation framework as a JSON object, including clusters, parameters, and sub-parameters with their objectives."),
+        }),
+    },
+    output: {
+        schema: FullEvaluationResponseSchema,
+    },
+    prompt: `You are an expert AI idea validator for "Pragati - Idea to Impact Platform".
+Your task is to evaluate an innovative idea based on our entire validation framework.
+For EACH sub-parameter in the provided framework, you must generate an assigned score (1-5), a concise explanation, and a brief assumption.
 
 **Idea Name:** {{{ideaTitle}}}
 **Idea Concept:** {{{ideaDescription}}}
 
-**Evaluation Context:**
-- **Cluster:** {{{clusterName}}}
-- **Parameter:** {{{paramName}}}
-- **Sub-Parameter:** {{{subParamName}}}
-- **Objective of this Sub-Parameter:** {{{subParamObjective}}}
+**Evaluation Framework:**
+\`\`\`json
+{{{json framework}}}
+\`\`\`
 
 **Scoring Rubric (1-5):**
 - 5: Excellent (Strong evidence, highly aligned, minimal risk, clear advantage)
 - 4: Good (Positive evidence, generally aligned, minor areas for improvement/risk)
 - 3: Moderate (Mixed evidence, some clear challenges/risks, requires attention)
 - 2: Weak (Significant gaps, major challenges/risks, requires substantial rework)
-- 1: Poor (No evidence, fundamental flaws, highly problematic, major red flags)`,
+- 1: Poor (No evidence, fundamental flaws, highly problematic, major red flags)
+
+Your response MUST be a single JSON object containing the full evaluation, matching the required output schema precisely.
+`,
 });
 
 // AI Prompt to generate the overall feedback summary
@@ -154,38 +158,21 @@ const generateValidationReportFlow = ai.defineFlow(
     outputSchema: GenerateValidationReportOutputSchema,
   },
   async input => {
-    const evaluatedData: any = {};
-    const clusterScores: Record<string, number> = {};
+    // 1. Evaluate all sub-parameters in a single AI call
+    console.log("Starting full evaluation for idea:", input.ideaTitle);
+    const evaluationResult = await fullEvaluationPrompt({
+        ideaTitle: input.ideaTitle,
+        ideaDescription: input.ideaDescription,
+        framework: MOCK_CLUSTER_DEFINITIONS, // Pass the whole framework
+    });
 
-    // 1. Evaluate each sub-parameter
-    for (const [clusterName, clusterDef] of Object.entries(
-      MOCK_CLUSTER_DEFINITIONS
-    )) {
-      evaluatedData[clusterName] = {};
-      for (const [paramName, paramDef] of Object.entries(
-        clusterDef.parameters
-      )) {
-        evaluatedData[clusterName][paramName] = {};
-        for (const [subParamName, subParamDef] of Object.entries(
-          paramDef.subParameters
-        )) {
-          console.log(`Evaluating: ${clusterName} > ${paramName} > ${subParamName}`);
-          const evaluation = await subParameterEvaluationPrompt({
-            ideaTitle: input.ideaTitle,
-            ideaDescription: input.ideaDescription,
-            clusterName,
-            paramName,
-            subParamName,
-            subParamObjective: subParamDef, // Passing the description as objective
-          });
+    const evaluatedData = evaluationResult.output?.evaluation;
 
-          evaluatedData[clusterName][paramName][subParamName] = {
-            ...evaluation.output,
-            weight: 0.5, // Mock weight as it is not in the new data structure
-          };
-        }
-      }
+    if (!evaluatedData) {
+        throw new Error("AI evaluation failed to return the expected data structure.");
     }
+
+    const clusterScores: Record<string, number> = {};
 
     // 2. Calculate scores
     const calculateWeightedScore = (
@@ -194,39 +181,46 @@ const generateValidationReportFlow = ai.defineFlow(
       paramWeight: number,
       clusterWeight: number
     ) => {
+      // Find the sub-parameter weight from the original definition
       return (assignedScore / 5) * subParamWeight * paramWeight * clusterWeight * 5;
     };
 
     let overallScore = 0;
 
     for (const [clusterName, clusterData] of Object.entries(evaluatedData)) {
-      let clusterScore = 0;
-      const clusterWeight = (input.clusterWeights[clusterName] || 0) / 100;
+        let clusterScore = 0;
+        const clusterWeight = (input.clusterWeights[clusterName] || 0) / 100;
+        const clusterDef = MOCK_CLUSTER_DEFINITIONS[clusterName as keyof typeof MOCK_CLUSTER_DEFINITIONS];
 
-      for (const [paramName, paramData] of Object.entries(clusterData as any)) {
-        const paramWeight = PARAMETER_WEIGHTS[clusterName]?.[paramName] || 0;
-        let paramTotalWeight = 0;
+        for (const [paramName, paramData] of Object.entries(clusterData as any)) {
+            const paramWeight = PARAMETER_WEIGHTS[clusterName]?.[paramName] || 0;
+            const paramDef = clusterDef?.parameters[paramName as keyof typeof clusterDef.parameters];
+            let paramTotalWeight = 0;
+            let weightedParamScore = 0;
 
-        for (const [subParamName, subParam] of Object.entries(paramData as any)) {
-            const subParamWeight = subParam.weight;
-            paramTotalWeight += subParamWeight;
-
-            overallScore += calculateWeightedScore(
-                subParam.assignedScore,
-                subParamWeight,
-                paramWeight,
-                clusterWeight
-            );
-        }
-        // Normalize sub-param weights if they don't sum to 1
-        if (paramTotalWeight > 0) {
             for (const [subParamName, subParam] of Object.entries(paramData as any)) {
-                 clusterScore += (subParam.assignedScore / 5) * (subParam.weight / paramTotalWeight) * paramWeight;
+                 const subParamDef = paramDef?.subParameters[subParamName as keyof typeof paramDef.subParameters];
+                 // Sub-parameter weight is now dynamically looked up from the definition, not part of the AI response
+                 const subParamWeight = subParamDef && typeof subParamDef !== 'string' ? (subParamDef as any).weight : 0.5; // fallback weight
+                 paramTotalWeight += subParamWeight;
+
+                 weightedParamScore += (subParam.assignedScore / 5) * subParamWeight;
+            }
+
+            if (paramTotalWeight > 0) {
+                 const normalizedParamScore = weightedParamScore / paramTotalWeight;
+                 clusterScore += normalizedParamScore * paramWeight;
             }
         }
-      }
-       clusterScores[clusterName] = clusterScore * 5; // Scale back to 5
+        clusterScores[clusterName] = clusterScore * 5; // Scale back to 5
     }
+
+    // Calculate overall score by summing weighted cluster scores
+    overallScore = Object.entries(clusterScores).reduce((acc, [clusterName, score]) => {
+        const clusterWeight = (input.clusterWeights[clusterName] || 0) / 100;
+        return acc + (score / 5) * clusterWeight;
+    }, 0) * 5; // Final score on a 5-point scale
+
 
     // 3. Determine outcome
     const getValidationOutcome = (score: number): 'Approved' | 'Moderate' | 'Rejected' => {
