@@ -1,6 +1,12 @@
-// Summarizes validation data across multiple submissions to identify promising ideas and trends.
-
 'use server';
+
+/**
+ * @fileOverview This file defines a Genkit flow for summarizing validation data.
+ *
+ * - summarizeValidationData - A function that summarizes validation data.
+ * - SummarizeValidationDataInput - The input type for the summarizeValidationData function.
+ * - SummarizeValidationDataOutput - The return type for the summarizeValidationData function.
+ */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';

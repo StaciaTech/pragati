@@ -4,7 +4,7 @@ import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
-import { FileUp } from 'lucide-react';
+import { FileUp, BrainCircuit } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -104,7 +104,7 @@ const presets = {
 const clusters = Object.keys(INITIAL_CLUSTER_WEIGHTS);
 
 function Step1({ form }: { form: any }) {
-  const { activeStep, setActiveStep, ...stepperProps } = useStepper();
+  const { activeStep, setActiveStep } = useStepper();
   const { toast } = useToast();
   const preset = form.watch('preset');
   const watchedWeights = form.watch(clusters);
@@ -133,7 +133,7 @@ function Step1({ form }: { form: any }) {
   }
 
   return (
-    <StepperItem index={0} {...stepperProps}>
+    <StepperItem index={0}>
       <StepperTrigger>
         <CardTitle>Idea Settings - Cluster Weightage</CardTitle>
         <CardDescription>Adjust weights to match your idea's focus.</CardDescription>
@@ -193,9 +193,8 @@ function Step1({ form }: { form: any }) {
 }
 
 function Step2({ form }: { form: any }) {
-    const { stepper, ...stepperProps } = useStepper();
     return (
-        <StepperItem index={1} {...stepperProps}>
+        <StepperItem index={1}>
         <StepperTrigger>
           <CardTitle>Upload Idea Details</CardTitle>
           <CardDescription>Provide your idea description and supporting documents.</CardDescription>
@@ -277,13 +276,12 @@ function Step2({ form }: { form: any }) {
     );
 }
 
-function Step3({ form }: { form: any }) {
-    const { stepper, ...stepperProps } = useStepper();
+function Step3({ form, isSubmitting }: { form: any, isSubmitting: boolean }) {
     const allValues = form.getValues();
     const weights = clusters.reduce((acc, key) => ({...acc, [key]: allValues[key]}), {});
 
     return (
-         <StepperItem index={2} {...stepperProps}>
+         <StepperItem index={2}>
          <StepperTrigger>
           <CardTitle>Review and Submit</CardTitle>
           <CardDescription>Review your details before final submission.</CardDescription>
@@ -317,7 +315,16 @@ function Step3({ form }: { form: any }) {
             </div>
             <div className="flex justify-between">
               <StepperPrevious variant="outline" />
-              <Button type="submit">Submit Idea (1 Credit)</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                    <>
+                        <BrainCircuit className="mr-2 h-4 w-4 animate-spin" />
+                        Validating with AI...
+                    </>
+                ) : (
+                    "Submit Idea (1 Credit)"
+                )}
+              </Button>
           </div>
         </StepperContent>
       </StepperItem>
@@ -374,7 +381,7 @@ export default function SubmitIdeaPage() {
   };
 
   return (
-    <Card>
+    <Card className="relative">
       <CardHeader>
         <CardTitle>Submit New Idea</CardTitle>
         <CardDescription>
@@ -387,19 +394,20 @@ export default function SubmitIdeaPage() {
             <Stepper initialStep={0} orientation="vertical">
               <Step1 form={form} />
               <Step2 form={form} />
-              <Step3 form={form} />
+              <Step3 form={form} isSubmitting={isSubmitting} />
             </Stepper>
-             {isSubmitting && (
-                <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-50">
-                    <div className="flex items-center space-x-2">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                        <p className="text-muted-foreground">AI is thinking...</p>
-                    </div>
-                </div>
-            )}
           </form>
         </Form>
       </CardContent>
+       {isSubmitting && (
+        <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center z-10 rounded-lg">
+            <div className="flex items-center space-x-2">
+                <BrainCircuit className="h-8 w-8 animate-pulse text-primary" />
+            </div>
+             <p className="text-muted-foreground mt-2 font-medium">AI is validating your idea...</p>
+             <p className="text-muted-foreground text-sm">Please wait, this may take a moment.</p>
+        </div>
+      )}
     </Card>
   );
 }
