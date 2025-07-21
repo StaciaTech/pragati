@@ -13,10 +13,11 @@ export function SpiderChart({ data, maxScore = 100, size = 200 }: SpiderChartPro
   const centerY = size / 2;
   const radius = size / 2 - 25; // Padding for labels
 
-  const dataKeys = Object.keys(data);
-  if (dataKeys.length === 0) return null;
+  const validDataKeys = Object.keys(data).filter(key => typeof data[key] === 'number');
 
-  const angles = dataKeys.map((_, i) => (i * 2 * Math.PI) / dataKeys.length);
+  if (validDataKeys.length === 0) return null;
+
+  const angles = validDataKeys.map((_, i) => (i * 2 * Math.PI) / validDataKeys.length);
 
   const getPoint = (angle: number, value: number) => {
     const r = (value / maxScore) * radius;
@@ -26,7 +27,7 @@ export function SpiderChart({ data, maxScore = 100, size = 200 }: SpiderChartPro
   };
 
   const points = angles.map((angle, i) => {
-    const value = data[dataKeys[i]] || 0;
+    const value = data[validDataKeys[i]];
     const point = getPoint(angle, value);
     return `${point.x},${point.y}`;
   }).join(' ');
@@ -59,7 +60,7 @@ export function SpiderChart({ data, maxScore = 100, size = 200 }: SpiderChartPro
 
       {/* Data Points */}
       {angles.map((angle, i) => {
-        const value = data[dataKeys[i]] || 0;
+        const value = data[validDataKeys[i]];
         const point = getPoint(angle, value);
         return (
           <circle
@@ -74,7 +75,7 @@ export function SpiderChart({ data, maxScore = 100, size = 200 }: SpiderChartPro
 
       {/* Labels */}
       {angles.map((angle, i) => {
-        const label = dataKeys[i];
+        const label = validDataKeys[i];
         const textPoint = getPoint(angle, maxScore + 12);
         return (
           <text
