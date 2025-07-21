@@ -45,13 +45,9 @@ import {
   useStepper,
 } from '@/components/ui/stepper';
 import { SpiderChart } from '@/components/spider-chart';
-import { INITIAL_CLUSTER_WEIGHTS, MOCK_IDEAS } from '@/lib/mock-data';
+import { INITIAL_CLUSTER_WEIGHTS } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 import { ROLES } from '@/lib/constants';
-
-// Import the AI flow and its types
-import { generateValidationReport } from '@/ai/flows/generate-validation-report';
-import { ValidationReport } from '@/ai/schemas';
 
 const clusterKeys = Object.keys(INITIAL_CLUSTER_WEIGHTS);
 const weightageSchema = clusterKeys.reduce((acc, key) => {
@@ -353,55 +349,41 @@ export default function SubmitIdeaPage() {
     });
 
     try {
-      // The new AI flow takes the core idea details.
-      // Weights are now part of the AI's internal context via the prompt.
-      const result: ValidationReport = await generateValidationReport({
-        ideaName: data.title,
-        ideaConcept: data.description,
-        category: data.domain,
-        institution: "Pragati University (Mock)", // This would come from user context
+      const response = await fetch('/api/ideas/validate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: data.title,
+          description: data.description,
+          domain: data.domain,
+        }),
       });
 
-      console.log('Validation Report:', result);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to validate idea');
+      }
 
-      // Add the new idea with its report to our mock data
-      const newIdea = {
-        id: `IDEA-${String(MOCK_IDEAS.length + 1).padStart(3, '0')}`,
-        title: result.ideaName,
-        description: result.ideaConcept,
-        collegeId: 'COL001',
-        collegeName: 'Pragati Institute of Technology',
-        domain: data.domain,
-        innovatorName: 'Jane Doe',
-        innovatorEmail: 'jane.doe@example.com',
-        status: result.validationOutcome,
-        dateSubmitted: new Date().toISOString().split('T')[0],
-        version: 'V1.0',
-        report: result, // Store the full report object
-        clusterWeights: {}, // This is now embedded in the report, can be removed
-        feedback: null, // Legacy feedback is replaced by the new report
-        consultationStatus: 'Not Requested',
-        consultationDate: null,
-        consultationTime: null,
-        ttcAssigned: null,
-      };
-      MOCK_IDEAS.unshift(newIdea); // Add to the beginning of the list
-
+      const result = await response.json();
+      const newIdeaId = result.idea.id;
+      const validationOutcome = result.idea.report.validationOutcome;
 
       toast({
         title: "Validation Complete!",
-        description: `Your idea "${result.ideaName}" has been evaluated with a status of: ${result.validationOutcome}`,
+        description: `Your idea "${data.title}" has been evaluated with a status of: ${validationOutcome}`,
       });
       
-      // Redirect to the new idea's report page
-      router.push(`/dashboard/ideas/${newIdea.id}?role=${ROLES.INNOVATOR}`);
+      router.push(`/dashboard/ideas/${newIdeaId}?role=${ROLES.INNOVATOR}`);
 
     } catch (error) {
       console.error("Validation failed:", error);
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
       toast({
         variant: "destructive",
         title: "Submission Failed",
-        description: "There was an error validating your idea. Please try again.",
+        description: `There was an error validating your idea: ${errorMessage}`,
       });
     } finally {
       setIsSubmitting(false);
