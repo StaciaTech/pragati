@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MOCK_CREDIT_REQUESTS, MOCK_TTCS } from '@/lib/mock-data';
@@ -24,6 +23,7 @@ import {
   AlertDialogTrigger,
   AlertDialogDescription,
   AlertDialogFooter,
+  AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
