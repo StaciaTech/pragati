@@ -33,7 +33,7 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
     return `${point.x},${point.y}`;
   }).join(' ');
 
-  const gridLevels = 5; // For increments of 20 up to 100
+  const gridLevels = 20; // For increments of 5 up to 100
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block mx-auto">
@@ -74,6 +74,9 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
             {isFirstSpoke && Array.from({ length: gridLevels }).map((_, levelIndex) => {
               const value = (maxScore / gridLevels) * (levelIndex + 1);
               if (value === 0) return null;
+              // Only show every 4th label (20, 40, 60, 80, 100) to avoid clutter
+              if ((levelIndex + 1) % 4 !== 0) return null;
+
               const labelPoint = getPoint(angle, value);
               return (
                 <text
