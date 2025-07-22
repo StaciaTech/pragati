@@ -13,6 +13,27 @@ const labelMap: { [key: string]: string } = {
   "Risk & Future Outlook": "Risk & Outlook",
 };
 
+// Helper function to wrap text into multiple tspans
+const wrapText = (text: string, maxWordsPerLine: number) => {
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = '';
+
+    words.forEach(word => {
+        if ((currentLine + ' ' + word).trim().split(' ').length > maxWordsPerLine) {
+            lines.push(currentLine.trim());
+            currentLine = word;
+        } else {
+            currentLine = (currentLine + ' ' + word).trim();
+        }
+    });
+    if (currentLine) {
+        lines.push(currentLine.trim());
+    }
+    return lines;
+};
+
+
 export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartProps) {
   const padding = 60; // Increased padding to ensure labels fit
   const chartSize = size - padding * 2;
@@ -78,21 +99,24 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
               strokeWidth="0.5"
             />
             {isFirstSpoke && Array.from({ length: gridLevels }).map((_, levelIndex) => {
-              const value = (maxScore / gridLevels) * (levelIndex + 1);
-              const labelPoint = getPoint(angle, value);
-              return (
-                <text
-                  key={`axis-label-${levelIndex}`}
-                  x={labelPoint.x + 5}
-                  y={labelPoint.y}
-                  textAnchor="start"
-                  dominantBaseline="middle"
-                  fontSize="10"
-                  className="fill-muted-foreground"
-                >
-                  {value}
-                </text>
-              );
+                const value = (maxScore / gridLevels) * (levelIndex + 1);
+                // Only show labels for 25, 50, 75, 100
+                if (value % 25 !== 0 && value !== 100) return null;
+
+                const labelPoint = getPoint(angle, value);
+                return (
+                  <text
+                    key={`axis-label-${levelIndex}`}
+                    x={labelPoint.x + 5}
+                    y={labelPoint.y}
+                    textAnchor="start"
+                    dominantBaseline="middle"
+                    fontSize="10"
+                    className="fill-muted-foreground"
+                  >
+                    {value}
+                  </text>
+                );
             })}
           </g>
         );
@@ -101,44 +125,52 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
       {/* Labels */}
       {angles.map((angle, i) => {
         const value = data[validDataKeys[i]];
-        const labelText = labelMap[validDataKeys[i]] || validDataKeys[i];
+        const originalLabelText = validDataKeys[i];
         
-        const labelRadius = radius + 25; // Push labels further out
+        const labelRadius = radius + 35; 
         let textPointX = centerX + labelRadius * Math.cos(angle);
         let textPointY = centerY + labelRadius * Math.sin(angle);
 
         let textAnchor = "middle";
-        // Adjust anchor based on horizontal position
-        if (textPointX > centerX + 10) {
+        if (angle > -Math.PI / 2 && angle < Math.PI / 2) { // Right side
             textAnchor = "start";
-        } else if (textPointX < centerX - 10) {
+        } else if (angle > Math.PI / 2 || angle < -Math.PI / 2) { // Left side
             textAnchor = "end";
         }
-
+        
         // Adjust vertical position for top/bottom labels to prevent them from sitting on the line
-        if (Math.abs(textPointX - centerX) < 10) { // Top or Bottom
-            textPointY += (textPointY < centerY) ? -10 : 10;
+        if (Math.abs(angle - (-Math.PI/2)) < 0.1) { // Top
+            textPointY -= 10;
+        } else if (Math.abs(angle - (Math.PI/2)) < 0.1) { // Bottom
+            textPointY += 10;
         }
+        
+        const wrappedLines = wrapText(originalLabelText, 2);
+        const verticalOffset = (wrappedLines.length - 1) * 12 / 2; // half of total height of text block
 
         return (
             <g key={`label-group-${i}`}>
                 <text
                     x={textPointX}
-                    y={textPointY - 8} // Position percentage above the label
+                    y={textPointY - 12} 
                     textAnchor={textAnchor}
                     dominantBaseline="middle"
                     className="font-bold text-lg fill-foreground"
                 >
                     {value}%
                 </text>
-                <text
+                 <text
                     x={textPointX}
-                    y={textPointY + 8} // Position label below the percentage
+                    y={textPointY + 8}
                     textAnchor={textAnchor}
                     dominantBaseline="middle"
                     className="text-xs fill-muted-foreground"
                 >
-                    {labelText}
+                    {wrappedLines.map((line, lineIndex) => (
+                        <tspan key={lineIndex} x={textPointX} dy={lineIndex === 0 ? 0 : 12}>
+                            {line}
+                        </tspan>
+                    ))}
                 </text>
             </g>
         );
