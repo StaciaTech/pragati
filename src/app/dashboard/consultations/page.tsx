@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -29,16 +30,19 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MOCK_CONSULTATIONS, STATUS_COLORS } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
+import { Separator } from '@/components/ui/separator';
+
+type Consultation = (typeof MOCK_CONSULTATIONS)[0];
 
 export default function ConsultationsPage() {
   const [consultations, setConsultations] = React.useState(MOCK_CONSULTATIONS);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [selectedConsultation, setSelectedConsultation] = React.useState<Consultation | null>(null);
   const { toast } = useToast();
 
-  const handleViewDetails = (consultationId: string) => {
-    toast({
-        title: "Feature In Development",
-        description: `Viewing details for consultation ${consultationId} is not yet implemented.`,
-    });
+  const handleViewDetails = (consultation: Consultation) => {
+    setSelectedConsultation(consultation);
+    setIsModalOpen(true);
   }
 
   return (
@@ -81,7 +85,7 @@ export default function ConsultationsPage() {
                       <Badge className={STATUS_COLORS[consultation.status]}>{consultation.status}</Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                        <Button variant="link" size="sm" onClick={() => handleViewDetails(consultation.id)}>View Details</Button>
+                        <Button variant="link" size="sm" onClick={() => handleViewDetails(consultation)}>View Details</Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -90,6 +94,46 @@ export default function ConsultationsPage() {
           )}
         </CardContent>
       </Card>
+      
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>{selectedConsultation?.title}</DialogTitle>
+                <DialogDescription>
+                    Scheduled for {selectedConsultation?.date} at {selectedConsultation?.time} with {selectedConsultation?.mentor}.
+                </DialogDescription>
+            </DialogHeader>
+            <Separator />
+            <div className="space-y-4 py-4">
+                <div>
+                    <h4 className="font-semibold text-sm">Milestones</h4>
+                    <ul className="list-disc list-inside text-muted-foreground text-sm space-y-1 mt-2">
+                        {selectedConsultation?.milestones.map((milestone, i) => (
+                            <li key={i}>{milestone}</li>
+                        ))}
+                    </ul>
+                </div>
+                <div>
+                    <h4 className="font-semibold text-sm">Shared Files</h4>
+                    <ul className="list-disc list-inside text-muted-foreground text-sm space-y-1 mt-2">
+                        {selectedConsultation?.files.map((file, i) => (
+                             <li key={i}><a href="#" className="text-primary hover:underline">{file}</a></li>
+                        ))}
+                    </ul>
+                </div>
+                 {selectedConsultation?.status === 'Scheduled' && (
+                    <div className="pt-4">
+                       <Button className="w-full">Join Meeting</Button>
+                    </div>
+                 )}
+            </div>
+            <DialogFooter>
+                <DialogClose asChild>
+                    <Button variant="outline">Close</Button>
+                </DialogClose>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

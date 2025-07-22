@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -9,6 +10,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/components/ui/card';
 import {
   Table,
@@ -41,7 +43,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 type Idea = {
   id: string;
@@ -56,7 +66,7 @@ type Idea = {
   dateSubmitted: string;
   version: string;
   report?: ValidationReport | null;
-  clusterWeights?: Record<string, number>; 
+  clusterWeights?: Record<string, number>;
   feedback?: { overall: string; details: { aspect: string; score: number; comment: string }[] } | null;
   consultationStatus: string;
   consultationDate: string | null;
@@ -65,12 +75,19 @@ type Idea = {
   overallScore?: number;
 };
 
+const mockHistory = [
+    { version: "V1.0", date: "2024-01-15", status: "Approved", score: 4.2 },
+    { version: "V0.9", date: "2024-01-10", status: "Moderate", score: 3.8 },
+    { version: "V0.8", date: "2024-01-05", status: "Rejected", score: 2.1 },
+];
 
 export default function IdeasPage() {
   const [ideas, setIdeas] = React.useState<Idea[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [historyDialogOpen, setHistoryDialogOpen] = React.useState(false);
+  const [selectedIdeaForHistory, setSelectedIdeaForHistory] = React.useState<Idea | null>(null);
   const [selectedAction, setSelectedAction] = React.useState<{ action?: () => void, title?: string, description?: string }>({});
   const { toast } = useToast();
   const router = useRouter();
@@ -115,12 +132,9 @@ export default function IdeasPage() {
     );
   };
 
-  const handleTrackHistory = (ideaId: string) => {
-     openConfirmationDialog(
-      () => toast({ title: "Feature In Development", description: `Tracking history for idea ${ideaId} is not yet implemented.` }),
-      "Confirm Track History",
-      "Are you sure you want to view the history for this idea?"
-    );
+  const handleTrackHistory = (idea: Idea) => {
+    setSelectedIdeaForHistory(idea);
+    setHistoryDialogOpen(true);
   };
   
   const handleResubmit = (idea: Idea) => {
@@ -226,7 +240,7 @@ export default function IdeasPage() {
                       <DropdownMenuItem onSelect={() => handleDownload(idea.id)}>
                         Download
                       </DropdownMenuItem>
-                      <DropdownMenuItem onSelect={() => handleTrackHistory(idea.id)}>
+                      <DropdownMenuItem onSelect={() => handleTrackHistory(idea)}>
                         Track History
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -266,6 +280,42 @@ export default function IdeasPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={historyDialogOpen} onOpenChange={setHistoryDialogOpen}>
+          <DialogContent>
+              <DialogHeader>
+                  <DialogTitle>History for: {selectedIdeaForHistory?.title}</DialogTitle>
+                  <DialogDescription>
+                      Showing the version history and outcomes for this idea.
+                  </DialogDescription>
+              </DialogHeader>
+              <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Version</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Score</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {mockHistory.map((item, index) => (
+                        <TableRow key={index}>
+                            <TableCell>{item.version}</TableCell>
+                            <TableCell>{item.date}</TableCell>
+                            <TableCell><Badge className={STATUS_COLORS[item.status]}>{item.status}</Badge></TableCell>
+                            <TableCell>{item.score.toFixed(1)}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+              <DialogFooter>
+                  <DialogClose asChild>
+                      <Button variant="outline">Close</Button>
+                  </DialogClose>
+              </DialogFooter>
+          </DialogContent>
+      </Dialog>
     </>
   );
 }
