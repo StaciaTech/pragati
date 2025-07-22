@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -29,7 +30,7 @@ export default function CoordinatorAnalyticsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
             <CardHeader>
-                <CardTitle>College Idea Approval Rate</CardTitle>
+                <CardTitle>Idea Approval Rate</CardTitle>
             </CardHeader>
             <CardContent>
                 <p className="text-5xl font-bold text-green-600">{approvalRate}%</p>
