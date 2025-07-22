@@ -1,8 +1,11 @@
+
 'use client';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MOCK_COLLEGES, MOCK_IDEAS, MOCK_PLANS, MOCK_TTCS, MOCK_INNOVATORS } from '@/lib/mock-data';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 
 export default function AdminDashboardPage() {
   const totalColleges = MOCK_COLLEGES.length;
@@ -17,12 +20,15 @@ export default function AdminDashboardPage() {
   const revenueByPlan = MOCK_COLLEGES.reduce((acc, college) => {
       const plan = MOCK_PLANS.find(p => p.id === college.currentPlanId);
       if (plan && plan.enabled) {
-          acc[plan.name] = (acc[plan.name] || 0) + plan.totalAmount;
+          const planName = plan.name.replace(/ Monthly| Yearly/, '');
+          acc[planName] = (acc[planName] || 0) + plan.totalAmount;
       }
       return acc;
   }, {} as Record<string, number>);
 
   const totalRevenue = Object.values(revenueByPlan).reduce((sum, rev) => sum + rev, 0);
+
+  const revenueChartData = Object.entries(revenueByPlan).map(([name, revenue]) => ({ name, revenue }));
 
   return (
     <div className="flex flex-col gap-6">
@@ -63,24 +69,27 @@ export default function AdminDashboardPage() {
        <Card>
         <CardHeader>
           <CardTitle>Revenue by Plan</CardTitle>
+          <CardDescription>Estimated revenue from active college subscription plans.</CardDescription>
         </CardHeader>
         <CardContent>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Plan Name</TableHead>
-                        <TableHead className="text-right">Estimated Revenue</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {Object.entries(revenueByPlan).map(([planName, revenue]) => (
-                        <TableRow key={planName}>
-                            <TableCell>{planName}</TableCell>
-                            <TableCell className="text-right">₹{revenue.toLocaleString()}</TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+           <ChartContainer config={{}} className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={revenueChartData} margin={{ left: 10, right: 10, top: 10, bottom: 10 }}>
+                  <CartesianGrid vertical={false} />
+                  <XAxis dataKey="name" tickLine={false} axisLine={false} />
+                  <YAxis tickFormatter={(value) => `₹${Number(value).toLocaleString()}`} />
+                  <Tooltip
+                    cursor={true}
+                    content={<ChartTooltipContent 
+                        contentStyle={{background: "hsl(var(--background))", border: "1px solid hsl(var(--border))"}}
+                        labelClassName="font-bold"
+                        formatter={(value) => [`₹${(value as number).toLocaleString()}`, 'Revenue']}
+                    />}
+                  />
+                  <Bar dataKey="revenue" fill="hsl(var(--chart-1))" radius={8} />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
         </CardContent>
        </Card>
     </div>
