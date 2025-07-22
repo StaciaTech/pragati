@@ -96,8 +96,6 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
             />
             {isFirstSpoke && Array.from({ length: gridLevels }).map((_, levelIndex) => {
               const value = (maxScore / gridLevels) * (levelIndex + 1);
-              if (value === 0) return null;
-              
               const labelPoint = getPoint(angle, value);
               return (
                 <text
@@ -123,7 +121,7 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
         const rawLabelText = validDataKeys[i].replace(/([A-Z&])/g, ' $1').trim();
         const wrappedText = wrapText(rawLabelText, 3);
         
-        const labelRadius = radius + 35; 
+        const labelRadius = radius + 15;
         const textPointX = centerX + labelRadius * Math.cos(angle);
         const textPointY = centerY + labelRadius * Math.sin(angle);
 
@@ -134,28 +132,28 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
             textAnchor = "end";
         }
         
-        let dominantBaseline = "middle";
-        if(textPointY < centerY - 20) dominantBaseline = "auto";
-        if(textPointY > centerY + 20) dominantBaseline = "hanging";
-
+        const isTopHalf = textPointY < centerY;
 
         return (
-          <g key={`label-group-${i}`} transform={`translate(${textPointX}, ${textPointY})`}>
+          <g key={`label-group-${i}`}>
             <text
+              x={textPointX}
+              y={textPointY - (isTopHalf ? 15 : -5) } // Position percentage above/below
               textAnchor={textAnchor}
-              dominantBaseline={dominantBaseline}
+              dominantBaseline="middle"
               className="font-bold text-lg fill-foreground"
             >
               {value}%
             </text>
             <text
-              y={dominantBaseline === 'hanging' ? 20 : -20} 
+              x={textPointX}
+              y={textPointY + (isTopHalf ? 5 : 20)} // Position label text
               textAnchor={textAnchor}
-              dominantBaseline={dominantBaseline}
+              dominantBaseline="middle"
               className="text-xs fill-muted-foreground"
             >
               {wrappedText.map((line, lineIndex) => (
-                  <tspan key={lineIndex} x={0} dy={lineIndex > 0 ? "1.2em" : 0}>{line}</tspan>
+                  <tspan key={lineIndex} x={textPointX} dy={lineIndex > 0 ? "1.2em" : 0}>{line}</tspan>
               ))}
             </text>
           </g>
