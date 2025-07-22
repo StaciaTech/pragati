@@ -12,7 +12,7 @@ interface SpiderChartProps {
 export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartProps) {
   const centerX = size / 2;
   const centerY = size / 2;
-  const radius = size / 2.8; // Reduce radius to make space for external labels
+  const radius = size / 3.5; 
 
   const validDataKeys = Object.keys(data).filter(key => typeof data[key] === 'number');
 
@@ -33,7 +33,7 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
     return `${point.x},${point.y}`;
   }).join(' ');
 
-  const gridLevels = 5;
+  const gridLevels = 4; // Change from 5 to 4 for increments of 25
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block mx-auto">
@@ -71,9 +71,9 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
               stroke="hsl(var(--border) / 0.8)"
               strokeWidth="0.5"
             />
-            {isFirstSpoke && Array.from({ length: gridLevels + 1 }).map((_, levelIndex) => {
-              if (levelIndex === 0) return null;
-              const value = (maxScore / gridLevels) * levelIndex;
+            {isFirstSpoke && Array.from({ length: gridLevels }).map((_, levelIndex) => {
+              if (levelIndex < 0) return null; // Start from the first level
+              const value = (maxScore / gridLevels) * (levelIndex + 1);
               const labelPoint = getPoint(angle, value);
               return (
                 <text
@@ -97,19 +97,18 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
       {angles.map((angle, i) => {
         const value = data[validDataKeys[i]];
         const labelText = validDataKeys[i].replace(/([A-Z&])/g, ' $1').trim();
-        const textPoint = getPoint(angle, maxScore + 35);
+        const textPoint = getPoint(angle, maxScore + 60); // Increased distance for labels
 
         let textAnchor = "middle";
-        if (textPoint.x > centerX + 5) {
+        if (textPoint.x > centerX + 10) {
             textAnchor = "start";
-        } else if (textPoint.x < centerX - 5) {
+        } else if (textPoint.x < centerX - 10) {
             textAnchor = "end";
         }
         
         let yOffset = 0;
-        if(textPoint.y < centerY) yOffset = -8;
-        if(textPoint.y > centerY) yOffset = 8;
-        
+        if(textPoint.y < centerY) yOffset = -12;
+        if(textPoint.y > centerY) yOffset = 12;
 
         return (
           <g key={`label-group-${i}`}>
