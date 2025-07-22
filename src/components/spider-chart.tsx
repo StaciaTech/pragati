@@ -74,9 +74,7 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
             {isFirstSpoke && Array.from({ length: gridLevels }).map((_, levelIndex) => {
               const value = (maxScore / gridLevels) * (levelIndex + 1);
               if (value === 0) return null;
-              // Only show every 4th label (20, 40, 60, 80, 100) to avoid clutter
-              if ((levelIndex + 1) % 4 !== 0) return null;
-
+              
               const labelPoint = getPoint(angle, value);
               return (
                 <text
