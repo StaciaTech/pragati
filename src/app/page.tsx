@@ -131,13 +131,13 @@ export default function LoginPage() {
           </div>
       </div>
       <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
-          <div className="absolute inset-0 bg-background" />
+          <div className="absolute inset-0 bg-primary" />
            <div
             aria-hidden="true"
             className="absolute inset-0 -z-10 animate-[spin_20s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]"
            />
            <div className="relative z-20 h-full flex flex-col justify-between">
-                <div className="flex items-center gap-2 text-lg font-medium text-foreground">
+                <div className="flex items-center gap-2 text-lg font-medium text-primary-foreground">
                     <BrainCircuit className="h-7 w-7" />
                     <span>Innovation at Lightspeed</span>
                 </div>
