@@ -51,6 +51,17 @@ import { useToast } from '@/hooks/use-toast';
 import { ROLES } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 const clusterKeys = Object.keys(INITIAL_CLUSTER_WEIGHTS);
 const weightageSchema = clusterKeys.reduce((acc, key) => {
@@ -472,9 +483,25 @@ export default function SubmitIdeaPage() {
                 </CardDescription>
             </div>
             {isEditing && (
-                <Button variant="outline" asChild>
-                    <Link href={`/dashboard/ideas?role=${ROLES.INNOVATOR}`}>Cancel Resubmission</Link>
-                </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline">Cancel Resubmission</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. You will lose any unsaved changes.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => router.push(`/dashboard/ideas?role=${ROLES.INNOVATOR}`)}>
+                      Yes, discard changes
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
         </div>
         {isEditing && (
