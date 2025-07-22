@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useParams, useSearchParams } from 'next/navigation';
@@ -30,6 +31,17 @@ const SectionCard = ({ title, description, children }: { title: string, descript
         <CardContent>{children}</CardContent>
     </Card>
 );
+
+const getBackLink = (role: string | null) => {
+    switch (role) {
+        case ROLES.SUPER_ADMIN:
+            return `/dashboard/admin/ideas?role=${role}`;
+        case ROLES.COORDINATOR:
+            return `/dashboard/coordinator/feedback?role=${role}`;
+        default:
+            return `/dashboard/ideas?role=${ROLES.INNOVATOR}`;
+    }
+}
 
 
 export default function IdeaReportPage() {
@@ -109,9 +121,9 @@ export default function IdeaReportPage() {
     <div className="space-y-6">
         <div className="flex justify-between items-center">
              <Button variant="outline" asChild>
-                <Link href={`/dashboard/ideas?role=${role || ROLES.INNOVATOR}`}>
+                <Link href={getBackLink(role)}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to My Ideas
+                    Back
                 </Link>
             </Button>
              <Button onClick={handleDownload}>
