@@ -13,8 +13,6 @@ import {
   CLUSTER_WEIGHTS,
   PARAMETER_WEIGHTS,
   SUB_PARAMETER_DEFINITIONS,
-  SCORING_RUBRIC,
-  VALIDATION_OUTCOMES,
 } from '@/lib/mock-data';
 import {
   GenerateValidationReportInput,
@@ -23,8 +21,6 @@ import {
   ValidationReportSchema,
   DetailedEvaluationClustersSchema,
 } from '@/ai/schemas';
-import { z } from 'zod';
-
 
 // Main exported function
 export async function generateValidationReport(
@@ -77,21 +73,27 @@ const generateValidationReportFlow = ai.defineFlow(
     let totalWeightUsed = 0;
 
     for (const clusterName in SUB_PARAMETER_DEFINITIONS) {
-        if (!CLUSTER_WEIGHTS[clusterName]) continue;
+        if (!CLUSTER_WEIGHTS[clusterName as keyof typeof CLUSTER_WEIGHTS]) continue;
 
         const clusterDef = SUB_PARAMETER_DEFINITIONS[clusterName as keyof typeof SUB_PARAMETER_DEFINITIONS];
         if (!clusterDef || !clusterDef.parameters) continue;
 
         for (const paramName in clusterDef.parameters) {
             const paramDef = clusterDef.parameters[paramName as keyof typeof clusterDef.parameters];
-            if (!PARAMETER_WEIGHTS[clusterName] || !PARAMETER_WEIGHTS[clusterName][paramName] || !paramDef.subParameters) continue;
+            const paramWeights = PARAMETER_WEIGHTS[clusterName as keyof typeof PARAMETER_WEIGHTS];
+
+            if (!paramWeights || !paramWeights[paramName] || !paramDef.subParameters) continue;
             
             for (const subParamName in paramDef.subParameters) {
                 const subParamDef = paramDef.subParameters[subParamName as keyof typeof paramDef.subParameters];
-                const scoreData = detailedEvaluationClusters[clusterName as keyof typeof detailedEvaluationClusters]?.[paramName as keyof object]?.[subParamName as keyof object];
+
+                const clusterData = detailedEvaluationClusters[clusterName as keyof typeof detailedEvaluationClusters];
+                const paramData = clusterData ? (clusterData as any)[paramName] : undefined;
+                const scoreData = paramData ? paramData[subParamName] : undefined;
+
 
                 if (scoreData && typeof scoreData.assignedScore === 'number') {
-                    const weight = (subParamDef.weight || 0) * (PARAMETER_WEIGHTS[clusterName][paramName] || 0) * (CLUSTER_WEIGHTS[clusterName] || 0);
+                    const weight = (subParamDef.weight || 0) * (paramWeights[paramName] || 0) * (CLUSTER_WEIGHTS[clusterName as keyof typeof CLUSTER_WEIGHTS] || 0);
                     totalWeightedScore += scoreData.assignedScore * weight;
                     totalWeightUsed += weight;
                 }

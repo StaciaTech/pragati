@@ -23,56 +23,7 @@ const SubParameterEvaluationSchema = z.object({
   assumptions: z.array(z.string()).describe("List of assumptions made for this evaluation"),
 });
 
-const createSubParameterObject = (schema: z.ZodObject<any>) => z.object(
-    Object.keys(schema.shape).reduce((acc, key) => {
-        acc[key] = SubParameterEvaluationSchema;
-        return acc;
-    }, {} as Record<string, typeof SubParameterEvaluationSchema>)
-);
-
-const CoreIdeaAndInnovationSubParams = {
-    "Originality": {}, "Differentiation": {},
-    "Problem Clarity & Severity": {}, "Target Audience Identification & Definition": {},
-    "Customer Pain Points Validation": {}, "Solution Efficacy": {},
-    "Customer Willingness to Pay": {}, "Jobs-to-Be-Done (JTBD) Alignment": {},
-    "Intuitive Design": {}, "Accessibility Compliance": {}
-};
-
-const MarketAndCommercialOpportunitySubParams = {
-    "Market Size (TAM)": {}, "Competitive Intensity": {},
-    "Regulatory Landscape": {}, "Infrastructure Readiness": {},
-    "User Engagement": {}, "Retention Potential": {}
-};
-
-const ExecutionAndOperationsSubParams = {
-    "Technology Maturity": {}, "Scalability & Performance": {},
-    "Resource Availability": {}, "Process Efficiency": {},
-    "Business Model Scalability": {}, "Market Expansion Potential": {}
-};
-
-const BusinessModelAndStrategySubParams = {
-    "Revenue Stream Diversity": {}, "Profitability & Margins": {},
-    "Intellectual Property (IP)": {}, "Network Effects": {}
-};
-
-const TeamAndOrganizationalHealthSubParams = {
-    "Relevant Experience": {}, "Complementary Skills": {},
-    "Mission Alignment": {}, "Diversity & Inclusion": {}
-};
-
-const ExternalEnvironmentAndComplianceSubParams = {
-    "Data Privacy Compliance": {}, "Sector-Specific Compliance": {},
-    "Environmental Impact": {}, "Social Impact (SDGs)": {},
-    "Government & Institutional Support": {}, "Investor & Partner Landscape": {}
-};
-
-const RiskAndFutureOutlookSubParams = {
-    "Technical Risks": {}, "Market Risks": {}, "Operational Risks": {},
-    "ROI Potential": {}, "Exit Strategy Feasibility": {},
-    "Research Synergy": {}, "National Priority Alignment": {}
-};
-
-
+// Simplified schemas to reduce complexity for the AI model
 export const DetailedEvaluationClustersSchema = z.object({
   "Core Idea & Innovation": z.object({
     "Novelty & Uniqueness": z.object({ "Originality": SubParameterEvaluationSchema, "Differentiation": SubParameterEvaluationSchema }),
@@ -108,6 +59,7 @@ export const DetailedEvaluationClustersSchema = z.object({
     "Academic/National Alignment": z.object({ "Research Synergy": SubParameterEvaluationSchema, "National Priority Alignment": SubParameterEvaluationSchema })
   })
 });
+
 
 // Main Report Output Schema
 export const ValidationReportSchema = z.object({
