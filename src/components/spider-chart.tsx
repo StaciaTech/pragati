@@ -16,7 +16,7 @@ function wrapText(text: string, maxWordsPerLine: number) {
     let currentLine = '';
     
     words.forEach(word => {
-        if ((currentLine + ' ' + word).trim().split(' ').length > maxWordsPer-line) {
+        if ((currentLine + ' ' + word).trim().split(' ').length > maxWordsPerLine) {
             lines.push(currentLine.trim());
             currentLine = word;
         } else {
