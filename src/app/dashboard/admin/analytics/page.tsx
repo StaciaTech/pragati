@@ -1,7 +1,7 @@
+
 'use client';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { MOCK_IDEAS } from '@/lib/mock-data';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
@@ -49,7 +49,7 @@ export default function AdminAnalyticsPage() {
                 <BarChart data={domainTrends} layout="vertical" margin={{ left: 20, right: 20 }}>
                   <CartesianGrid horizontal={false} />
                   <XAxis type="number" dataKey="approvalRate" unit="%" />
-                  <YAxis type="category" dataKey="domain" tickLine={false} axisLine={false} />
+                  <YAxis type="category" dataKey="domain" tickLine={false} axisLine={false} width={80} />
                   <ChartTooltip 
                     cursor={false}
                     content={<ChartTooltipContent
