@@ -6,94 +6,95 @@ body {
   font-family: var(--font-body), sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-headline), sans-serif;
 }
 
 @layer base {
   :root {
-    --background: 252 80% 98%; /* Light Purple-White */
-    --foreground: 252 30% 25%; /* Dark Purple-Gray */
-    --card: 0 0% 100%;
-    --card-foreground: 252 30% 25%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 252 30% 25%;
-    --primary: 252 82% 42%; /* #3813C2 */
+    --background: 220 20% 98%;
+    --foreground: 220 10% 20%;
+    --card: 220 20% 98% / 0.8;
+    --card-foreground: 220 10% 20%;
+    --popover: 220 20% 98%;
+    --popover-foreground: 220 10% 20%;
+    --primary: 206 100% 35%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 252 80% 95%; /* Lighter Purple */
-    --secondary-foreground: 252 30% 25%;
-    --muted: 252 80% 95%;
-    --muted-foreground: 252 20% 55%;
-    --accent: 318 100% 72%; /* #FF6FD8 */
-    --accent-foreground: 252 30% 25%;
+    --secondary: 220 15% 95%;
+    --secondary-foreground: 220 10% 20%;
+    --muted: 220 15% 95%;
+    --muted-foreground: 220 10% 45%;
+    --accent: 200 98% 40%;
+    --accent-foreground: 220 10% 20%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 252 40% 90%;
-    --input: 252 40% 90%;
-    --ring: 318 100% 72%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 15% 90%;
+    --input: 220 15% 90%;
+    --ring: 206 100% 35%;
     --radius: 0.75rem;
-    
+
+    /* Custom App Colors */
+    --color-approved: 142 60% 45%;
+    --color-moderate: 45 90% 55%;
+    --color-rejected: 0 80% 60%;
+
     /* Chart Colors */
-    --chart-1: 252 82% 42%; /* Primary Purple */
-    --chart-2: 318 100% 72%; /* Accent Pink */
-    --chart-3: 280 82% 61%; /* #A33FF4 */
-    --chart-4: 220 82% 66%; /* #5C62F4 */
-    --chart-5: 200 100% 50%;/* #00C7FF */
+    --chart-1: 206 100% 35%; /* primary */
+    --chart-2: 200 98% 40%; /* accent */
+    --chart-3: 180 82% 40%;
+    --chart-4: 240 82% 66%;
+    --chart-5: 340 82% 66%;
 
-    --color-approved: 142 60% 45%; /* Green */
-    --color-moderate: 45 90% 55%; /* Yellow */
-    --color-rejected: 0 80% 60%;  /* Red */
-
-    --sidebar-background: 252 71.4% 10.1%;
-    --sidebar-foreground: 252 20% 98%;
-    --sidebar-primary: 318 80% 80%;
-    --sidebar-primary-foreground: 318 90% 10%;
-    --sidebar-accent: 252 71.4% 15.1%;
-    --sidebar-accent-foreground: 252 20% 98%;
-    --sidebar-border: 252 71.4% 15.1%;
-    --sidebar-ring: 318 80% 80%;
+    /* Sidebar Colors */
+    --sidebar-background: 220 10% 12%;
+    --sidebar-foreground: 220 15% 95%;
+    --sidebar-primary: 200 98% 50%;
+    --sidebar-primary-foreground: 220 10% 10%;
+    --sidebar-accent: 220 10% 20%;
+    --sidebar-accent-foreground: 220 15% 95%;
+    --sidebar-border: 220 10% 20%;
+    --sidebar-ring: 200 98% 50%;
   }
 
   .dark {
-    --background: 252 47% 11%; /* #110F2A */
-    --foreground: 252 20% 90%; 
-    --card: 252 40% 16%; 
-    --card-foreground: 252 20% 90%;
-    --popover: 252 40% 16%;
-    --popover-foreground: 252 20% 90%;
-    --primary: 318 100% 80%; /* Lighter Pink for dark mode */
-    --primary-foreground: 252 30% 10%;
-    --secondary: 252 33% 27%;
-    --secondary-foreground: 252 20% 90%;
-    --muted: 252 33% 27%;
-    --muted-foreground: 252 20% 65%;
-    --accent: 252 82% 52%; /* Brighter Purple */
-    --accent-foreground: 252 20% 98%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 252 33% 27%;
-    --input: 252 33% 27%;
-    --ring: 318 100% 72%;
+    --background: 220 10% 12%;
+    --foreground: 220 15% 95%;
+    --card: 220 10% 18% / 0.7;
+    --card-foreground: 220 15% 95%;
+    --popover: 220 10% 12%;
+    --popover-foreground: 220 15% 95%;
+    --primary: 200 98% 50%;
+    --primary-foreground: 220 10% 10%;
+    --secondary: 220 10% 20%;
+    --secondary-foreground: 220 15% 95%;
+    --muted: 220 10% 20%;
+    --muted-foreground: 220 15% 65%;
+    --accent: 206 100% 45%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 63% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 10% 25%;
+    --input: 220 10% 25%;
+    --ring: 200 98% 50%;
+
+    /* Custom App Colors */
+    --color-approved: 142 60% 55%;
+    --color-moderate: 45 90% 65%;
+    --color-rejected: 0 80% 70%;
 
     /* Chart Colors */
-    --chart-1: 318 100% 80%; /* Lighter Pink */
-    --chart-2: 252 82% 62%; /* Brighter Purple */
-    --chart-3: 280 82% 71%;
-    --chart-4: 220 82% 76%;
-    --chart-5: 200 100% 60%;
+    --chart-1: 200 98% 50%; /* primary */
+    --chart-2: 206 100% 45%; /* accent */
+    --chart-3: 180 82% 50%;
+    --chart-4: 240 82% 76%;
+    --chart-5: 340 82% 76%;
 
-    --color-approved: 142 60% 55%; /* Green */
-    --color-moderate: 45 90% 65%; /* Yellow */
-    --color-rejected: 0 80% 70%; /* Red */
-
-    --sidebar-background: 252 71.4% 4.1%;
-    --sidebar-foreground: 252 20% 98%;
-    --sidebar-primary: 318 80% 80%;
-    --sidebar-primary-foreground: 318 90% 10%;
-    --sidebar-accent: 252 71.4% 10.1%;
-    --sidebar-accent-foreground: 252 20% 98%;
-    --sidebar-border: 252 71.4% 10.1%;
-    --sidebar-ring: 318 80% 80%;
+    /* Sidebar Colors are the same as light mode for a consistent dark sidebar */
   }
 }
 
@@ -105,7 +106,7 @@ h1, h2, h3, h4, h5, h6 {
     @apply bg-background text-foreground;
   }
   .animate-shake {
-    animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
     transform: translate3d(0, 0, 0);
   }
 }
@@ -113,5 +114,8 @@ h1, h2, h3, h4, h5, h6 {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  .glassmorphism {
+      @apply backdrop-blur-lg;
   }
 }

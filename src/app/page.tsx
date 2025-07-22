@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import * as React from 'react';
@@ -91,7 +89,7 @@ export default function LoginPage() {
                 Fostering the next generation of innovation in education.
               </p>
             </div>
-             <Card className="w-full shadow-lg">
+             <Card className="w-full shadow-lg glassmorphism">
               <form onSubmit={handleLogin}>
                 <CardHeader>
                   <CardTitle>Login</CardTitle>
@@ -136,7 +134,7 @@ export default function LoginPage() {
           <div className="absolute -top-40 -left-40 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse delay-2000"></div>
           
           <div className="relative w-full max-w-md">
-            <Card className="bg-background/80 backdrop-blur-lg shadow-2xl">
+            <Card className="bg-card/80 backdrop-blur-lg shadow-2xl">
                 <CardHeader>
                     <div className="flex items-center gap-3">
                         <div className="p-3 bg-gradient-to-br from-primary to-accent rounded-lg text-primary-foreground">

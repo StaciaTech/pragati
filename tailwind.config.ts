@@ -18,9 +18,9 @@ const config = {
     },
     extend: {
       fontFamily: {
-        body: ['Poppins', 'sans-serif'],
-        headline: ['Poppins', 'sans-serif'],
-        code: ['"Source Code Pro"', 'monospace'],
+        body: ['var(--font-body)', 'sans-serif'],
+        headline: ['var(--font-body)', 'sans-serif'],
+        code: ['var(--font-code)', 'monospace'],
       },
       colors: {
         border: 'hsl(var(--border))',
