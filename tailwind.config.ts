@@ -1,3 +1,4 @@
+
 import type { Config } from 'tailwindcss';
 
 const config = {
@@ -95,9 +96,9 @@ const config = {
         },
         'move-dots': {
             '0%, 100%': { 'background-position': '0 0' },
-            '25%': { 'background-position': '0 1.5rem' },
-            '50%': { 'background-position': '1.5rem 1.5rem' },
-            '75%': { 'background-position': '1.5rem 0' },
+            '25%': { 'background-position': '0 1rem' },
+            '50%': { 'background-position': '1rem 1rem' },
+            '75%': { 'background-position': '1rem 0' },
         },
       },
       animation: {
