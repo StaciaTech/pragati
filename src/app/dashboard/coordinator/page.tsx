@@ -17,15 +17,7 @@ export default function CoordinatorDashboardPage() {
 
     return (
         <div className="flex flex-col gap-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Available Credits</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-4xl font-bold">{college?.creditsAvailable || 0}</p>
-                    </CardContent>
-                </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                 <Card>
                     <CardHeader>
                         <CardTitle>Total Innovators</CardTitle>

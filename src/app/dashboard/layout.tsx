@@ -19,7 +19,7 @@ import {
 import { Logo } from '@/components/icons';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { NAV_LINKS, ROLES, type Role } from '@/lib/constants';
-import { MOCK_INNOVATOR_USER } from '@/lib/mock-data';
+import { MOCK_INNOVATOR_USER, MOCK_TTCS, MOCK_COLLEGES } from '@/lib/mock-data';
 import { CreditCard, LogOut } from 'lucide-react';
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
@@ -28,6 +28,20 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const role = (searchParams.get('role') as Role) || ROLES.INNOVATOR;
 
   const navLinks = NAV_LINKS[role] || [];
+  
+  const getCredits = () => {
+    if (role === ROLES.INNOVATOR) {
+        return MOCK_INNOVATOR_USER.credits;
+    }
+    if (role === ROLES.COORDINATOR) {
+        const userTTC = MOCK_TTCS[0]; 
+        const college = MOCK_COLLEGES.find(c => c.id === userTTC.collegeId);
+        return college?.creditsAvailable || 0;
+    }
+    return null;
+  }
+
+  const credits = getCredits();
   
   return (
     <SidebarProvider>
@@ -78,10 +92,10 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             <h1 className="text-lg font-semibold">{role} Portal</h1>
           </div>
           <div className="flex items-center gap-4">
-             {role === ROLES.INNOVATOR && (
+             {(role === ROLES.INNOVATOR || role === ROLES.COORDINATOR) && credits !== null && (
                 <div className="flex items-center gap-2 text-sm font-medium">
                     <CreditCard className="size-5 text-primary" />
-                    <span>{MOCK_INNOVATOR_USER.credits} Credits</span>
+                    <span>{credits} Credits</span>
                 </div>
             )}
             <ThemeToggle />
