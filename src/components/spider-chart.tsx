@@ -9,10 +9,33 @@ interface SpiderChartProps {
   size?: number;
 }
 
+// Helper to wrap text
+function wrapText(text: string, maxWordsPerLine: number) {
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = '';
+    
+    words.forEach(word => {
+        if ((currentLine + ' ' + word).trim().split(' ').length > maxWordsPerLine) {
+            lines.push(currentLine.trim());
+            currentLine = word;
+        } else {
+            currentLine = (currentLine + ' ' + word).trim();
+        }
+    });
+    if (currentLine) {
+        lines.push(currentLine.trim());
+    }
+    return lines;
+}
+
+
 export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartProps) {
+  const padding = 50;
+  const chartSize = size - padding * 2;
   const centerX = size / 2;
   const centerY = size / 2;
-  const radius = size / 3.5; 
+  const radius = chartSize / 2.5;
 
   const validDataKeys = Object.keys(data).filter(key => typeof data[key] === 'number');
 
@@ -32,8 +55,8 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
     const point = getPoint(angle, value);
     return `${point.x},${point.y}`;
   }).join(' ');
-
-  const gridLevels = 4; // For increments of 25 up to 100
+  
+  const gridLevels = 4; // For 25, 50, 75, 100
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block mx-auto">
@@ -94,28 +117,30 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
         );
       })}
       
-       {/* Labels */}
+      {/* Labels */}
       {angles.map((angle, i) => {
         const value = data[validDataKeys[i]];
-        const labelText = validDataKeys[i].replace(/([A-Z&])/g, ' $1').trim();
-        const textPoint = getPoint(angle, maxScore + 60); // Increased distance for labels
+        const rawLabelText = validDataKeys[i].replace(/([A-Z&])/g, ' $1').trim();
+        const wrappedText = wrapText(rawLabelText, 2);
+        
+        const labelRadius = radius + 30; // Move labels further out
+        const textPointX = centerX + labelRadius * Math.cos(angle);
+        const textPointY = centerY + labelRadius * Math.sin(angle);
 
         let textAnchor = "middle";
-        if (textPoint.x > centerX + 10) {
+        if (textPointX > centerX + 10) {
             textAnchor = "start";
-        } else if (textPoint.x < centerX - 10) {
+        } else if (textPointX < centerX - 10) {
             textAnchor = "end";
         }
         
         let yOffset = 0;
-        if(textPoint.y < centerY) yOffset = -12;
-        if(textPoint.y > centerY) yOffset = 12;
+        if(textPointY < centerY) yOffset = -20;
+        if(textPointY > centerY) yOffset = 20;
 
         return (
-          <g key={`label-group-${i}`}>
+          <g key={`label-group-${i}`} transform={`translate(${textPointX}, ${textPointY + yOffset})`}>
             <text
-              x={textPoint.x}
-              y={textPoint.y + yOffset}
               textAnchor={textAnchor}
               dominantBaseline="middle"
               className="font-bold text-lg fill-foreground"
@@ -123,13 +148,14 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
               {value}%
             </text>
             <text
-              x={textPoint.x}
-              y={textPoint.y + yOffset + 18}
+              y={18}
               textAnchor={textAnchor}
               dominantBaseline="middle"
               className="text-xs fill-muted-foreground"
             >
-              {labelText}
+              {wrappedText.map((line, lineIndex) => (
+                  <tspan key={lineIndex} x={0} dy={lineIndex > 0 ? "1.2em" : 0}>{line}</tspan>
+              ))}
             </text>
           </g>
         );
