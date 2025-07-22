@@ -5,17 +5,17 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 240 4.8% 95.9%;
     --foreground: 222.2 84% 4.9%;
  
-    --card: 0 0% 100%;
+    --card: 240 4.8% 95.9%;
     --card-foreground: 222.2 84% 4.9%;
  
-    --popover: 0 0% 100%;
+    --popover: 240 4.8% 95.9%;
     --popover-foreground: 222.2 84% 4.9%;
  
-    --primary: 263.4 70% 50.4%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 244.8 95.2% 67.3%;
+    --primary-foreground: 222.2 47.4% 11.2%;
  
     --secondary: 336.8 85.1% 52.2%;
     --secondary-foreground: 0 0% 98%;
@@ -23,7 +23,7 @@
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
  
-    --accent: 173.3 97.4% 44.1%;
+    --accent: 336.8 85.1% 52.2%;
     --accent-foreground: 222.2 47.4% 11.2%;
  
     --destructive: 0 84.2% 60.2%;
@@ -31,7 +31,7 @@
 
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 263.4 70% 50.4%;
+    --ring: 244.8 95.2% 67.3%;
  
     --radius: 0.75rem;
 
@@ -41,10 +41,10 @@
     --color-rejected: 0 72.2% 50.6%;
 
     /* Chart Colors */
-    --chart-1: 263.4 70% 50.4%; /* Indigo */
-    --chart-2: 173.3 97.4% 44.1%; /* Neon Cyan */
-    --chart-3: 336.8 85.1% 52.2%; /* Pink */
-    --chart-4: 268.4 83.3% 57.8%; /* Purple */
+    --chart-1: 262 82% 62%; /* Purple */
+    --chart-2: 336.8 85.1% 52.2%; /* Pink */
+    --chart-3: 244.8 95.2% 67.3%; /* Indigo */
+    --chart-4: 173.3 97.4% 44.1%; /* Neon Cyan */
     --chart-5: 29.8 95.8% 62.5%;  /* Peach */
 
     /* Sidebar Colors */
@@ -68,7 +68,7 @@
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
  
-    --primary: 263.4 70% 50.4%;
+    --primary: 244.8 95.2% 67.3%;
     --primary-foreground: 0 0% 98%;
  
     --secondary: 336.8 85.1% 52.2%;
@@ -77,7 +77,7 @@
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
  
-    --accent: 173.3 97.4% 44.1%;
+    --accent: 336.8 85.1% 52.2%;
     --accent-foreground: 240 10% 3.9%;
  
     --destructive: 0 62.8% 30.6%;
@@ -85,7 +85,7 @@
  
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 263.4 70% 50.4%;
+    --ring: 244.8 95.2% 67.3%;
   }
 }
  
@@ -101,5 +101,9 @@
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  .dot-bg {
+    background-image: radial-gradient(circle, hsl(var(--primary) / 0.1) 1px, transparent 1px);
+    background-size: 1rem 1rem;
   }
 }
