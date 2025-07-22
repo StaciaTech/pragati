@@ -148,15 +148,15 @@ function Step1({ form }: { form: any }) {
         <CardDescription>Adjust weights to match your idea's focus.</CardDescription>
       </StepperTrigger>
       <StepperContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-6">
-          <div className="md:col-span-2 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-6">
+          <div className="md:col-span-1 space-y-6">
             <div className="flex flex-wrap gap-2">
                 <Button size="sm" variant={preset === 'Balanced' ? 'default' : 'outline'} onClick={() => handlePresetChange('Balanced')}>Balanced</Button>
                 <Button size="sm" variant={preset === 'Research-Focused' ? 'default' : 'outline'} onClick={() => handlePresetChange('Research-Focused')}>Research-Focused</Button>
                 <Button size="sm" variant={preset === 'Commercialization-Focused' ? 'default' : 'outline'} onClick={() => handlePresetChange('Commercialization-Focused')}>Commercialization-Focused</Button>
                 <Button size="sm" variant={preset === 'Manual' ? 'default' : 'outline'} onClick={() => handlePresetChange('Manual')}>Manual</Button>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
+            <div className="space-y-4">
               {clusters.map((key) => (
                 <FormField
                   key={key}
@@ -188,8 +188,8 @@ function Step1({ form }: { form: any }) {
             </div>
           </div>
           <div className="md:col-span-1 flex items-center justify-center">
-             <div className="w-full h-80 bg-muted/30 rounded-lg flex items-center justify-center p-4">
-                 <SpiderChart data={form.getValues()} size={300} />
+             <div className="w-full h-96 bg-background rounded-lg flex items-center justify-center p-4">
+                 <SpiderChart data={form.getValues()} size={400} />
              </div>
           </div>
         </div>
@@ -310,7 +310,7 @@ function Step3({ form, isSubmitting }: { form: any, isSubmitting: boolean }) {
                             ))}
                         </div>
                         <div className="mt-4 flex justify-center">
-                            <SpiderChart data={weights} size={250} />
+                            <SpiderChart data={weights} size={300} />
                         </div>
                     </CardContent>
                 </Card>

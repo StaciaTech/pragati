@@ -9,21 +9,21 @@ interface SpiderChartProps {
   size?: number;
 }
 
-export function SpiderChart({ data, maxScore = 100, size = 300 }: SpiderChartProps) {
+export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartProps) {
   const centerX = size / 2;
   const centerY = size / 2;
-  const radius = size / 2 - 40; // Increased padding for longer labels
+  const radius = size / 2.8; // Reduce radius to make space for external labels
 
   const validDataKeys = Object.keys(data).filter(key => typeof data[key] === 'number');
 
   if (validDataKeys.length === 0) return null;
 
-  const angles = validDataKeys.map((_, i) => (i * 2 * Math.PI) / validDataKeys.length);
+  const angles = validDataKeys.map((_, i) => (i * 2 * Math.PI) / validDataKeys.length - Math.PI / 2);
 
   const getPoint = (angle: number, value: number) => {
     const r = (value / maxScore) * radius;
-    const x = centerX + r * Math.sin(angle);
-    const y = centerY - r * Math.cos(angle);
+    const x = centerX + r * Math.cos(angle);
+    const y = centerY + r * Math.sin(angle);
     return { x, y };
   };
 
@@ -37,19 +37,12 @@ export function SpiderChart({ data, maxScore = 100, size = 300 }: SpiderChartPro
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block mx-auto">
-       <defs>
-        <radialGradient id="spider-gradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-          <stop offset="0%" style={{ stopColor: 'hsla(var(--primary) / 0.4)', stopOpacity: 1 }} />
-          <stop offset="100%" style={{ stopColor: 'hsla(var(--primary) / 0.1)', stopOpacity: 1 }} />
-        </radialGradient>
-      </defs>
-
       {/* Grid Lines */}
       {Array.from({ length: gridLevels }).map((_, levelIndex) => {
         const gridRadius = radius * ((levelIndex + 1) / gridLevels);
         const gridPoints = angles.map(angle => {
-          const x = centerX + gridRadius * Math.sin(angle);
-          const y = centerY - gridRadius * Math.cos(angle);
+          const x = centerX + gridRadius * Math.cos(angle);
+          const y = centerY + gridRadius * Math.sin(angle);
           return `${x},${y}`;
         }).join(' ');
         return (
@@ -57,80 +50,113 @@ export function SpiderChart({ data, maxScore = 100, size = 300 }: SpiderChartPro
             key={`grid-${levelIndex}`}
             points={gridPoints}
             fill="none"
-            stroke="hsl(var(--border) / 0.5)"
-            strokeWidth="1"
+            stroke="hsl(var(--border) / 0.8)"
+            strokeWidth="0.5"
           />
         );
       })}
-      
-      {/* Spokes */}
+
+      {/* Spokes and Axis Labels */}
       {angles.map((angle, i) => {
         const point = getPoint(angle, maxScore);
+        const isFirstSpoke = i === 0;
         return (
-          <line
-            key={`spoke-${i}`}
-            x1={centerX}
-            y1={centerY}
-            x2={point.x}
-            y2={point.y}
-            stroke="hsl(var(--border) / 0.5)"
-            strokeWidth="1"
-          />
+          <g key={`spoke-group-${i}`}>
+            <line
+              key={`spoke-${i}`}
+              x1={centerX}
+              y1={centerY}
+              x2={point.x}
+              y2={point.y}
+              stroke="hsl(var(--border) / 0.8)"
+              strokeWidth="0.5"
+            />
+            {isFirstSpoke && Array.from({ length: gridLevels + 1 }).map((_, levelIndex) => {
+              if (levelIndex === 0) return null;
+              const value = (maxScore / gridLevels) * levelIndex;
+              const labelPoint = getPoint(angle, value);
+              return (
+                <text
+                  key={`axis-label-${levelIndex}`}
+                  x={labelPoint.x + 5}
+                  y={labelPoint.y}
+                  textAnchor="start"
+                  dominantBaseline="middle"
+                  fontSize="10"
+                  className="fill-muted-foreground"
+                >
+                  {value}
+                </text>
+              );
+            })}
+          </g>
+        );
+      })}
+      
+       {/* Labels */}
+      {angles.map((angle, i) => {
+        const value = data[validDataKeys[i]];
+        const labelText = validDataKeys[i].replace(/([A-Z&])/g, ' $1').trim();
+        const textPoint = getPoint(angle, maxScore + 35);
+
+        let textAnchor = "middle";
+        if (textPoint.x > centerX + 5) {
+            textAnchor = "start";
+        } else if (textPoint.x < centerX - 5) {
+            textAnchor = "end";
+        }
+        
+        let yOffset = 0;
+        if(textPoint.y < centerY) yOffset = -8;
+        if(textPoint.y > centerY) yOffset = 8;
+        
+
+        return (
+          <g key={`label-group-${i}`}>
+            <text
+              x={textPoint.x}
+              y={textPoint.y + yOffset}
+              textAnchor={textAnchor}
+              dominantBaseline="middle"
+              className="font-bold text-lg fill-foreground"
+            >
+              {value}%
+            </text>
+            <text
+              x={textPoint.x}
+              y={textPoint.y + yOffset + 18}
+              textAnchor={textAnchor}
+              dominantBaseline="middle"
+              className="text-xs fill-muted-foreground"
+            >
+              {labelText}
+            </text>
+          </g>
         );
       })}
 
       {/* Data Polygon */}
       <polygon
         points={points}
-        fill="url(#spider-gradient)"
+        fill="none"
         stroke="hsl(var(--primary))"
-        strokeWidth="2.5"
+        strokeWidth="2"
       />
 
       {/* Data Points */}
       {angles.map((angle, i) => {
         const value = data[validDataKeys[i]];
         const point = getPoint(angle, value);
+        const size = 4;
         return (
-          <g key={`dot-group-${i}`} className="group transition-transform duration-200 ease-in-out hover:scale-125">
-             <circle
-                cx={point.x}
-                cy={point.y}
-                r="5"
-                fill="hsl(var(--primary))"
-             />
-             <circle
-                cx={point.x}
-                cy={point.y}
-                r="8"
-                fill="hsl(var(--primary) / 0.3)"
-                className="opacity-0 group-hover:opacity-100 transition-opacity"
-             />
-          </g>
-        );
-      })}
-
-      {/* Labels */}
-      {angles.map((angle, i) => {
-        const label = validDataKeys[i].replace(/([A-Z&])/g, ' $1').trim(); // Add spaces before caps and ampersand
-        const textPoint = getPoint(angle, maxScore + 20); // Move labels further out
-        
-        const words = label.split(' ');
-        
-        return (
-          <text
-            key={`label-${i}`}
-            x={textPoint.x}
-            y={textPoint.y}
-            textAnchor="middle"
-            dominantBaseline="central"
-            fontSize="11"
-            className="fill-muted-foreground font-semibold"
-          >
-            {words.map((word, wordIndex) => (
-              <tspan key={wordIndex} x={textPoint.x} dy={wordIndex === 0 ? '-0.6em' : '1.2em'}>{word}</tspan>
-            ))}
-          </text>
+          <polygon 
+            key={`point-${i}`}
+            points={`${point.x},${point.y - size} ${point.x + size},${point.y} ${point.x},${point.y + size} ${point.x - size},${point.y}`}
+            fill="hsl(var(--primary))"
+            stroke="hsl(var(--card))"
+            strokeWidth={1.5}
+            className="transition-transform duration-200 ease-in-out hover:scale-150"
+          />
         );
       })}
     </svg>
