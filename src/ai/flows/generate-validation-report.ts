@@ -2,8 +2,8 @@
 
 /**
  * @fileOverview AI flow that generates a comprehensive validation report for a submitted idea.
- * This flow makes a single, large call to the AI, asking it to generate the entire report
- * in a structured JSON format based on a detailed framework.
+ * This flow now orchestrates multiple calls to a simpler AI evaluation flow,
+ * one for each evaluation cluster, to build the full report.
  *
  * - generateValidationReport - A function that generates the validation report.
  */
@@ -20,7 +20,10 @@ import {
   ValidationReport,
   ValidationReportSchema,
   DetailedEvaluationClustersSchema,
+  DetailedEvaluationClusters,
 } from '@/ai/schemas';
+import { generateEvaluation } from './generate-evaluation';
+
 
 // Main exported function
 export async function generateValidationReport(
@@ -28,28 +31,6 @@ export async function generateValidationReport(
 ): Promise<ValidationReport> {
   return generateValidationReportFlow(input);
 }
-
-
-// The prompt now focuses ONLY on generating the detailed evaluation scores.
-const detailedEvaluationPrompt = ai.definePrompt({
-  name: 'detailedEvaluationPrompt',
-  input: { schema: GenerateValidationReportInputSchema },
-  output: { schema: DetailedEvaluationClustersSchema },
-  prompt: `You are an expert AI-powered business and innovation consultant. Your goal is to provide a comprehensive, structured evaluation for a given innovative idea.
-
-**Idea Details:**
-Idea Name: {{ideaName}}
-Concept: {{ideaConcept}}
-Category: {{category}}
-Institution: {{institution}}
-
-**Instructions:**
-1.  **Output Format:** Your response MUST be a single, valid JSON object that conforms to the DetailedEvaluationClustersSchema. Do not add any text or formatting before or after the JSON object.
-2.  **Scoring:** For each sub-parameter, assign a score from 1 to 5 (integer). Do not use 'N/A'. If a parameter is not applicable, assign a score of 3.
-3.  **Justification:** For each score, provide a concise 'explanation' (1-3 sentences) and list any 'assumptions' you made as an array of strings.
-`,
-});
-
 
 // Main Genkit Flow
 const generateValidationReportFlow = ai.defineFlow(
@@ -61,8 +42,25 @@ const generateValidationReportFlow = ai.defineFlow(
   async (input) => {
     console.log("Starting detailed evaluation generation for idea:", input.ideaName);
     
-    // Step 1: Get the detailed evaluation from the AI
-    const { output: detailedEvaluationClusters } = await detailedEvaluationPrompt(input);
+    // Step 1: Generate the detailed evaluation by calling the simpler flow for each cluster
+    const clusterNames = Object.keys(SUB_PARAMETER_DEFINITIONS) as (keyof DetailedEvaluationClusters)[];
+    const evaluationPromises = clusterNames.map(clusterName => 
+      generateEvaluation({
+        ...input,
+        cluster: {
+          name: clusterName,
+          definition: SUB_PARAMETER_DEFINITIONS[clusterName],
+        },
+      })
+    );
+
+    const evaluationResults = await Promise.all(evaluationPromises);
+
+    const detailedEvaluationClusters = evaluationResults.reduce((acc, result) => {
+      acc = { ...acc, ...result };
+      return acc;
+    }, {} as DetailedEvaluationClusters);
+
 
     if (!detailedEvaluationClusters) {
       throw new Error("AI evaluation failed to return the detailed evaluation data.");

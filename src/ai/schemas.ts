@@ -22,6 +22,8 @@ const SubParameterEvaluationSchema = z.object({
   explanation: z.string().describe("Concise explanation for the score (1-3 sentences)"),
   assumptions: z.array(z.string()).describe("List of assumptions made for this evaluation"),
 });
+export type SubParameterEvaluation = z.infer<typeof SubParameterEvaluationSchema>;
+
 
 // Simplified schemas to reduce complexity for the AI model
 export const DetailedEvaluationClustersSchema = z.object({
@@ -59,6 +61,7 @@ export const DetailedEvaluationClustersSchema = z.object({
     "Academic/National Alignment": z.object({ "Research Synergy": SubParameterEvaluationSchema, "National Priority Alignment": SubParameterEvaluationSchema })
   })
 });
+export type DetailedEvaluationClusters = z.infer<typeof DetailedEvaluationClustersSchema>;
 
 
 // Main Report Output Schema
@@ -121,3 +124,26 @@ export const ValidationReportSchema = z.object({
   }),
 });
 export type ValidationReport = z.infer<typeof ValidationReportSchema>;
+
+// Schemas for the individual cluster evaluation flow
+const SubParameterDefinitionSchema = z.object({
+  weight: z.number(),
+  objective: z.string(),
+});
+const ParameterDefinitionSchema = z.object({
+  subParameters: z.record(SubParameterDefinitionSchema),
+});
+const ClusterDefinitionSchema = z.object({
+  name: z.string(),
+  definition: z.object({
+    parameters: z.record(ParameterDefinitionSchema),
+  }),
+});
+
+export const GenerateEvaluationInputSchema = GenerateValidationReportInputSchema.extend({
+  cluster: ClusterDefinitionSchema,
+});
+export type GenerateEvaluationInput = z.infer<typeof GenerateEvaluationInputSchema>;
+
+export const GenerateEvaluationOutputSchema = z.record(z.any());
+export type GenerateEvaluationOutput = z.infer<typeof GenerateEvaluationOutputSchema>;
