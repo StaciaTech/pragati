@@ -75,22 +75,22 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex min-h-screen w-full items-center justify-center p-4 lg:p-8 relative bg-background">
-       <div className="absolute inset-0 -z-10 h-full w-full bg-background bg-[radial-gradient(hsl(var(--primary)/0.1)_1px,transparent_1px)] bg-[size:16px_16px]"></div>
-          <div className="absolute top-4 right-4 z-10">
+    <main className="flex min-h-screen w-full items-center justify-center bg-background lg:grid lg:grid-cols-2">
+       <div className="absolute top-4 right-4 z-10">
             <ThemeToggle />
-          </div>
-          <div className="max-w-md w-full">
-            <div className="flex flex-col items-center text-center mb-8">
-              <Logo className="mb-4 h-16 w-16 text-primary" />
-              <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl font-headline">
+        </div>
+      <div className="flex items-center justify-center p-4 lg:p-8">
+          <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+            <div className="flex flex-col items-center text-center">
+              <Logo className="mb-4 h-12 w-12 text-primary" />
+              <h1 className="text-3xl font-bold tracking-tight text-foreground font-headline">
                 Welcome to PragatiAI
               </h1>
-              <p className="mt-3 text-lg text-muted-foreground text-balance">
+              <p className="mt-2 text-muted-foreground text-balance">
                 Fostering the next generation of innovation in education.
               </p>
             </div>
-             <Card className="w-full shadow-lg">
+             <Card className="w-full">
               <form onSubmit={handleLogin}>
                 <CardHeader>
                   <CardTitle>Login</CardTitle>
@@ -127,8 +127,32 @@ export default function LoginPage() {
                 </CardFooter>
               </form>
             </Card>
-             <p className="text-xs text-muted-foreground text-center mt-8">© 2024 PragatiAI by Stacia Corp</p>
+             <p className="text-xs text-muted-foreground text-center">© 2024 PragatiAI by Stacia Corp</p>
           </div>
+      </div>
+      <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
+          <div className="absolute inset-0 bg-background" />
+           <div
+            aria-hidden="true"
+            className="absolute inset-0 -z-10 animate-[spin_20s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]"
+           />
+           <div className="relative z-20 h-full flex flex-col justify-between">
+                <div className="flex items-center gap-2 text-lg font-medium text-foreground">
+                    <BrainCircuit className="h-7 w-7" />
+                    <span>Innovation at Lightspeed</span>
+                </div>
+                <Card className="bg-background/80 text-foreground backdrop-blur-sm">
+                    <CardHeader>
+                        <CardTitle>AI-Powered Validation</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-muted-foreground">
+                            "Our platform leverages advanced AI to provide instant, data-driven feedback on your innovative ideas, helping you refine and succeed faster than ever before."
+                        </p>
+                    </CardContent>
+                </Card>
+            </div>
+       </div>
     </main>
   );
 }
