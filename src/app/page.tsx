@@ -130,7 +130,7 @@ export default function LoginPage() {
             </Card>
           </div>
       </div>
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-primary/10 to-accent/10 dark:from-primary/5 dark:to-accent/5 p-8 items-center justify-center relative overflow-hidden">
+      <div className="hidden lg:flex flex-1 bg-secondary/50 p-8 items-center justify-center relative overflow-hidden">
           <div className="absolute inset-0 -z-10 h-full w-full bg-background/50 dark:bg-background/80 bg-[radial-gradient(hsla(var(--primary),0.1)_1px,transparent_1px)] bg-[size:16px_16px]"></div>
           <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute -top-40 -left-40 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse delay-2000"></div>
