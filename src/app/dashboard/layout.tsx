@@ -20,7 +20,7 @@ import { Logo } from '@/components/icons';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { NAV_LINKS, ROLES, type Role } from '@/lib/constants';
 import { MOCK_INNOVATOR_USER } from '@/lib/mock-data';
-import { CreditCard } from 'lucide-react';
+import { CreditCard, LogOut } from 'lucide-react';
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -58,8 +58,17 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             ))}
           </SidebarMenu>
         </SidebarContent>
-        <SidebarFooter className="items-center justify-center group-data-[collapsible=icon]:hidden">
-          <p className="text-xs text-muted-foreground">&copy; 2024 PragatiAI</p>
+        <SidebarFooter>
+           <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip={{ children: 'Log Out' }}>
+                  <Link href="/">
+                    <LogOut />
+                    <span>Log Out</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
