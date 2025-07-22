@@ -3,35 +3,18 @@
 
 import * as React from 'react';
 
-interface SpiderChartProps {
-  data: { [key: string]: number };
-  maxScore?: number;
-  size?: number;
-}
-
-// Helper to wrap text
-function wrapText(text: string, maxWordsPerLine: number) {
-    const words = text.split(' ');
-    const lines = [];
-    let currentLine = '';
-    
-    words.forEach(word => {
-        if ((currentLine + ' ' + word).trim().split(' ').length > maxWordsPerLine) {
-            lines.push(currentLine.trim());
-            currentLine = word;
-        } else {
-            currentLine = (currentLine + ' ' + word).trim();
-        }
-    });
-    if (currentLine) {
-        lines.push(currentLine.trim());
-    }
-    return lines;
-}
-
+const labelMap: { [key: string]: string } = {
+  "Core Idea & Innovation": "Idea & Innovation",
+  "Market & Commercial Opportunity": "Market Opportunity",
+  "Execution & Operations": "Execution & Ops",
+  "Business Model & Strategy": "Business Model",
+  "Team & Organizational Health": "Team",
+  "External Environment & Compliance": "Compliance",
+  "Risk & Future Outlook": "Risk & Outlook",
+};
 
 export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartProps) {
-  const padding = 70; 
+  const padding = 60; // Increased padding to ensure labels fit
   const chartSize = size - padding * 2;
   const centerX = size / 2;
   const centerY = size / 2;
@@ -118,52 +101,53 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
       {/* Labels */}
       {angles.map((angle, i) => {
         const value = data[validDataKeys[i]];
-        const rawLabelText = validDataKeys[i].replace(/([A-Z&])/g, ' $1').trim();
-        const wrappedText = wrapText(rawLabelText, 3);
+        const labelText = labelMap[validDataKeys[i]] || validDataKeys[i];
         
-        const labelRadius = radius + 15;
-        const textPointX = centerX + labelRadius * Math.cos(angle);
-        const textPointY = centerY + labelRadius * Math.sin(angle);
+        const labelRadius = radius + 25; // Push labels further out
+        let textPointX = centerX + labelRadius * Math.cos(angle);
+        let textPointY = centerY + labelRadius * Math.sin(angle);
 
         let textAnchor = "middle";
+        // Adjust anchor based on horizontal position
         if (textPointX > centerX + 10) {
             textAnchor = "start";
         } else if (textPointX < centerX - 10) {
             textAnchor = "end";
         }
-        
-        const isTopHalf = textPointY < centerY;
+
+        // Adjust vertical position for top/bottom labels to prevent them from sitting on the line
+        if (Math.abs(textPointX - centerX) < 10) { // Top or Bottom
+            textPointY += (textPointY < centerY) ? -10 : 10;
+        }
 
         return (
-          <g key={`label-group-${i}`}>
-            <text
-              x={textPointX}
-              y={textPointY - (isTopHalf ? 15 : -5) } // Position percentage above/below
-              textAnchor={textAnchor}
-              dominantBaseline="middle"
-              className="font-bold text-lg fill-foreground"
-            >
-              {value}%
-            </text>
-            <text
-              x={textPointX}
-              y={textPointY + (isTopHalf ? 5 : 20)} // Position label text
-              textAnchor={textAnchor}
-              dominantBaseline="middle"
-              className="text-xs fill-muted-foreground"
-            >
-              {wrappedText.map((line, lineIndex) => (
-                  <tspan key={lineIndex} x={textPointX} dy={lineIndex > 0 ? "1.2em" : 0}>{line}</tspan>
-              ))}
-            </text>
-          </g>
+            <g key={`label-group-${i}`}>
+                <text
+                    x={textPointX}
+                    y={textPointY - 8} // Position percentage above the label
+                    textAnchor={textAnchor}
+                    dominantBaseline="middle"
+                    className="font-bold text-lg fill-foreground"
+                >
+                    {value}%
+                </text>
+                <text
+                    x={textPointX}
+                    y={textPointY + 8} // Position label below the percentage
+                    textAnchor={textAnchor}
+                    dominantBaseline="middle"
+                    className="text-xs fill-muted-foreground"
+                >
+                    {labelText}
+                </text>
+            </g>
         );
       })}
 
       {/* Data Polygon */}
       <polygon
         points={points}
-        fill="none"
+        fill="hsl(var(--primary) / 0.1)"
         stroke="hsl(var(--primary))"
         strokeWidth="2"
       />
