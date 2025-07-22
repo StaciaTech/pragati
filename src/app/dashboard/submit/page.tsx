@@ -64,10 +64,13 @@ const submitIdeaSchema = z.object({
 
   title: z.string().min(1, 'Title is required.'),
   description: z.string().min(1, 'Description is required.'),
-  pptFile: z.any().optional().refine(file => {
-      if (!file || !file.name) return true; // Optional field
-      return file.name.endsWith('.ppt') || file.name.endsWith('.pptx');
-    }, 'Please upload a .ppt or .pptx file.'),
+  pptFile: z
+    .any()
+    .refine((file) => file && file.name, 'PPT file is required.')
+    .refine(
+      (file) => file?.name?.endsWith('.ppt') || file?.name?.endsWith('.pptx'),
+      'Please upload a .ppt or .pptx file.'
+    ),
   domain: z.string().min(1, 'Project domain is required.'),
   otherDomain: z.string().optional(),
 }).refine(data => {
