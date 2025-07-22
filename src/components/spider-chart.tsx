@@ -31,11 +31,11 @@ function wrapText(text: string, maxWordsPerLine: number) {
 
 
 export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartProps) {
-  const padding = 50;
+  const padding = 70; // Increased padding
   const chartSize = size - padding * 2;
   const centerX = size / 2;
   const centerY = size / 2;
-  const radius = chartSize / 2.5;
+  const radius = chartSize / 2; // Slightly reduced radius
 
   const validDataKeys = Object.keys(data).filter(key => typeof data[key] === 'number');
 
@@ -121,9 +121,9 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
       {angles.map((angle, i) => {
         const value = data[validDataKeys[i]];
         const rawLabelText = validDataKeys[i].replace(/([A-Z&])/g, ' $1').trim();
-        const wrappedText = wrapText(rawLabelText, 2);
+        const wrappedText = wrapText(rawLabelText, 3); // Allow more words per line
         
-        const labelRadius = radius + 30; // Move labels further out
+        const labelRadius = radius + 35; // Adjust label distance
         const textPointX = centerX + labelRadius * Math.cos(angle);
         const textPointY = centerY + labelRadius * Math.sin(angle);
 
@@ -134,23 +134,25 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
             textAnchor = "end";
         }
         
-        let yOffset = 0;
-        if(textPointY < centerY) yOffset = -20;
-        if(textPointY > centerY) yOffset = 20;
+        // Adjust vertical alignment based on position
+        let dominantBaseline = "middle";
+        if(textPointY < centerY - 20) dominantBaseline = "auto";
+        if(textPointY > centerY + 20) dominantBaseline = "hanging";
+
 
         return (
-          <g key={`label-group-${i}`} transform={`translate(${textPointX}, ${textPointY + yOffset})`}>
+          <g key={`label-group-${i}`} transform={`translate(${textPointX}, ${textPointY})`}>
             <text
               textAnchor={textAnchor}
-              dominantBaseline="middle"
+              dominantBaseline={dominantBaseline}
               className="font-bold text-lg fill-foreground"
             >
               {value}%
             </text>
             <text
-              y={18}
+              y={dominantBaseline === 'hanging' ? 20 : -20} // Adjust based on alignment
               textAnchor={textAnchor}
-              dominantBaseline="middle"
+              dominantBaseline={dominantBaseline}
               className="text-xs fill-muted-foreground"
             >
               {wrappedText.map((line, lineIndex) => (
