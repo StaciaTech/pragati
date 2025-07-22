@@ -62,13 +62,13 @@ function DashboardPageContent() {
 
   return (
     <div className="flex flex-col gap-6">
-       <Card className="bg-gradient-to-br from-primary/80 to-primary text-primary-foreground">
+       <Card className="w-full bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-lg">
         <CardHeader>
           <CardTitle className="text-3xl text-white">Welcome back, {user.name}!</CardTitle>
           <CardDescription className="text-primary-foreground/80">Ready to change the world? Let's get your next great idea validated.</CardDescription>
         </CardHeader>
          <CardContent>
-            <Button asChild variant="secondary">
+            <Button asChild variant="secondary" className="bg-primary-foreground/20 hover:bg-primary-foreground/30 text-primary-foreground">
                 <Link href={`/dashboard/submit?role=${ROLES.INNOVATOR}`}>Submit a New Idea</Link>
             </Button>
         </CardContent>

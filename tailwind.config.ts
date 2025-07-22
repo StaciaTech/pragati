@@ -18,8 +18,8 @@ const config = {
     },
     extend: {
       fontFamily: {
-        body: ['Inter', 'sans-serif'],
-        headline: ['Inter', 'sans-serif'],
+        body: ['Poppins', 'sans-serif'],
+        headline: ['Poppins', 'sans-serif'],
         code: ['"Source Code Pro"', 'monospace'],
       },
       colors: {

@@ -19,7 +19,7 @@ import { ROLES, type Role } from '@/lib/constants';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { MOCK_INNOVATOR_USER, MOCK_TTCS, MOCK_PRINCIPAL_USERS } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowRight, BrainCircuit } from 'lucide-react';
+import { ArrowRight, BrainCircuit, Zap } from 'lucide-react';
 
 
 const getDashboardLink = (role: Role) => {
@@ -55,7 +55,7 @@ export default function LoginPage() {
       userRole = ROLES.PRINCIPAL;
     } else if (MOCK_TTCS.some(t => t.email === email)) {
         userRole = ROLES.COORDINATOR;
-    } else if (email === MOCK_INNOVATOR_USER.email) {
+    } else if (MOCK_INNOVATOR_USER.email.toLowerCase() === email.toLowerCase()) {
         userRole = ROLES.INNOVATOR;
     }
 
@@ -90,7 +90,7 @@ export default function LoginPage() {
                 Fostering the next generation of innovation in education.
               </p>
             </div>
-             <Card className="w-full">
+             <Card className="w-full shadow-lg">
               <form onSubmit={handleLogin}>
                 <CardHeader>
                   <CardTitle>Login</CardTitle>
@@ -129,24 +129,24 @@ export default function LoginPage() {
             </Card>
           </div>
       </div>
-      <div className="hidden lg:flex flex-1 bg-primary/10 dark:bg-primary/5 p-8 items-center justify-center relative overflow-hidden">
-          <div className="absolute inset-0 -z-10 h-full w-full bg-background/50 dark:bg-background/80 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]"></div>
-          <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-teal-400/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute -top-20 -left-20 w-72 h-72 bg-sky-400/20 rounded-full blur-3xl animate-pulse delay-2000"></div>
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-primary/10 to-accent/10 dark:from-primary/5 dark:to-accent/5 p-8 items-center justify-center relative overflow-hidden">
+          <div className="absolute inset-0 -z-10 h-full w-full bg-background/50 dark:bg-background/80 bg-[radial-gradient(hsla(220,73%,63%,0.1)_1px,transparent_1px)] bg-[size:16px_16px]"></div>
+          <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -top-40 -left-40 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse delay-2000"></div>
           
           <div className="relative w-full max-w-md">
-            <Card className="bg-background/80 backdrop-blur-sm">
+            <Card className="bg-background/80 backdrop-blur-lg shadow-2xl">
                 <CardHeader>
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-primary/10 rounded-md">
-                            <BrainCircuit className="w-8 h-8 text-primary" />
+                        <div className="p-3 bg-gradient-to-br from-primary to-accent rounded-lg text-primary-foreground">
+                            <Zap className="w-6 h-6" />
                         </div>
-                        <CardTitle className="text-xl">AI-Powered Validation Engine</CardTitle>
+                        <CardTitle className="text-xl">Innovation at Lightspeed</CardTitle>
                     </div>
                 </CardHeader>
                 <CardContent>
                     <p className="text-muted-foreground">
-                        Our platform uses an advanced AI engine to provide comprehensive, data-driven feedback on your innovative ideas, helping you refine your concepts and accelerate your journey from idea to impact.
+                       Our platform uses an advanced AI engine to provide comprehensive, data-driven feedback on your innovative ideas, helping you refine your concepts and accelerate your journey from idea to impact.
                     </p>
                 </CardContent>
                  <CardFooter>
