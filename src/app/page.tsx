@@ -15,16 +15,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Logo } from '@/components/icons';
 import { ROLES, type Role } from '@/lib/constants';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { MOCK_INNOVATOR_USER, MOCK_TTCS, MOCK_PRINCIPAL_USERS } from '@/lib/mock-data';
+import { useToast } from '@/hooks/use-toast';
 
 
 const getDashboardLink = (role: Role) => {
@@ -45,12 +40,32 @@ const getDashboardLink = (role: Role) => {
 
 export default function LoginPage() {
   const router = useRouter();
-  const [role, setRole] = React.useState<Role | ''>('');
+  const [email, setEmail] = React.useState('');
+  const { toast } = useToast();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (role) {
-      router.push(getDashboardLink(role));
+    
+    let userRole: Role | null = null;
+
+    if (email === 'admin@pragati.ai') {
+      userRole = ROLES.SUPER_ADMIN;
+    } else if (MOCK_PRINCIPAL_USERS.some(p => p.email === email)) {
+      userRole = ROLES.PRINCIPAL;
+    } else if (MOCK_TTCS.some(t => t.email === email)) {
+        userRole = ROLES.COORDINATOR;
+    } else if (email === MOCK_INNOVATOR_USER.email) {
+        userRole = ROLES.INNOVATOR;
+    }
+
+    if (userRole) {
+      router.push(getDashboardLink(userRole));
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: "Invalid credentials. Please try again.",
+      });
     }
   };
 
@@ -74,25 +89,19 @@ export default function LoginPage() {
         <form onSubmit={handleLogin}>
           <CardHeader>
             <CardTitle>Login</CardTitle>
-            <CardDescription>Select your role and enter your credentials.</CardDescription>
+            <CardDescription>Enter your credentials to access your portal.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-             <div className="space-y-2">
-                <Label htmlFor="role">Select Your Role</Label>
-                <Select required value={role} onValueChange={(value) => setRole(value as Role)}>
-                    <SelectTrigger id="role">
-                        <SelectValue placeholder="Select a role..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {Object.values(ROLES).map((r) => (
-                          <SelectItem key={r} value={r}>{r}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
             <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="user@pragati.ai" required />
+                <Input 
+                    id="email" 
+                    type="email" 
+                    placeholder="user@pragati.ai" 
+                    required 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
             </div>
              <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
@@ -100,7 +109,7 @@ export default function LoginPage() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full" disabled={!role}>Login</Button>
+            <Button type="submit" className="w-full">Login</Button>
           </CardFooter>
         </form>
       </Card>
