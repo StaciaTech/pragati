@@ -148,9 +148,9 @@ function Step1({ form }: { form: any }) {
         <CardDescription>Adjust weights to match your idea's focus.</CardDescription>
       </StepperTrigger>
       <StepperContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-6">
-          <div className="md:col-span-1 space-y-6">
-            <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col items-center gap-8 py-6">
+           <div className="w-full max-w-md space-y-6">
+            <div className="flex flex-wrap gap-2 justify-center">
                 <Button size="sm" variant={preset === 'Balanced' ? 'default' : 'outline'} onClick={() => handlePresetChange('Balanced')}>Balanced</Button>
                 <Button size="sm" variant={preset === 'Research-Focused' ? 'default' : 'outline'} onClick={() => handlePresetChange('Research-Focused')}>Research-Focused</Button>
                 <Button size="sm" variant={preset === 'Commercialization-Focused' ? 'default' : 'outline'} onClick={() => handlePresetChange('Commercialization-Focused')}>Commercialization-Focused</Button>
@@ -187,10 +187,8 @@ function Step1({ form }: { form: any }) {
                 <span className="font-bold text-xl">{totalWeight}%</span>
             </div>
           </div>
-          <div className="md:col-span-1 flex items-center justify-center">
-             <div className="w-full h-96 bg-background rounded-lg flex items-center justify-center p-4">
-                 <SpiderChart data={form.getValues()} size={400} />
-             </div>
+          <div className="w-full h-96 bg-background rounded-lg flex items-center justify-center p-4">
+              <SpiderChart data={form.getValues()} size={400} />
           </div>
         </div>
         <div className="flex justify-end">
