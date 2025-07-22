@@ -2,78 +2,19 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import dynamic from 'next/dynamic';
 import { Logo } from '@/components/icons';
-import { ROLES, type Role } from '@/lib/constants';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { MOCK_INNOVATOR_USER, MOCK_TTCS, MOCK_PRINCIPAL_USERS } from '@/lib/mock-data';
-import { useToast } from '@/hooks/use-toast';
-import { ArrowRight, BrainCircuit, Zap } from 'lucide-react';
+import { BrainCircuit } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-
-const getDashboardLink = (role: Role) => {
-    switch (role) {
-        case ROLES.INNOVATOR:
-            return `/dashboard?role=${role}`;
-        case ROLES.PRINCIPAL:
-            return `/dashboard/principal?role=${role}`;
-        case ROLES.COORDINATOR:
-            return `/dashboard/coordinator?role=${role}`;
-        case ROLES.SUPER_ADMIN:
-            return `/dashboard/admin?role=${role}`;
-        default:
-            return `/dashboard?role=${ROLES.INNOVATOR}`;
-    }
-}
+const LoginForm = dynamic(() => import('@/components/login-form').then(mod => mod.LoginForm), {
+  ssr: false,
+  loading: () => <p>Loading...</p>
+});
 
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const { toast } = useToast();
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    let userRole: Role | null = null;
-
-    if (email === 'admin@pragati.ai') {
-      userRole = ROLES.SUPER_ADMIN;
-    } else if (MOCK_PRINCIPAL_USERS.some(p => p.email === email)) {
-      userRole = ROLES.PRINCIPAL;
-    } else if (MOCK_TTCS.some(t => t.email === email)) {
-        userRole = ROLES.COORDINATOR;
-    } else if (MOCK_INNOVATOR_USER.email.toLowerCase() === email.toLowerCase()) {
-        userRole = ROLES.INNOVATOR;
-    }
-
-    if (userRole) {
-      toast({
-        title: "Login Successful",
-        description: `Welcome! Redirecting to the ${userRole} dashboard.`,
-      });
-      router.push(getDashboardLink(userRole));
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description: "Invalid credentials. Please try again.",
-      });
-    }
-  };
-
   return (
     <main className="flex min-h-screen w-full items-center justify-center bg-background lg:grid lg:grid-cols-2">
        <div className="absolute top-4 right-4 z-10">
@@ -90,43 +31,7 @@ export default function LoginPage() {
                 Fostering the next generation of innovation in education.
               </p>
             </div>
-             <Card className="w-full">
-              <form onSubmit={handleLogin}>
-                <CardHeader>
-                  <CardTitle>Login</CardTitle>
-                  <CardDescription>Enter your credentials to access your portal.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input 
-                          id="email" 
-                          type="email" 
-                          placeholder="user@pragati.ai" 
-                          required 
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                      />
-                  </div>
-                   <div className="space-y-2">
-                      <Label htmlFor="password">Password</Label>
-                      <Input 
-                        id="password" 
-                        type="password" 
-                        required 
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      />
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button type="submit" className="w-full">
-                    <span>Login</span>
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </CardFooter>
-              </form>
-            </Card>
+             <LoginForm />
              <p className="text-xs text-muted-foreground text-center">© 2024 PragatiAI by Stacia Corp</p>
           </div>
       </div>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -16,7 +17,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import type { Role } from '@/lib/constants';
+import { ROLES, type Role } from '@/lib/constants';
 
 const getInitials = (name: string) => {
   return name
@@ -27,7 +28,7 @@ const getInitials = (name: string) => {
 
 export function UserNav() {
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') as Role | null;
+  const role = (searchParams.get('role') as Role) || ROLES.INNOVATOR;
 
   const userName = role || 'User';
 
@@ -46,7 +47,7 @@ export function UserNav() {
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{userName}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              {role}@pragati.ai
+              {role.toLowerCase()}@pragati.ai
             </p>
           </div>
         </DropdownMenuLabel>
