@@ -1,3 +1,4 @@
+
 'use client';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -19,7 +20,7 @@ export default function CoordinatorDashboardPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <Card>
                     <CardHeader>
-                        <CardTitle>College Credits</CardTitle>
+                        <CardTitle>Available Credits</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <p className="text-4xl font-bold">{college?.creditsAvailable || 0}</p>
