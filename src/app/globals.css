@@ -18,25 +18,32 @@ h1, h2, h3, h4, h5, h6 {
     --card-foreground: 220 13% 20%;
     --popover: 0 0% 100%;
     --popover-foreground: 220 13% 20%;
-    --primary: 231 60% 30%; /* #1E2A78 */
+    --primary: 211 70% 35%; /* #20639B */
     --primary-foreground: 210 20% 98%;
     --secondary: 215 35% 85%; /* #CBD5E1 */
     --secondary-foreground: 220 13% 20%;
     --muted: 215 35% 85%;
     --muted-foreground: 215 20% 55%; /* #718096 */
-    --accent: 215 25% 90%; /* #E2E8F0 */
-    --accent-foreground: 220 13% 20%;
+    --accent: 175 55% 58%; /* #3CAEA3 */
+    --accent-foreground: 210 20% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 20% 98%;
     --border: 215 28% 83%; /* #C9D3E0 */
     --input: 215 28% 83%;
-    --ring: 231 60% 30%;
+    --ring: 211 70% 35%;
     --radius: 0.5rem;
-    --chart-1: 231 60% 30%;
-    --chart-2: 205 80% 55%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    
+    /* Chart Colors */
+    --chart-1: 211 70% 50%; /* Primary Blue */
+    --chart-2: 175 55% 50%; /* Accent Teal */
+    --chart-3: 16 100% 66%; /* Coral */
+    --chart-4: 51 100% 50%; /* Lemon Yellow */
+    --chart-5: 197 71% 73%; /* Sky Blue */
+
+    --color-approved: 142 60% 45%; /* Green */
+    --color-moderate: 45 90% 55%; /* Yellow */
+    --color-rejected: 0 80% 60%;  /* Red */
+
     --sidebar-background: 224 71.4% 4.1%;
     --sidebar-foreground: 210 20% 98%;
     --sidebar-primary: 208 64% 70%;
@@ -54,24 +61,31 @@ h1, h2, h3, h4, h5, h6 {
     --card-foreground: 210 40% 98%;
     --popover: 222 40% 16%;
     --popover-foreground: 210 40% 98%;
-    --primary: 220 75% 60%; /* #3B82F6 */
+    --primary: 211 70% 60%; /* Lighter Blue */
     --primary-foreground: 222 47% 11%;
     --secondary: 217 33% 27%; /* #334155 */
     --secondary-foreground: 210 40% 98%;
     --muted: 217 33% 27%;
     --muted-foreground: 215 20% 65%; /* #94A3B8 */
-    --accent: 217 33% 27%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 175 55% 58%; /* Teal */
+    --accent-foreground: 222 47% 11%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
     --border: 217 33% 27%;
     --input: 217 33% 27%;
-    --ring: 220 75% 60%;
-    --chart-1: 220 75% 60%;
-    --chart-2: 173 80% 50%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --ring: 211 70% 60%;
+
+    /* Chart Colors */
+    --chart-1: 211 70% 60%; /* Primary Blue */
+    --chart-2: 175 55% 58%; /* Accent Teal */
+    --chart-3: 16 100% 70%; /* Coral */
+    --chart-4: 51 100% 60%; /* Lemon Yellow */
+    --chart-5: 197 71% 78%; /* Sky Blue */
+
+    --color-approved: 142 60% 55%; /* Green */
+    --color-moderate: 45 90% 65%; /* Yellow */
+    --color-rejected: 0 80% 70%; /* Red */
+
     --sidebar-background: 224 71.4% 4.1%;
     --sidebar-foreground: 210 20% 98%;
     --sidebar-primary: 208 64% 70%;
@@ -93,5 +107,11 @@ h1, h2, h3, h4, h5, h6 {
   .animate-shake {
     animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
     transform: translate3d(0, 0, 0);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
   }
 }

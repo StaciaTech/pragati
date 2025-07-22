@@ -4,6 +4,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { MOCK_IDEAS } from '@/lib/mock-data';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from "recharts";
 
 export default function AdminAnalyticsPage() {
   
@@ -20,7 +22,7 @@ export default function AdminAnalyticsPage() {
 
   const domainTrends = Object.entries(approvalRatesByDomain).map(([domain, data]) => ({
     domain,
-    approvalRate: data.total > 0 ? ((data.approved / data.total) * 100).toFixed(2) : '0.00',
+    approvalRate: data.total > 0 ? ((data.approved / data.total) * 100) : 0,
     totalIdeas: data.total,
   }));
 
@@ -42,24 +44,28 @@ export default function AdminAnalyticsPage() {
           <CardTitle>Approval Rates by Domain</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Domain</TableHead>
-                <TableHead>Total Ideas</TableHead>
-                <TableHead>Approval Rate (%)</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {domainTrends.map((data) => (
-                <TableRow key={data.domain}>
-                  <TableCell className="font-medium">{data.domain}</TableCell>
-                  <TableCell>{data.totalIdeas}</TableCell>
-                  <TableCell>{data.approvalRate}%</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+           <ChartContainer config={{}} className="h-[400px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={domainTrends} layout="vertical" margin={{ left: 20, right: 20 }}>
+                  <CartesianGrid horizontal={false} />
+                  <XAxis type="number" dataKey="approvalRate" unit="%" />
+                  <YAxis type="category" dataKey="domain" tickLine={false} axisLine={false} />
+                  <ChartTooltip 
+                    cursor={false}
+                    content={<ChartTooltipContent
+                        contentStyle={{background: "hsl(var(--background))", border: "1px solid hsl(var(--border))"}}
+                        labelClassName="font-bold"
+                        formatter={(value, name) => {
+                            if (name === 'approvalRate') return [`${(value as number).toFixed(2)}%`, 'Approval Rate'];
+                            if (name === 'totalIdeas') return [value, 'Total Ideas'];
+                            return [value, name];
+                        }}
+                    />} 
+                  />
+                  <Bar dataKey="approvalRate" fill="hsl(var(--chart-2))" radius={5} />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
         </CardContent>
       </Card>
 
