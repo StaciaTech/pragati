@@ -104,6 +104,6 @@
   }
   .dot-bg {
     background-image: radial-gradient(circle at 1px 1px, hsl(var(--primary-foreground) / 0.2) 1px, transparent 0);
-    background-size: 2rem 2rem;
+    background-size: 1.5rem 1.5rem;
   }
 }
