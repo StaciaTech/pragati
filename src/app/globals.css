@@ -14,24 +14,24 @@
     --popover: 240 10% 98%;
     --popover-foreground: 222.2 84% 4.9%;
  
-    --primary: 262 82% 62%;
+    --primary: 258 75% 42%; /* #3813C2 */
     --primary-foreground: 0 0% 98%;
  
-    --secondary: 346.8 77.2% 49.8%;
+    --secondary: 325 100% 72%; /* #FF6FD8 */
     --secondary-foreground: 0 0% 98%;
  
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
  
-    --accent: 346.8 77.2% 49.8%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 325 100% 72%; /* #FF6FD8 */
+    --accent-foreground: 222.2 84% 4.9%;
  
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 262 82% 62%;
+    --ring: 258 75% 42%;
  
     --radius: 0.75rem;
 
@@ -41,21 +41,21 @@
     --color-rejected: 0 72.2% 50.6%;
 
     /* Chart Colors */
-    --chart-1: 262 82% 62%; /* Purple */
-    --chart-2: 346.8 77.2% 49.8%; /* Pink */
-    --chart-3: 244.8 95.2% 67.3%; /* Indigo */
-    --chart-4: 22.1 94.8% 59.4%; /* Neon Cyan -> Peach */
-    --chart-5: 22.1 94.8% 59.4%;  /* Peach */
+    --chart-1: 258 75% 42%;
+    --chart-2: 325 100% 72%;
+    --chart-3: 244.8 95.2% 67.3%;
+    --chart-4: 22.1 94.8% 59.4%;
+    --chart-5: 22.1 94.8% 59.4%;
 
     /* Sidebar Colors */
     --sidebar-background: 240 10% 3.9%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 346.8 77.2% 49.8%; /* Pink */
+    --sidebar-primary: 325 100% 72%;
     --sidebar-primary-foreground: 240 10% 3.9%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 346.8 77.2% 49.8%;
+    --sidebar-ring: 325 100% 72%;
   }
  
   .dark {
@@ -68,16 +68,16 @@
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
  
-    --primary: 262 82% 62%;
+    --primary: 258 75% 52%; /* Lighter indigo for dark mode */
     --primary-foreground: 0 0% 98%;
  
-    --secondary: 346.8 77.2% 49.8%;
+    --secondary: 325 100% 72%; /* Pink */
     --secondary-foreground: 0 0% 98%;
  
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
  
-    --accent: 346.8 77.2% 49.8%;
+    --accent: 325 100% 72%; /* Pink */
     --accent-foreground: 240 10% 3.9%;
  
     --destructive: 0 62.8% 30.6%;
@@ -85,7 +85,7 @@
  
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 262 82% 62%;
+    --ring: 258 75% 52%;
   }
 }
  
