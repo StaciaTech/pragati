@@ -1,9 +1,12 @@
+
 'use client';
 
 import { useSearchParams } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { MOCK_INNOVATOR_USER, MOCK_TTCS, MOCK_PRINCIPAL_USERS } from '@/lib/mock-data';
 import { ROLES, type Role } from '@/lib/constants';
+import { Button } from '@/components/ui/button';
+import { Pencil } from 'lucide-react';
 
 export default function ProfilePage() {
   const searchParams = useSearchParams();
@@ -33,8 +36,16 @@ export default function ProfilePage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Profile</CardTitle>
-        <CardDescription>Manage your profile settings.</CardDescription>
+        <div className="flex justify-between items-center">
+            <div>
+                <CardTitle>Profile</CardTitle>
+                <CardDescription>Manage your profile settings.</CardDescription>
+            </div>
+            <Button variant="outline" size="icon">
+                <Pencil className="h-4 w-4" />
+                <span className="sr-only">Edit Profile</span>
+            </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-1">

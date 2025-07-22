@@ -36,6 +36,11 @@ export const NAV_LINKS: Record<
       href: `/dashboard/ideas?role=${ROLES.INNOVATOR}`,
     },
     {
+        title: "Analytics",
+        icon: BarChart3,
+        href: `/dashboard/analytics?role=${ROLES.INNOVATOR}`,
+    },
+    {
         title: "Consultations",
         icon: MessageSquare,
         href: `/dashboard/consultations?role=${ROLES.INNOVATOR}`,
@@ -49,11 +54,6 @@ export const NAV_LINKS: Record<
       title: "Support",
       icon: LifeBuoy,
       href: `/dashboard/support?role=${ROLES.INNOVATOR}`,
-    },
-    {
-      title: "Profile",
-      icon: Settings,
-      href: `/dashboard/profile?role=${ROLES.INNOVATOR}`,
     },
   ],
   [ROLES.PRINCIPAL]: [

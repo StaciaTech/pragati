@@ -1,33 +1,33 @@
+
 'use client';
 
+import * as React from 'react';
 import Link from 'next/link';
-import { Building, Lightbulb, Shield, Users, Briefcase } from 'lucide-react';
-
+import { useRouter } from 'next/navigation';
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Logo } from '@/components/icons';
-import { ROLES } from '@/lib/constants';
+import { ROLES, type Role } from '@/lib/constants';
+import { ThemeToggle } from '@/components/theme-toggle';
 
-const roleIcons = {
-  [ROLES.INNOVATOR]: Lightbulb,
-  [ROLES.PRINCIPAL]: Building,
-  [ROLES.COORDINATOR]: Users,
-  [ROLES.SUPER_ADMIN]: Shield,
-};
 
-const roleDescriptions = {
-  [ROLES.INNOVATOR]: 'Submit and track your innovative ideas.',
-  [ROLES.PRINCIPAL]: 'Oversee and manage ideas from your institution.',
-  [ROLES.COORDINATOR]: 'Coordinate validation and support for new ideas.',
-  [ROLES.SUPER_ADMIN]: 'Manage the platform, users, and system settings.',
-};
-
-const getDashboardLink = (role: string) => {
+const getDashboardLink = (role: Role) => {
     switch (role) {
         case ROLES.INNOVATOR:
             return `/dashboard?role=${role}`;
@@ -44,8 +44,21 @@ const getDashboardLink = (role: string) => {
 
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [role, setRole] = React.useState<Role | ''>('');
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (role) {
+      router.push(getDashboardLink(role));
+    }
+  };
+
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background p-4">
+    <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background p-4 relative">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
       <div className="absolute inset-0 -z-10 h-full w-full bg-background bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]"></div>
       <div className="flex flex-col items-center justify-center text-center">
         <Logo className="mb-4 h-16 w-16 text-primary" />
@@ -57,33 +70,40 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <div className="mt-12 w-full max-w-4xl">
-        <h2 className="text-center text-xl font-semibold text-foreground">
-          Choose Your Role
-        </h2>
-        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {Object.values(ROLES).map((role) => {
-            const Icon = roleIcons[role];
-            return (
-              <Link href={getDashboardLink(role)} key={role} passHref>
-                <Card className="h-full transform-gpu cursor-pointer transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:bg-card/95">
-                  <CardHeader className="items-center">
-                    <div className="rounded-full bg-primary/10 p-3">
-                      <Icon className="h-8 w-8 text-primary" />
-                    </div>
-                  </CardHeader>
-                  <CardContent className="text-center">
-                    <CardTitle className="text-lg font-semibold">{role}</CardTitle>
-                    <CardDescription className="mt-1">
-                      {roleDescriptions[role]}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
+      <Card className="mt-12 w-full max-w-sm">
+        <form onSubmit={handleLogin}>
+          <CardHeader>
+            <CardTitle>Login</CardTitle>
+            <CardDescription>Select your role and enter your credentials.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="role">Select Your Role</Label>
+                <Select required value={role} onValueChange={(value) => setRole(value as Role)}>
+                    <SelectTrigger id="role">
+                        <SelectValue placeholder="Select a role..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {Object.values(ROLES).map((r) => (
+                          <SelectItem key={r} value={r}>{r}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" placeholder="user@pragati.ai" required />
+            </div>
+             <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input id="password" type="password" required />
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button type="submit" className="w-full" disabled={!role}>Login</Button>
+          </CardFooter>
+        </form>
+      </Card>
     </div>
   );
 }

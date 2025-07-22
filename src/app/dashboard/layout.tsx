@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Suspense } from 'react';
@@ -19,6 +20,8 @@ import { Logo } from '@/components/icons';
 import { UserNav } from '@/components/user-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { NAV_LINKS, ROLES, type Role } from '@/lib/constants';
+import { MOCK_INNOVATOR_USER } from '@/lib/mock-data';
+import { CreditCard } from 'lucide-react';
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -66,7 +69,13 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           <div className="flex-1">
             <h1 className="text-lg font-semibold">{role} Portal</h1>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
+             {role === ROLES.INNOVATOR && (
+                <div className="flex items-center gap-2 text-sm font-medium">
+                    <CreditCard className="size-5 text-primary" />
+                    <span>{MOCK_INNOVATOR_USER.credits} Credits</span>
+                </div>
+            )}
             <ThemeToggle />
             <UserNav />
           </div>

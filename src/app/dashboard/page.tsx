@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Suspense } from 'react';
@@ -44,7 +45,7 @@ function DashboardPageContent() {
 
   const user = MOCK_INNOVATOR_USER;
   const ideas = MOCK_IDEAS;
-  const recentIdeas = ideas.slice(0, 3);
+  const recentIdeas = ideas.slice(0, 5);
   const getOverallScore = (idea: (typeof ideas)[0]) => {
     if (!idea.feedback) return "N/A";
     const total = idea.feedback.details.reduce((sum, d) => sum + d.score, 0);
@@ -55,69 +56,26 @@ function DashboardPageContent() {
   return (
     <div className="flex flex-col gap-6">
        <h2 className="text-2xl font-bold">Welcome, {user.name}!</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Profile Card */}
-          <Card>
-            <CardHeader>
-                <CardTitle className="text-lg">Your Profile</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm space-y-2">
-                <p><span className="font-medium text-muted-foreground">Name:</span> {user.name}</p>
-                <p><span className="font-medium text-muted-foreground">Role:</span> {user.role}</p>
-                <p><span className="font-medium text-muted-foreground">Email:</span> {user.email}</p>
-                <p><span className="font-medium text-muted-foreground">College:</span> {user.college}</p>
-            </CardContent>
-          </Card>
-
-          {/* Credits Card */}
-          <Card className="flex flex-col justify-between">
-            <CardHeader>
-              <CardTitle className="text-lg">Credits Available</CardTitle>
-              <CardDescription>Credits are used for submitting new ideas.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <p className="text-5xl font-bold text-primary">{user.credits}</p>
-            </CardContent>
-          </Card>
-
-          {/* Ideas Submitted Card */}
-          <Card className="flex flex-col justify-between">
-             <CardHeader>
-              <CardTitle className="text-lg">Ideas Submitted</CardTitle>
-              <CardDescription>Total ideas you've submitted so far.</CardDescription>
-            </CardHeader>
-            <CardContent>
-               <p className="text-5xl font-bold text-primary">{ideas.length}</p>
-            </CardContent>
-          </Card>
-
-          {/* Consultation Progress Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Consultation Progress</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <p className="text-sm">
-                <span className="font-medium text-muted-foreground">Next Consultation:</span> July 20, 2024 (IDEA-001)
-              </p>
-              <p className="text-sm">
-                <span className="font-medium text-muted-foreground">Assigned Mentor:</span> Dr. Emily White
-              </p>
-              <Button variant="link" asChild className="p-0 h-auto">
-                <Link href={`/dashboard/consultations?role=${ROLES.INNOVATOR}`}>View All Consultations</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* My Ideas List on Dashboard */}
         <Card>
             <CardHeader>
-                <CardTitle>My Recent Ideas</CardTitle>
+                <div className="flex justify-between items-center">
+                    <CardTitle>My Recent Ideas</CardTitle>
+                    <Button asChild variant="outline">
+                        <Link href={`/dashboard/submit?role=${ROLES.INNOVATOR}`}>Submit New Idea</Link>
+                    </Button>
+                </div>
+                <CardDescription>
+                    A quick look at your most recently submitted ideas.
+                </CardDescription>
             </CardHeader>
           <CardContent>
             {ideas.length === 0 ? (
-              <p className="text-muted-foreground">You haven't submitted any ideas yet. Go to "Submit Idea" to get started!</p>
+              <div className="text-center py-10">
+                <p className="text-muted-foreground">You haven't submitted any ideas yet. Go to "Submit Idea" to get started!</p>
+                <Button asChild className="mt-4">
+                    <Link href={`/dashboard/submit?role=${ROLES.INNOVATOR}`}>Submit Your First Idea</Link>
+                </Button>
+              </div>
             ) : (
                 <Table>
                   <TableHeader>
@@ -141,12 +99,12 @@ function DashboardPageContent() {
                         </TableCell>
                         <TableCell>{getOverallScore(idea)}</TableCell>
                         <TableCell className="text-right">
-                          {idea.feedback ? (
+                          {idea.report ? (
                             <Button variant="link" asChild className="p-0 h-auto">
                                 <Link href={`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`}>View Report</Link>
                             </Button>
                           ) : (
-                            <span className="text-muted-foreground italic text-xs">No feedback yet</span>
+                            <span className="text-muted-foreground italic text-xs">Validating...</span>
                           )}
                         </TableCell>
                       </TableRow>
@@ -154,7 +112,7 @@ function DashboardPageContent() {
                   </TableBody>
                 </Table>
             )}
-            {ideas.length > 3 && (
+            {ideas.length > 5 && (
               <div className="text-center mt-4">
                  <Button variant="link" asChild>
                     <Link href={`/dashboard/ideas?role=${ROLES.INNOVATOR}`}>View All My Ideas</Link>
