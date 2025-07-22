@@ -4,38 +4,17 @@
 import * as React from 'react';
 
 const labelMap: { [key: string]: string } = {
-  "Core Idea & Innovation": "Idea & Innovation",
-  "Market & Commercial Opportunity": "Market Opportunity",
-  "Execution & Operations": "Execution & Ops",
-  "Business Model & Strategy": "Business Model",
-  "Team & Organizational Health": "Team",
-  "External Environment & Compliance": "Compliance",
-  "Risk & Future Outlook": "Risk & Outlook",
+  "Core Idea & Innovation": "CI & I",
+  "Market & Commercial Opportunity": "M & CO",
+  "Execution & Operations": "E & O",
+  "Business Model & Strategy": "BM & S",
+  "Team & Organizational Health": "T & OH",
+  "External Environment & Compliance": "EE & C",
+  "Risk & Future Outlook": "R & FO",
 };
 
-// Helper function to wrap text into multiple tspans
-const wrapText = (text: string, maxWordsPerLine: number) => {
-    const words = text.split(' ');
-    const lines = [];
-    let currentLine = '';
-
-    words.forEach(word => {
-        if ((currentLine + ' ' + word).trim().split(' ').length > maxWordsPerLine) {
-            lines.push(currentLine.trim());
-            currentLine = word;
-        } else {
-            currentLine = (currentLine + ' ' + word).trim();
-        }
-    });
-    if (currentLine) {
-        lines.push(currentLine.trim());
-    }
-    return lines;
-};
-
-
-export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartProps) {
-  const padding = 60; // Increased padding to ensure labels fit
+export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record<string, number>, maxScore?: number, size?: number }) {
+  const padding = 60; 
   const chartSize = size - padding * 2;
   const centerX = size / 2;
   const centerY = size / 2;
@@ -59,7 +38,7 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
     const point = getPoint(angle, value);
     return `${point.x},${point.y}`;
   }).join(' ');
-  
+
   const gridLevels = 4; // For 25, 50, 75, 100
 
   return (
@@ -99,87 +78,79 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
               strokeWidth="0.5"
             />
             {isFirstSpoke && Array.from({ length: gridLevels }).map((_, levelIndex) => {
-                const value = (maxScore / gridLevels) * (levelIndex + 1);
-                // Only show labels for 25, 50, 75, 100
-                if (value % 25 !== 0 && value !== 100) return null;
+              const value = (maxScore / gridLevels) * (levelIndex + 1);
+              if (value % 25 !== 0 && value !== 100) return null;
 
-                const labelPoint = getPoint(angle, value);
-                return (
-                  <text
-                    key={`axis-label-${levelIndex}`}
-                    x={labelPoint.x + 5}
-                    y={labelPoint.y}
-                    textAnchor="start"
-                    dominantBaseline="middle"
-                    fontSize="10"
-                    className="fill-muted-foreground"
-                  >
-                    {value}
-                  </text>
-                );
+              const labelPoint = getPoint(angle, value);
+              return (
+                <text
+                  key={`axis-label-${levelIndex}`}
+                  x={labelPoint.x + 5}
+                  y={labelPoint.y}
+                  textAnchor="start"
+                  dominantBaseline="middle"
+                  fontSize="10"
+                  className="fill-muted-foreground"
+                >
+                  {value}
+                </text>
+              );
             })}
           </g>
         );
       })}
-      
+
       {/* Labels */}
       {angles.map((angle, i) => {
         const value = data[validDataKeys[i]];
-        const originalLabelText = validDataKeys[i];
+        const labelText = labelMap[validDataKeys[i]] || validDataKeys[i];
         
-        const labelRadius = radius + 35; 
-        let textPointX = centerX + labelRadius * Math.cos(angle);
-        let textPointY = centerY + labelRadius * Math.sin(angle);
+        const labelRadius = radius + 25; 
+        const textPointX = centerX + labelRadius * Math.cos(angle);
+        const textPointY = centerY + labelRadius * Math.sin(angle);
 
         let textAnchor = "middle";
-        if (angle > -Math.PI / 2 && angle < Math.PI / 2) { // Right side
+        if (angle > -Math.PI / 2 && angle < Math.PI / 2) {
             textAnchor = "start";
-        } else if (angle > Math.PI / 2 || angle < -Math.PI / 2) { // Left side
+        } else if (angle > Math.PI / 2 || angle < -Math.PI / 2) {
             textAnchor = "end";
         }
-        
-        // Adjust vertical position for top/bottom labels to prevent them from sitting on the line
-        if (Math.abs(angle - (-Math.PI/2)) < 0.1) { // Top
-            textPointY -= 10;
-        } else if (Math.abs(angle - (Math.PI/2)) < 0.1) { // Bottom
-            textPointY += 10;
+
+        let yOffset = 0;
+        if (Math.abs(angle - (-Math.PI / 2)) < 0.1) { // Top
+            yOffset = -10;
+        } else if (Math.abs(angle - (Math.PI / 2)) < 0.1) { // Bottom
+            yOffset = 10;
         }
-        
-        const wrappedLines = wrapText(originalLabelText, 2);
-        const verticalOffset = (wrappedLines.length - 1) * 12 / 2; // half of total height of text block
 
         return (
-            <g key={`label-group-${i}`}>
-                <text
-                    x={textPointX}
-                    y={textPointY - 12} 
-                    textAnchor={textAnchor}
-                    dominantBaseline="middle"
-                    className="font-bold text-lg fill-foreground"
-                >
-                    {value}%
-                </text>
-                 <text
-                    x={textPointX}
-                    y={textPointY + 8}
-                    textAnchor={textAnchor}
-                    dominantBaseline="middle"
-                    className="text-xs fill-muted-foreground"
-                >
-                    {wrappedLines.map((line, lineIndex) => (
-                        <tspan key={lineIndex} x={textPointX} dy={lineIndex === 0 ? 0 : 12}>
-                            {line}
-                        </tspan>
-                    ))}
-                </text>
-            </g>
+          <g key={`label-group-${i}`}>
+            <text
+              x={textPointX}
+              y={textPointY + yOffset - 8}
+              textAnchor={textAnchor}
+              dominantBaseline="middle"
+              className="font-bold text-lg fill-foreground"
+            >
+              {value}%
+            </text>
+            <text
+              x={textPointX}
+              y={textPointY + yOffset + 12}
+              textAnchor={textAnchor}
+              dominantBaseline="middle"
+              className="text-xs fill-muted-foreground"
+            >
+              {labelText}
+            </text>
+          </g>
         );
       })}
 
       {/* Data Polygon */}
       <polygon
         points={points}
-        fill="hsl(var(--primary) / 0.1)"
+        fill="none"
         stroke="hsl(var(--primary))"
         strokeWidth="2"
       />
@@ -190,7 +161,7 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
         const point = getPoint(angle, value);
         const size = 4;
         return (
-          <polygon 
+          <polygon
             key={`point-${i}`}
             points={`${point.x},${point.y - size} ${point.x + size},${point.y} ${point.x},${point.y + size} ${point.x - size},${point.y}`}
             fill="hsl(var(--primary))"
