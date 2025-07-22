@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { MOCK_INNOVATOR_USER, MOCK_TTCS, MOCK_PRINCIPAL_USERS } from '@/lib/mock-data';
 import { ROLES, type Role } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
-import { Pencil } from 'lucide-react';
+import { Pencil, Eye, EyeOff } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -26,10 +26,12 @@ export default function ProfilePage() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
 
   const role = (searchParams.get('role') as Role) || ROLES.INNOVATOR;
 
   let user: any = {};
+  let mockPassword = "password123"; // Mock password for display
 
   // Mock fetching user data based on role
   switch (role) {
@@ -87,6 +89,10 @@ export default function ProfilePage() {
               <p className="text-sm font-medium text-muted-foreground">Role</p>
               <p>{user.role || role}</p>
           </div>
+          <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Password</p>
+              <p>**********</p>
+          </div>
           {user.college && (
               <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">College</p>
@@ -119,6 +125,22 @@ export default function ProfilePage() {
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input id="email" name="email" type="email" defaultValue={user.email} />
+                </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <div className="relative">
+                        <Input id="password" name="password" type={showPassword ? "text" : "password"} defaultValue={mockPassword} />
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                            onClick={() => setShowPassword(prev => !prev)}
+                        >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
+                        </Button>
+                    </div>
                 </div>
               </div>
               <DialogFooter>
