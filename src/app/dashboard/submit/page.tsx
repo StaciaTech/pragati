@@ -187,7 +187,7 @@ function Step1({ form }: { form: any }) {
                 <span className="font-bold text-xl">{totalWeight}%</span>
             </div>
           </div>
-          <div className="w-full h-96 bg-background rounded-lg flex items-center justify-center p-4">
+          <div className="w-full bg-background rounded-lg p-4">
               <SpiderChart data={form.getValues()} size={400} />
           </div>
         </div>
