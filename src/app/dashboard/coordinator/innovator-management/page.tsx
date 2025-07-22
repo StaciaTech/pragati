@@ -202,33 +202,35 @@ export default function InnovatorManagementPage() {
                                 <TableCell>{req.amount}</TableCell>
                                 <TableCell>{req.date}</TableCell>
                                 <TableCell className="max-w-xs truncate">{req.purpose}</TableCell>
-                                <TableCell className="text-right space-x-2">
-                                    <AlertDialog>
-                                        <AlertDialogTrigger asChild><Button size="sm">Approve</Button></AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>Approve Request?</AlertDialogTitle>
-                                                <AlertDialogDescription>Are you sure you want to approve this request for {req.amount} credits?</AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                <AlertDialogAction onClick={() => handleRequestAction(req.id, 'Approved')}>Yes, Approve</AlertDialogAction>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
-                                    <AlertDialog>
-                                        <AlertDialogTrigger asChild><Button variant="destructive" size="sm">Reject</Button></AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>Reject Request?</AlertDialogTitle>
-                                                <AlertDialogDescription>Are you sure you want to reject this request? This action cannot be undone.</AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                <AlertDialogAction onClick={() => handleRequestAction(req.id, 'Rejected')}>Yes, Reject</AlertDialogAction>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
+                                <TableCell className="text-right">
+                                    <div className="flex gap-2 justify-end">
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild><Button size="sm">Approve</Button></AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Approve Request?</AlertDialogTitle>
+                                                    <AlertDialogDescription>Are you sure you want to approve this request for {req.amount} credits?</AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction onClick={() => handleRequestAction(req.id, 'Approved')}>Yes, Approve</AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild><Button variant="destructive" size="sm">Reject</Button></AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Reject Request?</AlertDialogTitle>
+                                                    <AlertDialogDescription>Are you sure you want to reject this request? This action cannot be undone.</AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction onClick={() => handleRequestAction(req.id, 'Rejected')}>Yes, Reject</AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         ))}
