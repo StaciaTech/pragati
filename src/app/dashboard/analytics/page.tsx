@@ -10,6 +10,11 @@ import { MOCK_IDEAS } from '@/lib/mock-data';
 const chartConfig = {
   ideas: {
     label: 'Ideas',
+    color: 'hsl(var(--chart-1))',
+  },
+  score: {
+    label: 'Score',
+    color: 'hsl(var(--chart-1))',
   },
   approved: {
     label: 'Approved',
@@ -27,7 +32,7 @@ const chartConfig = {
 
 export default function AnalyticsPage() {
   const ideaStatusData = React.useMemo(() => {
-    const statuses = { Approved: 0, Moderate: 0, Rejected: 0 };
+    const statuses: Record<string, number> = { Approved: 0, Moderate: 0, Rejected: 0 };
     MOCK_IDEAS.forEach((idea) => {
       const status = idea.report?.validationOutcome || idea.status;
       if (status in statuses) {
@@ -43,12 +48,24 @@ export default function AnalyticsPage() {
 
   const submissionTrendData = React.useMemo(() => {
     const trends: { [key: string]: number } = {};
-    MOCK_IDEAS.forEach((idea) => {
-      const month = new Date(idea.dateSubmitted).toLocaleString('default', { month: 'short' });
+    const sortedIdeas = [...MOCK_IDEAS].sort((a,b) => new Date(a.dateSubmitted).getTime() - new Date(b.dateSubmitted).getTime());
+    
+    sortedIdeas.forEach((idea) => {
+      const month = new Date(idea.dateSubmitted).toLocaleString('default', { month: 'short', year: '2-digit' });
       trends[month] = (trends[month] || 0) + 1;
     });
     return Object.entries(trends).map(([name, ideas]) => ({ name, ideas }));
   }, []);
+
+  const scoreTrendData = React.useMemo(() => {
+     return MOCK_IDEAS.filter(idea => idea.report?.overallScore)
+      .map(idea => ({
+        name: idea.title.length > 15 ? `${idea.title.substring(0, 15)}...` : idea.title,
+        score: idea.report!.overallScore,
+      }))
+      .sort((a,b) => MOCK_IDEAS.findIndex(idea => idea.title === a.name) - MOCK_IDEAS.findIndex(idea => idea.title === b.name));
+  }, []);
+
 
   return (
     <div className="space-y-6">
@@ -100,9 +117,10 @@ export default function AnalyticsPage() {
                     tickMargin={10}
                     axisLine={false}
                   />
+                   <YAxis />
                   <Tooltip
                     cursor={false}
-                    content={<ChartTooltipContent hideLabel />}
+                    content={<ChartTooltipContent />}
                   />
                   <Bar dataKey="ideas" fill="hsl(var(--chart-1))" radius={8} />
                 </BarChart>
@@ -115,22 +133,17 @@ export default function AnalyticsPage() {
        <Card>
           <CardHeader>
             <CardTitle>Overall Score Trend</CardTitle>
-             <CardDescription>Mock data showing score improvement over time.</CardDescription>
+             <CardDescription>Shows the evaluation score for each idea you've submitted.</CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={{}} className="min-h-[200px] w-full">
-                <ResponsiveContainer width="100%" height={250}>
-                    <LineChart data={[
-                        { name: 'Idea 1', score: 2.8 },
-                        { name: 'Idea 2', score: 3.5 },
-                        { name: 'Idea 3', score: 3.8 },
-                        { name: 'Idea 4', score: 4.2 },
-                    ]}>
+            <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+                <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={scoreTrendData}>
                     <CartesianGrid vertical={false} />
-                    <XAxis dataKey="name" />
+                    <XAxis dataKey="name" tick={{ fontSize: 12 }} angle={-30} textAnchor="end" height={60} />
                     <YAxis domain={[1, 5]} />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="score" stroke="hsl(var(--chart-1))" />
+                    <Tooltip content={<ChartTooltipContent />} />
+                    <Line type="monotone" dataKey="score" stroke="hsl(var(--chart-1))" strokeWidth={2} />
                     </LineChart>
                 </ResponsiveContainer>
             </ChartContainer>
