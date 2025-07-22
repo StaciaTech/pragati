@@ -64,7 +64,10 @@ const submitIdeaSchema = z.object({
 
   title: z.string().min(1, 'Title is required.'),
   description: z.string().min(1, 'Description is required.'),
-  pptFile: z.any().optional(),
+  pptFile: z.any().optional().refine(file => {
+      if (!file || !file.name) return true; // Optional field
+      return file.name.endsWith('.ppt') || file.name.endsWith('.pptx');
+    }, 'Please upload a .ppt or .pptx file.'),
   domain: z.string().min(1, 'Project domain is required.'),
   otherDomain: z.string().optional(),
 }).refine(data => {
@@ -206,7 +209,7 @@ function Step2({ form }: { form: any }) {
     const [shakeErrors, setShakeErrors] = React.useState<Partial<Record<keyof SubmitIdeaForm, boolean>>>({});
 
     const handleNext = async () => {
-        const fieldsToValidate: (keyof SubmitIdeaForm)[] = ['title', 'description', 'domain'];
+        const fieldsToValidate: (keyof SubmitIdeaForm)[] = ['title', 'description', 'domain', 'pptFile'];
         if (form.getValues('domain') === 'Other') {
             fieldsToValidate.push('otherDomain');
         }
@@ -258,7 +261,7 @@ function Step2({ form }: { form: any }) {
                   <FormControl>
                     <div className="relative">
                       <FileUp className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                      <Input type="file" className="pl-10" accept=".ppt, .pptx" onChange={(e) => field.onChange(e.target.files ? e.target.files[0] : null)} />
+                      <Input type="file" className={cn("pl-10", shakeErrors.pptFile && 'animate-shake')} accept=".ppt, .pptx" onChange={(e) => field.onChange(e.target.files ? e.target.files[0] : null)} />
                     </div>
                   </FormControl>
                   <FormDescription>Please adhere to the provided PPT format guidelines.</FormDescription>
