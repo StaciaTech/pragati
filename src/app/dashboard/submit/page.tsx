@@ -392,7 +392,6 @@ export default function SubmitIdeaPage() {
   const form = useForm<SubmitIdeaForm>({
     resolver: zodResolver(submitIdeaSchema),
     defaultValues: getInitialValues(),
-    mode: 'onChange',
   });
   
   React.useEffect(() => {
