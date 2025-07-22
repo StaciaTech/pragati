@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -18,7 +19,7 @@ export default function CollegeAnalyticsPage() {
     const domainChartData = Object.entries(domainSubmissions).map(([name, ideas]) => ({ name, ideas }));
 
     const statusCounts = MOCK_IDEAS.reduce((acc, idea) => {
-        const status = idea.status || "N/A";
+        const status = idea.report?.validationOutcome || idea.status || "N/A";
         acc[status] = (acc[status] || 0) + 1;
         return acc;
     }, {} as Record<string, number>);
@@ -74,6 +75,7 @@ export default function CollegeAnalyticsPage() {
                       cursor={true}
                       content={<ChartTooltipContent 
                         contentStyle={{background: "hsl(var(--background))", border: "1px solid hsl(var(--border))"}}
+                        labelClassName="font-bold"
                       />}
                     />
                     <Bar dataKey="ideas" fill="hsl(var(--chart-1))" radius={8} />
@@ -94,6 +96,7 @@ export default function CollegeAnalyticsPage() {
                       cursor={true}
                       content={<ChartTooltipContent 
                         contentStyle={{background: "hsl(var(--background))", border: "1px solid hsl(var(--border))"}}
+                        labelClassName="font-bold"
                         formatter={(value, name, props) => {
                             return [`${value} Ideas`, name]
                         }}
