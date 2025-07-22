@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -29,27 +30,39 @@ import { MoreHorizontal, Loader2 } from 'lucide-react';
 import { STATUS_COLORS } from '@/lib/mock-data';
 import { ROLES } from '@/lib/constants';
 import type { ValidationReport } from '@/ai/schemas';
+import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+
 
 type Idea = {
   id: string;
   title: string;
   description: string;
   collegeId: string;
-  collegeName: string;
+  collegeName:string;
   domain: string;
   innovatorName: string;
   innovatorEmail: string;
   status: string;
   dateSubmitted: string;
   version: string;
-  report?: ValidationReport | null; // Keep report optional on the client
+  report?: ValidationReport | null;
   clusterWeights?: Record<string, number>; 
   feedback?: { overall: string; details: { aspect: string; score: number; comment: string }[] } | null;
   consultationStatus: string;
   consultationDate: string | null;
   consultationTime: string | null;
   ttcAssigned: string | null;
-  overallScore?: number; // Add overallScore to the type
+  overallScore?: number;
 };
 
 
@@ -57,6 +70,11 @@ export default function IdeasPage() {
   const [ideas, setIdeas] = React.useState<Idea[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [selectedAction, setSelectedAction] = React.useState<{ action?: () => void, title?: string, description?: string }>({});
+  const { toast } = useToast();
+  const router = useRouter();
+
 
   React.useEffect(() => {
     const fetchIdeas = async () => {
@@ -76,6 +94,51 @@ export default function IdeasPage() {
 
     fetchIdeas();
   }, []);
+  
+  const handleActionConfirm = () => {
+    if (selectedAction.action) {
+      selectedAction.action();
+    }
+    setDialogOpen(false);
+  };
+  
+  const openConfirmationDialog = (action: () => void, title: string, description: string) => {
+    setSelectedAction({ action, title, description });
+    setDialogOpen(true);
+  };
+
+  const handleDownload = (ideaId: string) => {
+    openConfirmationDialog(
+      () => toast({ title: "Feature In Development", description: `Downloading for idea ${ideaId} is not yet implemented.` }),
+      "Confirm Download",
+      "Are you sure you want to download the report for this idea?"
+    );
+  };
+
+  const handleTrackHistory = (ideaId: string) => {
+     openConfirmationDialog(
+      () => toast({ title: "Feature In Development", description: `Tracking history for idea ${ideaId} is not yet implemented.` }),
+      "Confirm Track History",
+      "Are you sure you want to view the history for this idea?"
+    );
+  };
+  
+  const handleResubmit = (idea: Idea) => {
+     openConfirmationDialog(
+      () => {
+        const ideaData = {
+          title: idea.title,
+          description: idea.description,
+          domain: idea.domain,
+          weights: idea.clusterWeights,
+        };
+        const query = new URLSearchParams({ idea: JSON.stringify(ideaData) }).toString();
+        router.push(`/dashboard/submit?${query}`);
+      },
+      "Confirm Resubmission",
+      "This will take you to the submission page to edit and resubmit your idea. This will cost 1 credit. Do you want to continue?"
+    );
+  }
 
   const getOverallScore = (idea: Idea) => {
     if (idea.report) {
@@ -154,12 +217,18 @@ export default function IdeasPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem asChild>
-                         <Link href={`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`}>View Report</Link>
+                      <DropdownMenuItem onSelect={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
+                        View Report
                       </DropdownMenuItem>
-                      <DropdownMenuItem>Resubmit</DropdownMenuItem>
-                      <DropdownMenuItem>Download</DropdownMenuItem>
-                      <DropdownMenuItem>Track History</DropdownMenuItem>
+                      <DropdownMenuItem onSelect={() => handleResubmit(idea)}>
+                        Resubmit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onSelect={() => handleDownload(idea.id)}>
+                        Download
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onSelect={() => handleTrackHistory(idea.id)}>
+                        Track History
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -172,14 +241,31 @@ export default function IdeasPage() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>My Ideas</CardTitle>
-        <CardDescription>A list of all your submitted ideas.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {renderContent()}
-      </CardContent>
-    </Card>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>My Ideas</CardTitle>
+          <CardDescription>A list of all your submitted ideas.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {renderContent()}
+        </CardContent>
+      </Card>
+      
+      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{selectedAction.title}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {selectedAction.description}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleActionConfirm}>Yes, continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

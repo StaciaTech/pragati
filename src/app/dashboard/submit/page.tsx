@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { FileUp, BrainCircuit } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -57,16 +57,22 @@ const weightageSchema = clusterKeys.reduce((acc, key) => {
 
 
 const submitIdeaSchema = z.object({
-  // Step 1 - We will handle weightage separately as it's not part of the main AI input anymore
   ...weightageSchema,
   preset: z.string().default('Balanced'),
 
-  // Step 2
   title: z.string().min(1, 'Title is required.'),
   description: z.string().min(1, 'Description is required.'),
-  pptFile: z.any().optional(), // Making PPT optional for now
-  validationPurpose: z.string().min(1, 'Validation purpose is required.'),
+  pptFile: z.any().optional(),
   domain: z.string().min(1, 'Project domain is required.'),
+  otherDomain: z.string().optional(),
+}).refine(data => {
+    if (data.domain === 'Other') {
+        return !!data.otherDomain && data.otherDomain.length > 0;
+    }
+    return true;
+}, {
+    message: 'Please specify your domain',
+    path: ['otherDomain'],
 });
 
 type SubmitIdeaForm = z.infer<typeof submitIdeaSchema>;
@@ -76,6 +82,8 @@ const defaultValues: Partial<SubmitIdeaForm> = {
   preset: 'Balanced',
   title: '',
   description: '',
+  domain: '',
+  otherDomain: '',
 };
 
 const presets = {
@@ -193,6 +201,8 @@ function Step1({ form }: { form: any }) {
 }
 
 function Step2({ form }: { form: any }) {
+    const domain = form.watch('domain');
+
     return (
         <StepperItem index={1}>
         <StepperTrigger>
@@ -229,23 +239,6 @@ function Step2({ form }: { form: any }) {
                 </FormItem>
             )} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               <FormField control={form.control} name="validationPurpose" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Validation Purpose</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl><SelectTrigger><SelectValue placeholder="Select a purpose" /></SelectTrigger></FormControl>
-                      <SelectContent>
-                        <SelectItem value="Market Fit Analysis">Market Fit Analysis</SelectItem>
-                        <SelectItem value="Technical Feasibility Study">Technical Feasibility Study</SelectItem>
-                        <SelectItem value="Innovation Assessment">Innovation Assessment</SelectItem>
-                        <SelectItem value="Scalability Potential">Scalability Potential</SelectItem>
-                        <SelectItem value="Social Impact Evaluation">Social Impact Evaluation</SelectItem>
-                        <SelectItem value="Comprehensive Review">Comprehensive Review</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )} />
                <FormField control={form.control} name="domain" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Project Domain/Category</FormLabel>
@@ -265,6 +258,15 @@ function Step2({ form }: { form: any }) {
                     <FormMessage />
                   </FormItem>
                 )} />
+                {domain === 'Other' && (
+                    <FormField control={form.control} name="otherDomain" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Please Specify Domain</FormLabel>
+                            <FormControl><Input placeholder="e.g., Sustainable Fashion" {...field} /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                )}
             </div>
           </div>
           <div className="flex justify-between">
@@ -294,8 +296,7 @@ function Step3({ form, isSubmitting }: { form: any, isSubmitting: boolean }) {
                         <p><span className="font-medium text-muted-foreground">Title:</span> {allValues.title}</p>
                         <p><span className="font-medium text-muted-foreground">Description:</span> {allValues.description}</p>
                         <p><span className="font-medium text-muted-foreground">PPT File:</span> {allValues.pptFile?.name || 'Not provided'}</p>
-                        <p><span className="font-medium text-muted-foreground">Purpose:</span> {allValues.validationPurpose}</p>
-                        <p><span className="font-medium text-muted-foreground">Domain:</span> {allValues.domain}</p>
+                        <p><span className="font-medium text-muted-foreground">Domain:</span> {allValues.domain === 'Other' ? allValues.otherDomain : allValues.domain}</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -334,12 +335,42 @@ function Step3({ form, isSubmitting }: { form: any, isSubmitting: boolean }) {
 export default function SubmitIdeaPage() {
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const getInitialValues = () => {
+      const ideaParam = searchParams.get('idea');
+      if (ideaParam) {
+          try {
+              const ideaData = JSON.parse(ideaParam);
+              const weights = ideaData.weights || INITIAL_CLUSTER_WEIGHTS;
+              return {
+                  ...defaultValues,
+                  title: ideaData.title || '',
+                  description: ideaData.description || '',
+                  domain: ideaData.domain || '',
+                  ...weights,
+              };
+          } catch (e) {
+              console.error("Failed to parse idea data from URL", e);
+              return defaultValues;
+          }
+      }
+      return defaultValues;
+  };
 
   const form = useForm<SubmitIdeaForm>({
     resolver: zodResolver(submitIdeaSchema),
-    defaultValues,
+    defaultValues: getInitialValues(),
   });
+  
+  React.useEffect(() => {
+    // This effect runs once on mount to set initial form values
+    const initialValues = getInitialValues();
+    for (const [key, value] of Object.entries(initialValues)) {
+      form.setValue(key as keyof SubmitIdeaForm, value);
+    }
+  }, [searchParams, form.setValue]);
 
   const onSubmit = async (data: SubmitIdeaForm) => {
     setIsSubmitting(true);
@@ -347,6 +378,8 @@ export default function SubmitIdeaPage() {
       title: "Submitting Idea...",
       description: "The AI is validating your idea. This may take a moment.",
     });
+
+    const finalDomain = data.domain === 'Other' ? data.otherDomain : data.domain;
 
     try {
       const response = await fetch('/api/ideas/validate', {
@@ -357,13 +390,13 @@ export default function SubmitIdeaPage() {
         body: JSON.stringify({
           title: data.title,
           description: data.description,
-          domain: data.domain,
+          domain: finalDomain,
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to validate idea');
+        throw new Error(errorData.details || errorData.error || 'Failed to validate idea');
       }
 
       const result = await response.json();
@@ -397,6 +430,11 @@ export default function SubmitIdeaPage() {
         <CardDescription>
           Follow the steps to validate and launch your innovation journey.
         </CardDescription>
+        {searchParams.get('idea') && (
+            <p className="text-sm font-medium text-blue-600 bg-blue-100 p-3 rounded-md mt-2">
+                You are editing a previous submission. Please review and make any necessary changes. Resubmitting will cost 1 credit.
+            </p>
+        )}
       </CardHeader>
       <CardContent>
         <Form {...form}>
