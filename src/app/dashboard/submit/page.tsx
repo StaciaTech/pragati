@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForm, type FieldError } from 'react-hook-form';
 import { z } from 'zod';
 import { FileUp, BrainCircuit } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -49,6 +49,7 @@ import { SpiderChart } from '@/components/spider-chart';
 import { INITIAL_CLUSTER_WEIGHTS } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 import { ROLES } from '@/lib/constants';
+import { cn } from '@/lib/utils';
 
 const clusterKeys = Object.keys(INITIAL_CLUSTER_WEIGHTS);
 const weightageSchema = clusterKeys.reduce((acc, key) => {
@@ -202,9 +203,10 @@ function Step1({ form }: { form: any }) {
 function Step2({ form }: { form: any }) {
     const { setActiveStep } = useStepper();
     const domain = form.watch('domain');
+    const [shakeErrors, setShakeErrors] = React.useState<Partial<Record<keyof SubmitIdeaForm, boolean>>>({});
 
     const handleNext = async () => {
-        const fieldsToValidate: ('title' | 'description' | 'domain' | 'otherDomain')[] = ['title', 'description', 'domain'];
+        const fieldsToValidate: (keyof SubmitIdeaForm)[] = ['title', 'description', 'domain'];
         if (form.getValues('domain') === 'Other') {
             fieldsToValidate.push('otherDomain');
         }
@@ -213,6 +215,17 @@ function Step2({ form }: { form: any }) {
 
         if (isValid) {
             setActiveStep(2);
+            setShakeErrors({});
+        } else {
+            const errors = form.formState.errors;
+            const errorFields = fieldsToValidate.reduce((acc, field) => {
+                if (errors[field]) {
+                    acc[field] = true;
+                }
+                return acc;
+            }, {} as typeof shakeErrors);
+            setShakeErrors(errorFields);
+            setTimeout(() => setShakeErrors({}), 1000);
         }
     };
 
@@ -228,14 +241,14 @@ function Step2({ form }: { form: any }) {
             <FormField control={form.control} name="title" render={({ field }) => (
                 <FormItem>
                     <FormLabel>Idea Title</FormLabel>
-                    <FormControl><Input placeholder="e.g., AI-Powered Crop Disease Detection" {...field} /></FormControl>
+                    <FormControl><Input placeholder="e.g., AI-Powered Crop Disease Detection" {...field} className={cn(shakeErrors.title && 'animate-shake')} /></FormControl>
                     <FormMessage />
                 </FormItem>
             )} />
             <FormField control={form.control} name="description" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Short Idea Description</FormLabel>
-                  <FormControl><Textarea placeholder="Briefly describe the core concept of your idea..." {...field} /></FormControl>
+                  <FormControl><Textarea placeholder="Briefly describe the core concept of your idea..." {...field} className={cn(shakeErrors.description && 'animate-shake')} /></FormControl>
                   <FormMessage />
                 </FormItem>
             )} />
@@ -257,7 +270,7 @@ function Step2({ form }: { form: any }) {
                   <FormItem>
                     <FormLabel>Project Domain/Category</FormLabel>
                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl><SelectTrigger><SelectValue placeholder="Select a domain" /></SelectTrigger></FormControl>
+                      <FormControl><SelectTrigger className={cn(shakeErrors.domain && 'animate-shake')}><SelectValue placeholder="Select a domain" /></SelectTrigger></FormControl>
                       <SelectContent>
                         <SelectItem value="HealthTech">HealthTech</SelectItem>
                         <SelectItem value="EdTech">EdTech</SelectItem>
@@ -276,7 +289,7 @@ function Step2({ form }: { form: any }) {
                     <FormField control={form.control} name="otherDomain" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Please Specify Domain</FormLabel>
-                            <FormControl><Input placeholder="e.g., Sustainable Fashion" {...field} /></FormControl>
+                            <FormControl><Input placeholder="e.g., Sustainable Fashion" {...field} className={cn(shakeErrors.otherDomain && 'animate-shake')} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
@@ -376,10 +389,10 @@ export default function SubmitIdeaPage() {
   const form = useForm<SubmitIdeaForm>({
     resolver: zodResolver(submitIdeaSchema),
     defaultValues: getInitialValues(),
+    mode: 'onChange',
   });
   
   React.useEffect(() => {
-    // This effect runs once on mount to set initial form values
     const initialValues = getInitialValues();
     for (const [key, value] of Object.entries(initialValues)) {
       form.setValue(key as keyof SubmitIdeaForm, value);
