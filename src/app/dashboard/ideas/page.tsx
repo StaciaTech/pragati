@@ -138,14 +138,22 @@ export default function IdeasPage() {
   };
   
   const handleResubmit = (idea: Idea) => {
-    const ideaData = {
-      title: idea.title,
-      description: idea.description,
-      domain: idea.domain,
-      weights: idea.clusterWeights,
-    };
-    const query = new URLSearchParams({ idea: JSON.stringify(ideaData) }).toString();
-    router.push(`/dashboard/submit?${query}`);
+    const action = () => {
+      const ideaData = {
+        title: idea.title,
+        description: idea.description,
+        domain: idea.domain,
+        weights: idea.clusterWeights,
+      };
+      const query = new URLSearchParams({ idea: JSON.stringify(ideaData) }).toString();
+      router.push(`/dashboard/submit?${query}`);
+    }
+
+    openConfirmationDialog(
+        action,
+        "Confirm Resubmission",
+        "This will take you to the submission page to edit and resubmit your idea. This will cost 1 credit. Do you want to continue?"
+    )
   }
 
   const getOverallScore = (idea: Idea) => {
