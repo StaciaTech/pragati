@@ -17,7 +17,6 @@ import {
   SidebarFooter,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/icons';
-import { UserNav } from '@/components/user-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { NAV_LINKS, ROLES, type Role } from '@/lib/constants';
 import { MOCK_INNOVATOR_USER } from '@/lib/mock-data';
@@ -77,7 +76,6 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                 </div>
             )}
             <ThemeToggle />
-            <UserNav />
           </div>
         </header>
         <main className="flex-1 overflow-y-auto p-4 sm:p-6">{children}</main>

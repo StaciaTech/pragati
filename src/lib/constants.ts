@@ -1,4 +1,4 @@
-import { Home, LayoutGrid, Lightbulb, Settings, Users, Shield, FileText, PlusCircle, MessageSquare, CreditCard, LifeBuoy, BrainCircuit, Briefcase, BarChart3, Receipt } from "lucide-react";
+import { Home, LayoutGrid, Lightbulb, Settings, Users, Shield, FileText, PlusCircle, MessageSquare, CreditCard, LifeBuoy, BrainCircuit, Briefcase, BarChart3, Receipt, User } from "lucide-react";
 
 export const ROLES = {
   INNOVATOR: "Innovator",
@@ -55,6 +55,16 @@ export const NAV_LINKS: Record<
       icon: LifeBuoy,
       href: `/dashboard/support?role=${ROLES.INNOVATOR}`,
     },
+    {
+      title: "Profile",
+      icon: User,
+      href: `/dashboard/profile?role=${ROLES.INNOVATOR}`,
+    },
+    {
+      title: "Settings",
+      icon: Settings,
+      href: `/dashboard/settings?role=${ROLES.INNOVATOR}`,
+    },
   ],
   [ROLES.PRINCIPAL]: [
     {
@@ -87,6 +97,16 @@ export const NAV_LINKS: Record<
       icon: FileText,
       href: `/dashboard/principal/audit-trail?role=${ROLES.PRINCIPAL}`,
     },
+    {
+      title: "Profile",
+      icon: User,
+      href: `/dashboard/profile?role=${ROLES.PRINCIPAL}`,
+    },
+    {
+      title: "Settings",
+      icon: Settings,
+      href: `/dashboard/settings?role=${ROLES.PRINCIPAL}`,
+    },
   ],
   [ROLES.COORDINATOR]: [
     {
@@ -118,7 +138,17 @@ export const NAV_LINKS: Record<
         title: "Logs & Requests",
         icon: FileText,
         href: `/dashboard/coordinator/logs?role=${ROLES.COORDINATOR}`,
-    }
+    },
+    {
+      title: "Profile",
+      icon: User,
+      href: `/dashboard/profile?role=${ROLES.COORDINATOR}`,
+    },
+    {
+      title: "Settings",
+      icon: Settings,
+      href: `/dashboard/settings?role=${ROLES.COORDINATOR}`,
+    },
   ],
   [ROLES.SUPER_ADMIN]: [
     {
@@ -160,6 +190,16 @@ export const NAV_LINKS: Record<
       title: "Security & Logs",
       icon: Shield,
       href: `/dashboard/admin/security?role=${ROLES.SUPER_ADMIN}`,
+    },
+    {
+      title: "Profile",
+      icon: User,
+      href: `/dashboard/profile?role=${ROLES.SUPER_ADMIN}`,
+    },
+    {
+      title: "Settings",
+      icon: Settings,
+      href: `/dashboard/settings?role=${ROLES.SUPER_ADMIN}`,
     },
   ],
 };
