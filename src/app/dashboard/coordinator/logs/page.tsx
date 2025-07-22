@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -79,19 +80,6 @@ export default function CoordinatorLogsPage() {
   return (
     <>
       <div className="space-y-6">
-        <Card>
-            <CardHeader>
-                <CardTitle>Logs & Requests</CardTitle>
-                <CardDescription>View your activity logs and request credits from your college principal.</CardDescription>
-            </CardHeader>
-             <CardContent>
-                <p className="mb-4">
-                    Current College Credits Available: <span className="font-bold text-primary">{college?.creditsAvailable || 0}</span>
-                </p>
-                <Button onClick={() => setIsModalOpen(true)} disabled={!!pendingRequest}>Request Credits from Principal</Button>
-            </CardContent>
-        </Card>
-
         {pendingRequest && (
             <Card className="border-yellow-500">
                 <CardHeader>
@@ -122,6 +110,19 @@ export default function CoordinatorLogsPage() {
                 </CardFooter>
             </Card>
         )}
+        
+        <Card>
+            <CardHeader>
+                <CardTitle>Logs & Requests</CardTitle>
+                <CardDescription>View your activity logs and request credits from your college principal.</CardDescription>
+            </CardHeader>
+             <CardContent>
+                <p className="mb-4">
+                    Current College Credits Available: <span className="font-bold text-primary">{college?.creditsAvailable || 0}</span>
+                </p>
+                <Button onClick={() => setIsModalOpen(true)} disabled={!!pendingRequest}>Request Credits from Principal</Button>
+            </CardContent>
+        </Card>
 
         <Card>
             <CardHeader>
