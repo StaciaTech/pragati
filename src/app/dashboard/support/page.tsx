@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -91,9 +92,17 @@ export default function SupportPage() {
             <CardTitle>Contact Support</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground text-sm mb-4">
-              Still have questions? Launch our chatbot for instant help or contact our support team directly.
-            </p>
+            <div className="text-sm text-muted-foreground space-y-4 mb-6">
+                <div>
+                  <p className="font-semibold text-foreground">Stacia Corp</p>
+                  <p>Ground Floor, C-53, Guindy Industrial Estate,</p>
+                  <p>Guindy, Chennai - 32, Tamil Nadu</p>
+                  <p>support@staciacorp.com</p>
+                </div>
+                <p>
+                  Still have questions? Launch our chatbot for instant help or contact our support team directly.
+                </p>
+            </div>
             <div className="flex flex-wrap gap-2">
                 <Button variant="outline">Launch Chatbot</Button>
                 <Button>Contact Support</Button>

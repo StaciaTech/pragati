@@ -1,3 +1,4 @@
+
 import { Home, LayoutGrid, Lightbulb, Settings, Users, Shield, FileText, PlusCircle, MessageSquare, CreditCard, LifeBuoy, BrainCircuit, Briefcase, BarChart3, Receipt, User } from "lucide-react";
 
 export const ROLES = {
@@ -60,11 +61,6 @@ export const NAV_LINKS: Record<
       icon: User,
       href: `/dashboard/profile?role=${ROLES.INNOVATOR}`,
     },
-    {
-      title: "Settings",
-      icon: Settings,
-      href: `/dashboard/settings?role=${ROLES.INNOVATOR}`,
-    },
   ],
   [ROLES.PRINCIPAL]: [
     {
@@ -102,11 +98,6 @@ export const NAV_LINKS: Record<
       icon: User,
       href: `/dashboard/profile?role=${ROLES.PRINCIPAL}`,
     },
-    {
-      title: "Settings",
-      icon: Settings,
-      href: `/dashboard/settings?role=${ROLES.PRINCIPAL}`,
-    },
   ],
   [ROLES.COORDINATOR]: [
     {
@@ -143,11 +134,6 @@ export const NAV_LINKS: Record<
       title: "Profile",
       icon: User,
       href: `/dashboard/profile?role=${ROLES.COORDINATOR}`,
-    },
-    {
-      title: "Settings",
-      icon: Settings,
-      href: `/dashboard/settings?role=${ROLES.COORDINATOR}`,
     },
   ],
   [ROLES.SUPER_ADMIN]: [
@@ -195,11 +181,6 @@ export const NAV_LINKS: Record<
       title: "Profile",
       icon: User,
       href: `/dashboard/profile?role=${ROLES.SUPER_ADMIN}`,
-    },
-    {
-      title: "Settings",
-      icon: Settings,
-      href: `/dashboard/settings?role=${ROLES.SUPER_ADMIN}`,
     },
   ],
 };
