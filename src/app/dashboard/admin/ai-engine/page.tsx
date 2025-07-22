@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -75,17 +76,17 @@ export default function AIEngineControlPage() {
               <AccordionItem value={clusterName} key={clusterName}>
                 <AccordionTrigger className="text-lg font-semibold">{clusterName}</AccordionTrigger>
                 <AccordionContent>
-                  <p className="text-muted-foreground mb-4">{clusterDef.description}</p>
+                  <p className="text-muted-foreground mb-4">{(clusterDef as any).description}</p>
                   <div className="space-y-4 pl-4">
-                    {Object.entries(clusterDef.parameters).map(([paramName, paramDef]) => (
+                    {Object.entries((clusterDef as any).parameters).map(([paramName, paramDef]: [string, any]) => (
                       <div key={paramName} className="border-l-2 pl-4">
                         <h4 className="font-medium">{paramName}</h4>
                         <p className="text-sm text-muted-foreground">{paramDef.description}</p>
                         <div className="mt-2 space-y-2 pl-4">
-                            {Object.entries(paramDef.subParameters).map(([subParamName, subParamDesc]) => (
+                            {Object.entries(paramDef.subParameters).map(([subParamName, subParamDesc]: [string, any]) => (
                                 <div key={subParamName}>
                                     <p className="font-medium text-sm">{subParamName}</p>
-                                    <p className="text-xs text-muted-foreground">{subParamDesc}</p>
+                                    <p className="text-xs text-muted-foreground">{subParamDesc.objective}</p>
                                 </div>
                             ))}
                         </div>
