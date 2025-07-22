@@ -632,17 +632,27 @@ export let MOCK_CREDIT_REQUESTS: {
 ];
 
 export let MOCK_COLLEGES = [
-  { id: 'COL001', name: 'Pragati Institute of Technology', principalEmail: 'principal.pit@pragati.com', ttcLimit: 5, creditsAvailable: 100, currentPlanId: 'PLAN001', status: 'Active' },
-  { id: 'COL002', name: 'Global School of Innovation', principalEmail: 'principal.gsi@pragati.com', ttcLimit: 3, creditsAvailable: 75, currentPlanId: 'PLAN001', status: 'Active' },
-  { id: 'COL003', name: 'Tech University Chennai', principalEmail: 'principal.tuc@pragati.com', ttcLimit: 7, creditsAvailable: 120, currentPlanId: 'PLAN002', status: 'Inactive' },
+  { id: 'COL001', name: 'Pragati Institute of Technology', principalEmail: 'principal.pit@pragati.com', ttcLimit: 5, creditsAvailable: 100, currentPlanId: 'PLAN001-M', status: 'Active' },
+  { id: 'COL002', name: 'Global School of Innovation', principalEmail: 'principal.gsi@pragati.com', ttcLimit: 3, creditsAvailable: 75, currentPlanId: 'PLAN001-M', status: 'Active' },
+  { id: 'COL003', name: 'Tech University Chennai', principalEmail: 'principal.tuc@pragati.com', ttcLimit: 7, creditsAvailable: 120, currentPlanId: 'PLAN002-Y', status: 'Inactive' },
 ];
 
 export let MOCK_PLANS = [
-  { id: 'PLAN001', name: 'Essential', pricePerCredit: 500, minCredits: 20, totalAmount: 10000, features: ['20 Idea Submissions', 'Basic Feedback', '5 TTCs'], enabled: true, interval: 'monthly' },
-  { id: 'PLAN002', name: 'Advance', pricePerCredit: 490, minCredits: 50, totalAmount: 24500, features: ['50 Idea Submissions', 'Detailed Feedback', '10 TTCs', '2 Consultations'], enabled: true, interval: 'monthly' },
-  { id: 'PLAN003', name: 'Advance Pro', pricePerCredit: 475, minCredits: 100, totalAmount: 47500, features: ['Unlimited Idea Submissions', 'Premium Feedback', '15 TTCs', 'Unlimited Consultations'], enabled: true, interval: 'yearly' },
-  { id: 'PLAN004', name: 'Enterprises', pricePerCredit: 0, minCredits: 0, totalAmount: 0, features: ['Custom Limits', 'Dedicated Support', 'Tailored Solutions', 'Contact Us for Pricing'], enabled: true, interval: 'yearly' },
+  // Monthly Plans
+  { id: 'PLAN001-M', name: 'Essential Monthly', pricePerCredit: 500, minCredits: 20, totalAmount: 10000, features: ['20 Idea Submissions', 'Basic Feedback', '5 TTCs'], enabled: true, interval: 'monthly' },
+  { id: 'PLAN002-M', name: 'Advance Monthly', pricePerCredit: 490, minCredits: 50, totalAmount: 24500, features: ['50 Idea Submissions', 'Detailed Feedback', '10 TTCs', '2 Consultations'], enabled: true, interval: 'monthly' },
+  { id: 'PLAN003-M', name: 'Advance Pro Monthly', pricePerCredit: 475, minCredits: 100, totalAmount: 47500, features: ['Unlimited Idea Submissions', 'Premium Feedback', '15 TTCs', 'Unlimited Consultations'], enabled: true, interval: 'monthly' },
+
+  // Yearly Plans (with a discount)
+  { id: 'PLAN001-Y', name: 'Essential Yearly', pricePerCredit: 450, minCredits: 240, totalAmount: 108000, features: ['240 Idea Submissions', 'Basic Feedback', '5 TTCs', '10% Discount'], enabled: true, interval: 'yearly' },
+  { id: 'PLAN002-Y', name: 'Advance Yearly', pricePerCredit: 440, minCredits: 600, totalAmount: 264000, features: ['600 Idea Submissions', 'Detailed Feedback', '10 TTCs', '24 Consultations', '12% Discount'], enabled: true, interval: 'yearly' },
+  { id: 'PLAN003-Y', name: 'Advance Pro Yearly', pricePerCredit: 425, minCredits: 1200, totalAmount: 510000, features: ['Unlimited Idea Submissions', 'Premium Feedback', '15 TTCs', 'Unlimited Consultations', '15% Discount'], enabled: true, interval: 'yearly' },
+  
+  // Enterprise Plan (same for both intervals)
+  { id: 'PLAN004-E', name: 'Enterprises', pricePerCredit: 0, minCredits: 0, totalAmount: 0, features: ['Custom Limits', 'Dedicated Support', 'Tailored Solutions', 'Contact Us for Pricing'], enabled: true, interval: 'monthly' },
+  { id: 'PLAN004-E', name: 'Enterprises', pricePerCredit: 0, minCredits: 0, totalAmount: 0, features: ['Custom Limits', 'Dedicated Support', 'Tailored Solutions', 'Contact Us for Pricing'], enabled: true, interval: 'yearly' },
 ];
+
 
 export let MOCK_TTCS = [
   { id: 'TTC_001', name: 'Dr. Priya Sharma', email: 'priya.sharma@pragati.com', collegeId: 'COL001', expertise: ['AI', 'Machine Learning'], maxConsultations: 3, currentConsultations: 1, status: 'Active' },

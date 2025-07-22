@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -14,7 +15,7 @@ export default function PlanPaymentPage() {
     const { toast } = useToast();
     const currentPlanId = MOCK_COLLEGES[0].currentPlanId;
     const currentPlan = MOCK_PLANS.find(p => p.id === currentPlanId);
-    const [interval, setInterval] = React.useState('monthly');
+    const [interval, setInterval] = React.useState(currentPlan?.interval || 'monthly');
 
     const handlePurchase = (planName: string) => {
         toast({
@@ -82,7 +83,7 @@ export default function PlanPaymentPage() {
                                 <Button disabled className="w-full">Current Plan</Button>
                             ) : (
                                 <Button className="w-full" onClick={() => handlePurchase(plan.name)}>
-                                    {plan.name === 'Enterprises' ? 'Contact Us' : 'Upgrade'}
+                                    {plan.name.includes('Enterprises') ? 'Contact Us' : 'Upgrade'}
                                 </Button>
                             )}
                         </CardFooter>
