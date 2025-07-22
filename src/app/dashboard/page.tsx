@@ -47,7 +47,7 @@ function DashboardPageContent() {
   const ideas = MOCK_IDEAS;
   const recentIdeas = ideas.slice(0, 5);
   const getOverallScore = (idea: (typeof ideas)[0]) => {
-    if (!idea.feedback) return "N/A";
+    if (!idea.feedback || !idea.feedback.details) return "N/A";
     const total = idea.feedback.details.reduce((sum, d) => sum + d.score, 0);
     return (total / idea.feedback.details.length).toFixed(1);
   };
