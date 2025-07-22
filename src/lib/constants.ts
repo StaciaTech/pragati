@@ -1,6 +1,4 @@
-
-
-import { Home, LayoutGrid, Lightbulb, Settings, Users, Shield, FileText, PlusCircle, MessageSquare, CreditCard, LifeBuoy, BrainCircuit, Briefcase, BarChart3, Receipt, User, Bell } from "lucide-react";
+import { Home, LayoutGrid, Lightbulb, Settings, Users, Shield, FileText, PlusCircle, MessageSquare, CreditCard, LifeBuoy, BrainCircuit, Briefcase, BarChart3, Receipt, User, Bell, ListChecks } from "lucide-react";
 
 export const ROLES = {
   INNOVATOR: "Innovator",
