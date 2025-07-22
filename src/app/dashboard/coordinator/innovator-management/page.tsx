@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -5,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MOCK_INNOVATORS, MOCK_TTCS, MOCK_COLLEGES, STATUS_COLORS } from '@/lib/mock-data';
+import { MOCK_INNOVATORS, MOCK_TTCS, MOCK_COLLEGES, STATUS_COLORS, MOCK_CREDIT_REQUESTS } from '@/lib/mock-data';
 import {
   Dialog,
   DialogContent,
@@ -15,6 +16,17 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTrigger,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
@@ -25,11 +37,14 @@ export default function InnovatorManagementPage() {
     const college = MOCK_COLLEGES.find(c => c.id === userTTC.collegeId);
     
     const [innovators, setInnovators] = React.useState(MOCK_INNOVATORS);
+    const [requests, setRequests] = React.useState(MOCK_CREDIT_REQUESTS);
     const [isModalOpen, setIsModalOpen] = React.useState(false);
     const [modalType, setModalType] = React.useState<'add' | 'assign'>('add');
     const [currentInnovator, setCurrentInnovator] = React.useState<(typeof innovators)[0] | null>(null);
+    const [isRequestsModalOpen, setIsRequestsModalOpen] = React.useState(false);
 
     const collegeInnovators = innovators.filter(inv => inv.collegeId === userTTC.collegeId);
+    const pendingInnovatorRequests = requests.filter(req => req.requesterType === 'Innovator' && req.status === 'Pending');
 
     const handleOpenModal = (type: 'add' | 'assign', innovator?: (typeof innovators)[0]) => {
         setModalType(type);
@@ -55,6 +70,22 @@ export default function InnovatorManagementPage() {
         setInnovators(prev => prev.map(inv => inv.id === id ? {...inv, status: inv.status === 'Active' ? 'Inactive' : 'Active'} : inv));
         toast({ title: "Status Updated", description: "Innovator status has been toggled."});
     }
+    
+    const handleRequestAction = (requestId: string, action: 'Approved' | 'Rejected') => {
+        const request = requests.find(r => r.id === requestId);
+        if (!request) return;
+
+        setRequests(prev => prev.map(req => req.id === requestId ? { ...req, status: action } : req));
+        
+        if (action === 'Approved') {
+            setInnovators(prev => prev.map(inv => inv.id === request.requesterId ? {...inv, credits: inv.credits + request.amount} : inv));
+        }
+
+        toast({
+            title: `Request ${action}`,
+            description: `The credit request has been ${action.toLowerCase()}.`,
+        });
+    };
 
   return (
     <>
@@ -64,7 +95,12 @@ export default function InnovatorManagementPage() {
                     <CardTitle>Innovator Management</CardTitle>
                     <CardDescription>Add, edit, and manage innovators for {college?.name}.</CardDescription>
                 </div>
-                <Button onClick={() => handleOpenModal('add')}>Add Innovator</Button>
+                <div className="flex items-center gap-2">
+                    <Button variant="outline" onClick={() => setIsRequestsModalOpen(true)} disabled={pendingInnovatorRequests.length === 0}>
+                        Pending Requests <Badge className="ml-2">{pendingInnovatorRequests.length}</Badge>
+                    </Button>
+                    <Button onClick={() => handleOpenModal('add')}>Add Innovator</Button>
+                </div>
             </CardHeader>
             <CardContent>
             <Table>
@@ -142,6 +178,67 @@ export default function InnovatorManagementPage() {
                   </form>
             </DialogContent>
         </Dialog>
+
+        <Dialog open={isRequestsModalOpen} onOpenChange={setIsRequestsModalOpen}>
+            <DialogContent className="max-w-3xl">
+                <DialogHeader>
+                    <DialogTitle>Pending Innovator Credit Requests</DialogTitle>
+                    <DialogDescription>Approve or reject credit requests from your innovators.</DialogDescription>
+                </DialogHeader>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Requester</TableHead>
+                            <TableHead>Amount</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Purpose</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {pendingInnovatorRequests.map(req => (
+                            <TableRow key={req.id}>
+                                <TableCell>{req.requesterName}</TableCell>
+                                <TableCell>{req.amount}</TableCell>
+                                <TableCell>{req.date}</TableCell>
+                                <TableCell className="max-w-xs truncate">{req.purpose}</TableCell>
+                                <TableCell className="text-right space-x-2">
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild><Button size="sm">Approve</Button></AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Approve Request?</AlertDialogTitle>
+                                                <AlertDialogDescription>Are you sure you want to approve this request for {req.amount} credits?</AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => handleRequestAction(req.id, 'Approved')}>Yes, Approve</AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild><Button variant="destructive" size="sm">Reject</Button></AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Reject Request?</AlertDialogTitle>
+                                                <AlertDialogDescription>Are you sure you want to reject this request? This action cannot be undone.</AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => handleRequestAction(req.id, 'Rejected')}>Yes, Reject</AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                <DialogFooter>
+                    <DialogClose asChild><Button type="button" variant="outline">Close</Button></DialogClose>
+                </DialogFooter>
+            </DialogContent>
+      </Dialog>
     </>
   );
 }
