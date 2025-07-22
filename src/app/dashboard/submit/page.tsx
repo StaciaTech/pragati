@@ -148,8 +148,8 @@ function Step1({ form }: { form: any }) {
         <CardDescription>Adjust weights to match your idea's focus.</CardDescription>
       </StepperTrigger>
       <StepperContent>
-        <div className="flex flex-col items-center gap-8 py-6">
-           <div className="w-full max-w-md space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 py-6">
+           <div className="w-full space-y-6">
             <div className="flex flex-wrap gap-2 justify-center">
                 <Button size="sm" variant={preset === 'Balanced' ? 'default' : 'outline'} onClick={() => handlePresetChange('Balanced')}>Balanced</Button>
                 <Button size="sm" variant={preset === 'Research-Focused' ? 'default' : 'outline'} onClick={() => handlePresetChange('Research-Focused')}>Research-Focused</Button>
