@@ -1,3 +1,4 @@
+
 'use client';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { MOCK_COLLEGES, MOCK_IDEAS, MOCK_TTCS } from '@/lib/mock-data';
@@ -39,36 +40,30 @@ export default function PrincipalDashboardPage() {
                     </CardContent>
                 </Card>
             </div>
-            <Card>
-                <CardHeader>
-                    <CardTitle>College Dashboard: {college.name}</CardTitle>
-                    <CardDescription>Welcome to the College Principal Admin Portal.</CardDescription>
-                </CardHeader>
-                 <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Total Ideas Submitted</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-4xl font-bold">{ideas.length}</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Approval Rate</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-4xl font-bold">
-                                    {ideas.length > 0 ? 
-                                    `${((ideas.filter(i => i.status === 'Approved').length / ideas.length) * 100).toFixed(1)}%`
-                                    : '0%'}
-                                </p>
-                            </CardContent>
-                        </Card>
-                    </div>
-                </CardContent>
-            </Card>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Total Ideas Submitted</CardTitle>
+                         <CardDescription>By innovators in your college</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-4xl font-bold">{ideas.length}</p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>College Approval Rate</CardTitle>
+                        <CardDescription>For all validated ideas</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-4xl font-bold">
+                            {ideas.length > 0 ? 
+                            `${((ideas.filter(i => i.status === 'Approved').length / ideas.length) * 100).toFixed(1)}%`
+                            : '0%'}
+                        </p>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 }
