@@ -33,7 +33,7 @@ export default function RequestCreditsPage() {
   const [requests, setRequests] = React.useState(MOCK_CREDIT_REQUESTS);
 
   const pendingRequest = requests.find(
-    (req) => req.requesterId === user.id && req.status === 'Pending'
+    (req) => req.requesterId === user.id && req.status === 'Pending' && req.requesterType === 'Innovator'
   );
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -77,17 +77,15 @@ export default function RequestCreditsPage() {
     setRequests((prev) => [...prev, newRequest]);
     MOCK_CREDIT_REQUESTS.push(newRequest);
 
-    console.log('New Credit Request:', { amount, purpose });
     toast({
       title: 'Request Submitted',
-      description: `Your request for ${amount} credits has been submitted successfully.`,
+      description: `Your request for ${amount} credits has been submitted to your TTC Coordinator.`,
     });
     event.currentTarget.reset();
   };
 
   const handleCancelRequest = (requestId: string) => {
     setRequests((prev) => prev.filter((req) => req.id !== requestId));
-    // Also update the mock data source if needed
     const index = MOCK_CREDIT_REQUESTS.findIndex((req) => req.id === requestId);
     if (index > -1) {
       MOCK_CREDIT_REQUESTS.splice(index, 1);
@@ -105,8 +103,7 @@ export default function RequestCreditsPage() {
           <CardHeader>
             <CardTitle>Pending Request</CardTitle>
             <CardDescription>
-              You have a credit request awaiting approval. You cannot make a new
-              request until the current one is resolved.
+              You have a credit request awaiting approval from your TTC Coordinator.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
@@ -159,11 +156,11 @@ export default function RequestCreditsPage() {
       <Card>
         <form onSubmit={handleSubmit}>
           <CardHeader>
-            <CardTitle>Request Credits</CardTitle>
+            <CardTitle>Request Credits from TTC Coordinator</CardTitle>
             <CardDescription>
               You currently have{' '}
               <span className="font-bold text-primary">{user.credits}</span>{' '}
-              credits available. Use this form to request additional credits.
+              credits available. Use this form to request additional credits from your TTC.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -192,7 +189,7 @@ export default function RequestCreditsPage() {
           </CardContent>
           <CardFooter>
             <Button type="submit" disabled={!!pendingRequest}>
-              Submit Request
+              Submit Request to TTC
             </Button>
           </CardFooter>
         </form>

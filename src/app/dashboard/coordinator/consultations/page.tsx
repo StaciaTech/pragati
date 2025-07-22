@@ -72,7 +72,7 @@ export default function CoordinatorConsultationsPage() {
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button variant="link" size="sm">Manage</Button>
+                  <Button variant="link" size="sm">View Details</Button>
                 </TableCell>
               </TableRow>
             ))}

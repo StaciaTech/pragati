@@ -2,6 +2,8 @@
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { MOCK_IDEAS, MOCK_TTCS } from '@/lib/mock-data';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 
 export default function CollegeAnalyticsPage() {
     const totalIdeas = MOCK_IDEAS.length;
@@ -12,6 +14,8 @@ export default function CollegeAnalyticsPage() {
         acc[idea.domain] = (acc[idea.domain] || 0) + 1;
         return acc;
     }, {} as Record<string, number>);
+    
+    const domainChartData = Object.entries(domainSubmissions).map(([name, ideas]) => ({ name, ideas }));
 
   return (
     <div className="space-y-6">
@@ -42,14 +46,25 @@ export default function CollegeAnalyticsPage() {
           <CardTitle>Domain-wise Submission Trends</CardTitle>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-2">
-            {Object.entries(domainSubmissions).map(([domain, count]) => (
-              <li key={domain} className="flex justify-between items-center bg-muted p-3 rounded-lg">
-                <span className="text-muted-foreground">{domain}</span>
-                <span className="font-bold">{count} Ideas</span>
-              </li>
-            ))}
-          </ul>
+           <ChartContainer config={{}} className="min-h-[200px] w-full">
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={domainChartData}>
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="name"
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                  />
+                   <YAxis />
+                  <Tooltip
+                    cursor={false}
+                    content={<ChartTooltipContent />}
+                  />
+                  <Bar dataKey="ideas" fill="hsl(var(--chart-1))" radius={8} />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
         </CardContent>
       </Card>
     </div>

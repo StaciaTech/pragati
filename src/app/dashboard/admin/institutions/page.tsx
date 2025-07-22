@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { MOCK_COLLEGES } from '@/lib/mock-data';
 import {
   Dialog,
@@ -40,6 +41,11 @@ export default function InstitutionManagementPage() {
         });
         setIsModalOpen(false);
     }
+    
+    const handleToggleStatus = (id: string) => {
+        setColleges(prev => prev.map(college => college.id === id ? {...college, status: college.status === 'Active' ? 'Inactive' : 'Active'} as any : college));
+        toast({ title: "Status Updated", description: "College status has been toggled."});
+    }
 
   return (
     <>
@@ -58,7 +64,7 @@ export default function InstitutionManagementPage() {
                 <TableHead>ID</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Principal Email</TableHead>
-                <TableHead>TTC Limit</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead>Credits</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -69,10 +75,21 @@ export default function InstitutionManagementPage() {
                   <TableCell>{college.id}</TableCell>
                   <TableCell className="font-medium">{college.name}</TableCell>
                   <TableCell>{college.principalEmail}</TableCell>
-                  <TableCell>{college.ttcLimit}</TableCell>
+                  <TableCell>
+                    <Badge variant={college.status === 'Active' ? 'default' : 'destructive'}>
+                        {college.status}
+                    </Badge>
+                  </TableCell>
                   <TableCell>{college.creditsAvailable}</TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right space-x-2">
                     <Button variant="outline" size="sm" onClick={() => handleOpenModal('edit', college)}>Edit</Button>
+                     <Button 
+                        variant={college.status === 'Active' ? 'destructive' : 'default'} 
+                        size="sm" 
+                        onClick={() => handleToggleStatus(college.id)}
+                    >
+                      {college.status === 'Active' ? 'Deactivate' : 'Activate'}
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

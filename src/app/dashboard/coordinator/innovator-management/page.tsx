@@ -50,6 +50,11 @@ export default function InnovatorManagementPage() {
         }
         setIsModalOpen(false);
     }
+    
+    const handleToggleStatus = (id: string) => {
+        setInnovators(prev => prev.map(inv => inv.id === id ? {...inv, status: inv.status === 'Active' ? 'Inactive' : 'Active'} : inv));
+        toast({ title: "Status Updated", description: "Innovator status has been toggled."});
+    }
 
   return (
     <>
@@ -83,8 +88,15 @@ export default function InnovatorManagementPage() {
                     <TableCell>
                         <Badge className={STATUS_COLORS[innovator.status]}>{innovator.status}</Badge>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right space-x-2">
                         <Button variant="outline" size="sm" onClick={() => handleOpenModal('assign', innovator)}>Assign Credits</Button>
+                         <Button 
+                            variant={innovator.status === 'Active' ? 'destructive' : 'default'} 
+                            size="sm" 
+                            onClick={() => handleToggleStatus(innovator.id)}
+                        >
+                          {innovator.status === 'Active' ? 'Deactivate' : 'Activate'}
+                        </Button>
                     </TableCell>
                     </TableRow>
                 ))}

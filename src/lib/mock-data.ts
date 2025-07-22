@@ -613,28 +613,39 @@ export let MOCK_CONSULTATIONS = [
   },
 ];
 
-export let MOCK_CREDIT_REQUESTS = [
-  { id: 'CR-COL-001', requesterType: 'College', requesterId: 'COL001', requesterName: 'Pragati University', amount: 50, status: 'Pending', date: '2024-07-10', purpose: 'Bulk credits for new semester' },
+export let MOCK_CREDIT_REQUESTS: {
+    id: string;
+    requesterType: 'College' | 'TTC' | 'Innovator';
+    requesterId: string;
+    requesterName: string;
+    amount: number;
+    status: 'Pending' | 'Approved' | 'Rejected';
+    date: string;
+    purpose: string;
+}[] = [
+  { id: 'CR-COL-001', requesterType: 'College', requesterId: 'COL001', requesterName: 'Pragati Institute of Technology', amount: 50, status: 'Pending', date: '2024-07-10', purpose: 'Bulk credits for new semester' },
+  { id: 'CR-TTC-001', requesterType: 'TTC', requesterId: 'TTC_001', requesterName: 'Dr. Priya Sharma', amount: 20, status: 'Pending', date: '2024-07-14', purpose: 'Credits for upcoming innovator batch' },
   { id: 'CR-INV-001', requesterType: 'Innovator', requesterId: 'innovator-001', requesterName: 'Jane Doe', amount: 1, status: 'Pending', date: '2024-07-15', purpose: 'Need 1 credit for new idea submission' },
+  { id: 'CR-INV-002', requesterType: 'Innovator', requesterId: 'INV002', requesterName: 'John Smith', amount: 5, status: 'Approved', date: '2024-07-12', purpose: 'Resubmission of project' },
 ];
 
 export let MOCK_COLLEGES = [
-  { id: 'COL001', name: 'Pragati Institute of Technology', principalEmail: 'principal.pit@pragati.com', ttcLimit: 5, creditsAvailable: 100, currentPlanId: 'PLAN001' },
-  { id: 'COL002', name: 'Global School of Innovation', principalEmail: 'principal.gsi@pragati.com', ttcLimit: 3, creditsAvailable: 75, currentPlanId: 'PLAN001' },
-  { id: 'COL003', name: 'Tech University Chennai', principalEmail: 'principal.tuc@pragati.com', ttcLimit: 7, creditsAvailable: 120, currentPlanId: 'PLAN002' },
+  { id: 'COL001', name: 'Pragati Institute of Technology', principalEmail: 'principal.pit@pragati.com', ttcLimit: 5, creditsAvailable: 100, currentPlanId: 'PLAN001', status: 'Active' },
+  { id: 'COL002', name: 'Global School of Innovation', principalEmail: 'principal.gsi@pragati.com', ttcLimit: 3, creditsAvailable: 75, currentPlanId: 'PLAN001', status: 'Active' },
+  { id: 'COL003', name: 'Tech University Chennai', principalEmail: 'principal.tuc@pragati.com', ttcLimit: 7, creditsAvailable: 120, currentPlanId: 'PLAN002', status: 'Inactive' },
 ];
 
 export let MOCK_PLANS = [
-  { id: 'PLAN001', name: 'Essential', pricePerCredit: 500, minCredits: 20, totalAmount: 10000, features: ['20 Idea Submissions', 'Basic Feedback', '5 TTCs'], enabled: true },
-  { id: 'PLAN002', name: 'Advance', pricePerCredit: 490, minCredits: 50, totalAmount: 24500, features: ['50 Idea Submissions', 'Detailed Feedback', '10 TTCs', '2 Consultations'], enabled: true },
-  { id: 'PLAN003', name: 'Advance Pro', pricePerCredit: 475, minCredits: 100, totalAmount: 47500, features: ['Unlimited Idea Submissions', 'Premium Feedback', '15 TTCs', 'Unlimited Consultations'], enabled: true },
-  { id: 'PLAN004', name: 'Enterprises', pricePerCredit: 0, minCredits: 0, totalAmount: 0, features: ['Custom Limits', 'Dedicated Support', 'Tailored Solutions', 'Contact Us for Pricing'], enabled: true },
+  { id: 'PLAN001', name: 'Essential', pricePerCredit: 500, minCredits: 20, totalAmount: 10000, features: ['20 Idea Submissions', 'Basic Feedback', '5 TTCs'], enabled: true, interval: 'monthly' },
+  { id: 'PLAN002', name: 'Advance', pricePerCredit: 490, minCredits: 50, totalAmount: 24500, features: ['50 Idea Submissions', 'Detailed Feedback', '10 TTCs', '2 Consultations'], enabled: true, interval: 'monthly' },
+  { id: 'PLAN003', name: 'Advance Pro', pricePerCredit: 475, minCredits: 100, totalAmount: 47500, features: ['Unlimited Idea Submissions', 'Premium Feedback', '15 TTCs', 'Unlimited Consultations'], enabled: true, interval: 'yearly' },
+  { id: 'PLAN004', name: 'Enterprises', pricePerCredit: 0, minCredits: 0, totalAmount: 0, features: ['Custom Limits', 'Dedicated Support', 'Tailored Solutions', 'Contact Us for Pricing'], enabled: true, interval: 'yearly' },
 ];
 
 export let MOCK_TTCS = [
   { id: 'TTC_001', name: 'Dr. Priya Sharma', email: 'priya.sharma@pragati.com', collegeId: 'COL001', expertise: ['AI', 'Machine Learning'], maxConsultations: 3, currentConsultations: 1, status: 'Active' },
   { id: 'TTC_002', name: 'Mr. Rahul Verma', email: 'rahul.verma@pragati.com', collegeId: 'COL001', expertise: ['Blockchain', 'FinTech'], maxConsultations: 2, currentConsultations: 0, status: 'Active' },
-  { id: 'TTC_003', name: 'Ms. Sneha Reddy', email: 'sneha.reddy@pragati.com', collegeId: 'COL002', expertise: ['Robotics', 'IoT'], maxConsultations: 4, currentConsultations: 0, status: 'Active' },
+  { id: 'TTC_003', name: 'Ms. Sneha Reddy', email: 'sneha.reddy@pragati.com', collegeId: 'COL002', expertise: ['Robotics', 'IoT'], maxConsultations: 4, currentConsultations: 0, status: 'Inactive' },
 ];
 
 export let MOCK_INNOVATORS = [

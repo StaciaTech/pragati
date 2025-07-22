@@ -18,12 +18,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function PlanConfigurationPage() {
     const { toast } = useToast();
     const [plans, setPlans] = React.useState(MOCK_PLANS);
     const [isModalOpen, setIsModalOpen] = React.useState(false);
     const [currentPlan, setCurrentPlan] = React.useState<(typeof MOCK_PLANS)[0] | null>(null);
+    const [interval, setInterval] = React.useState('monthly');
 
     const handleEditPlan = (plan: (typeof MOCK_PLANS)[0]) => {
         setCurrentPlan(plan);
@@ -40,13 +42,23 @@ export default function PlanConfigurationPage() {
         });
         setIsModalOpen(false);
     };
+    
+    const filteredPlans = plans.filter(plan => plan.interval === interval);
 
   return (
     <>
         <Card>
-            <CardHeader>
-                <CardTitle>Plan Configuration</CardTitle>
-                <CardDescription>Define and edit subscription tiers and their features.</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Plan Configuration</CardTitle>
+                  <CardDescription>Define and edit subscription tiers and their features.</CardDescription>
+                </div>
+                 <Tabs value={interval} onValueChange={setInterval}>
+                    <TabsList>
+                        <TabsTrigger value="monthly">Monthly</TabsTrigger>
+                        <TabsTrigger value="yearly">Yearly</TabsTrigger>
+                    </TabsList>
+                </Tabs>
             </CardHeader>
             <CardContent>
             <Table>
@@ -61,7 +73,7 @@ export default function PlanConfigurationPage() {
                 </TableRow>
                 </TableHeader>
                 <TableBody>
-                {plans.map((plan) => (
+                {filteredPlans.map((plan) => (
                     <TableRow key={plan.id}>
                     <TableCell className="font-medium">{plan.name}</TableCell>
                     <TableCell>{plan.pricePerCredit > 0 ? plan.pricePerCredit : 'N/A'}</TableCell>

@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MOCK_TTCS } from '@/lib/mock-data';
+import { MOCK_CREDIT_REQUESTS, MOCK_TTCS } from '@/lib/mock-data';
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,18 @@ import {
   DialogTitle,
   DialogFooter,
   DialogClose,
+  DialogDescription,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+  AlertDialogDescription,
+} from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
@@ -21,9 +32,13 @@ import { useToast } from '@/hooks/use-toast';
 export default function TTCManagementPage() {
     const { toast } = useToast();
     const [ttcs, setTtcs] = React.useState(MOCK_TTCS);
+    const [requests, setRequests] = React.useState(MOCK_CREDIT_REQUESTS);
     const [isModalOpen, setIsModalOpen] = React.useState(false);
     const [modalType, setModalType] = React.useState<'add' | 'edit'>('add');
     const [currentTtc, setCurrentTtc] = React.useState<(typeof ttcs)[0] | null>(null);
+    
+    const [isRequestsModalOpen, setIsRequestsModalOpen] = React.useState(false);
+    const pendingTTCRequests = requests.filter(req => req.requesterType === 'TTC' && req.status === 'Pending');
 
     const handleOpenModal = (type: 'add' | 'edit', ttc?: (typeof ttcs)[0]) => {
         setModalType(type);
@@ -47,6 +62,14 @@ export default function TTCManagementPage() {
         toast({ title: "Status Updated", description: "TTC status has been toggled."});
     }
 
+    const handleRequestAction = (requestId: string, action: 'Approved' | 'Rejected') => {
+        setRequests(prev => prev.map(req => req.id === requestId ? { ...req, status: action } : req));
+        toast({
+            title: `Request ${action}`,
+            description: `The credit request has been ${action.toLowerCase()}.`,
+        });
+    };
+
   return (
     <>
       <Card>
@@ -55,7 +78,12 @@ export default function TTCManagementPage() {
                 <CardTitle>TTC Management</CardTitle>
                 <CardDescription>Add, edit, and manage TTCs for your college.</CardDescription>
             </div>
-            <Button onClick={() => handleOpenModal('add')}>Add New TTC</Button>
+            <div className="flex items-center gap-2">
+                <Button variant="outline" onClick={() => setIsRequestsModalOpen(true)} disabled={pendingTTCRequests.length === 0}>
+                    Pending Requests <Badge className="ml-2">{pendingTTCRequests.length}</Badge>
+                </Button>
+                <Button onClick={() => handleOpenModal('add')}>Add New TTC</Button>
+            </div>
         </CardHeader>
         <CardContent>
           <Table>
@@ -123,6 +151,67 @@ export default function TTCManagementPage() {
                     <Button type="submit">Save</Button>
                 </DialogFooter>
             </form>
+        </DialogContent>
+      </Dialog>
+      
+      <Dialog open={isRequestsModalOpen} onOpenChange={setIsRequestsModalOpen}>
+        <DialogContent className="max-w-3xl">
+            <DialogHeader>
+                <DialogTitle>Pending TTC Credit Requests</DialogTitle>
+                <DialogDescription>Approve or reject credit requests from your TTCs.</DialogDescription>
+            </DialogHeader>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Requester</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Purpose</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {pendingTTCRequests.map(req => (
+                        <TableRow key={req.id}>
+                            <TableCell>{req.requesterName}</TableCell>
+                            <TableCell>{req.amount}</TableCell>
+                            <TableCell>{req.date}</TableCell>
+                            <TableCell className="max-w-xs truncate">{req.purpose}</TableCell>
+                            <TableCell className="text-right space-x-2">
+                                 <AlertDialog>
+                                    <AlertDialogTrigger asChild><Button size="sm">Approve</Button></AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Approve Request?</AlertDialogTitle>
+                                            <AlertDialogDescription>Are you sure you want to approve this request for {req.amount} credits?</AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => handleRequestAction(req.id, 'Approved')}>Yes, Approve</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild><Button variant="destructive" size="sm">Reject</Button></AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Reject Request?</AlertDialogTitle>
+                                            <AlertDialogDescription>Are you sure you want to reject this request? This action cannot be undone.</AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => handleRequestAction(req.id, 'Rejected')}>Yes, Reject</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+            <DialogFooter>
+                <DialogClose asChild><Button type="button" variant="outline">Close</Button></DialogClose>
+            </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
