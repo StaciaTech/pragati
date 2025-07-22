@@ -18,106 +18,94 @@ export type GenerateValidationReportInput = z.infer<
 
 // Schemas for the detailed report structure
 const SubParameterEvaluationSchema = z.object({
-  assignedScore: z.union([z.number().int().min(1).max(5), z.string().refine(val => val === 'N/A')]).describe("Score from 1-5 or 'N/A'"),
+  assignedScore: z.number().int().min(1).max(5).describe("Score from 1-5"),
   explanation: z.string().describe("Concise explanation for the score (1-3 sentences)"),
   assumptions: z.array(z.string()).describe("List of assumptions made for this evaluation"),
 });
 
+const createSubParameterObject = (schema: z.ZodObject<any>) => z.object(
+    Object.keys(schema.shape).reduce((acc, key) => {
+        acc[key] = SubParameterEvaluationSchema;
+        return acc;
+    }, {} as Record<string, typeof SubParameterEvaluationSchema>)
+);
+
+const CoreIdeaAndInnovationSubParams = {
+    "Originality": {}, "Differentiation": {},
+    "Problem Clarity & Severity": {}, "Target Audience Identification & Definition": {},
+    "Customer Pain Points Validation": {}, "Solution Efficacy": {},
+    "Customer Willingness to Pay": {}, "Jobs-to-Be-Done (JTBD) Alignment": {},
+    "Intuitive Design": {}, "Accessibility Compliance": {}
+};
+
+const MarketAndCommercialOpportunitySubParams = {
+    "Market Size (TAM)": {}, "Competitive Intensity": {},
+    "Regulatory Landscape": {}, "Infrastructure Readiness": {},
+    "User Engagement": {}, "Retention Potential": {}
+};
+
+const ExecutionAndOperationsSubParams = {
+    "Technology Maturity": {}, "Scalability & Performance": {},
+    "Resource Availability": {}, "Process Efficiency": {},
+    "Business Model Scalability": {}, "Market Expansion Potential": {}
+};
+
+const BusinessModelAndStrategySubParams = {
+    "Revenue Stream Diversity": {}, "Profitability & Margins": {},
+    "Intellectual Property (IP)": {}, "Network Effects": {}
+};
+
+const TeamAndOrganizationalHealthSubParams = {
+    "Relevant Experience": {}, "Complementary Skills": {},
+    "Mission Alignment": {}, "Diversity & Inclusion": {}
+};
+
+const ExternalEnvironmentAndComplianceSubParams = {
+    "Data Privacy Compliance": {}, "Sector-Specific Compliance": {},
+    "Environmental Impact": {}, "Social Impact (SDGs)": {},
+    "Government & Institutional Support": {}, "Investor & Partner Landscape": {}
+};
+
+const RiskAndFutureOutlookSubParams = {
+    "Technical Risks": {}, "Market Risks": {}, "Operational Risks": {},
+    "ROI Potential": {}, "Exit Strategy Feasibility": {},
+    "Research Synergy": {}, "National Priority Alignment": {}
+};
+
+
 export const DetailedEvaluationClustersSchema = z.object({
   "Core Idea & Innovation": z.object({
-    "Novelty & Uniqueness": z.object({
-      "Originality": SubParameterEvaluationSchema,
-      "Differentiation": SubParameterEvaluationSchema
-    }),
-    "Problem-Solution Fit & Market Need": z.object({
-      "Problem Clarity & Severity": SubParameterEvaluationSchema,
-      "Target Audience Identification & Definition": SubParameterEvaluationSchema,
-      "Customer Pain Points Validation": SubParameterEvaluationSchema,
-      "Solution Efficacy": SubParameterEvaluationSchema,
-      "Customer Willingness to Pay": SubParameterEvaluationSchema,
-      "Jobs-to-Be-Done (JTBD) Alignment": SubParameterEvaluationSchema
-    }),
-    "User Experience (UX) & Usability Potential": z.object({
-      "Intuitive Design": SubParameterEvaluationSchema,
-      "Accessibility Compliance": SubParameterEvaluationSchema
-    })
+    "Novelty & Uniqueness": z.object({ "Originality": SubParameterEvaluationSchema, "Differentiation": SubParameterEvaluationSchema }),
+    "Problem-Solution Fit & Market Need": z.object({ "Problem Clarity & Severity": SubParameterEvaluationSchema, "Target Audience Identification & Definition": SubParameterEvaluationSchema, "Customer Pain Points Validation": SubParameterEvaluationSchema, "Solution Efficacy": SubParameterEvaluationSchema, "Customer Willingness to Pay": SubParameterEvaluationSchema, "Jobs-to-Be-Done (JTBD) Alignment": SubParameterEvaluationSchema }),
+    "User Experience (UX) & Usability Potential": z.object({ "Intuitive Design": SubParameterEvaluationSchema, "Accessibility Compliance": SubParameterEvaluationSchema })
   }),
   "Market & Commercial Opportunity": z.object({
-    "Market Validation": z.object({
-      "Market Size (TAM)": SubParameterEvaluationSchema,
-      "Competitive Intensity": SubParameterEvaluationSchema
-    }),
-    "Geographic Specificity (India)": z.object({
-      "Regulatory Landscape": SubParameterEvaluationSchema,
-      "Infrastructure Readiness": SubParameterEvaluationSchema
-    }),
-    "Product-Market Fit": z.object({
-      "User Engagement": SubParameterEvaluationSchema,
-      "Retention Potential": SubParameterEvaluationSchema
-    })
+    "Market Validation": z.object({ "Market Size (TAM)": SubParameterEvaluationSchema, "Competitive Intensity": SubParameterEvaluationSchema }),
+    "Geographic Specificity (India)": z.object({ "Regulatory Landscape": SubParameterEvaluationSchema, "Infrastructure Readiness": SubParameterEvaluationSchema }),
+    "Product-Market Fit": z.object({ "User Engagement": SubParameterEvaluationSchema, "Retention Potential": SubParameterEvaluationSchema })
   }),
   "Execution & Operations": z.object({
-      "Technical Feasibility": z.object({
-        "Technology Maturity": SubParameterEvaluationSchema,
-        "Scalability & Performance": SubParameterEvaluationSchema
-      }),
-      "Operational Viability": z.object({
-        "Resource Availability": SubParameterEvaluationSchema,
-        "Process Efficiency": SubParameterEvaluationSchema
-      }),
-      "Scalability Potential": z.object({
-        "Business Model Scalability": SubParameterEvaluationSchema,
-        "Market Expansion Potential": SubParameterEvaluationSchema
-      })
+      "Technical Feasibility": z.object({ "Technology Maturity": SubParameterEvaluationSchema, "Scalability & Performance": SubParameterEvaluationSchema }),
+      "Operational Viability": z.object({ "Resource Availability": SubParameterEvaluationSchema, "Process Efficiency": SubParameterEvaluationSchema }),
+      "Scalability Potential": z.object({ "Business Model Scalability": SubParameterEvaluationSchema, "Market Expansion Potential": SubParameterEvaluationSchema })
   }),
   "Business Model & Strategy": z.object({
-    "Financial Viability": z.object({
-      "Revenue Stream Diversity": SubParameterEvaluationSchema,
-      "Profitability & Margins": SubParameterEvaluationSchema
-    }),
-    "Defensibility": z.object({
-      "Intellectual Property (IP)": SubParameterEvaluationSchema,
-      "Network Effects": SubParameterEvaluationSchema
-    })
+    "Financial Viability": z.object({ "Revenue Stream Diversity": SubParameterEvaluationSchema, "Profitability & Margins": SubParameterEvaluationSchema }),
+    "Defensibility": z.object({ "Intellectual Property (IP)": SubParameterEvaluationSchema, "Network Effects": SubParameterEvaluationSchema })
   }),
   "Team & Organizational Health": z.object({
-    "Founder-Fit": z.object({
-      "Relevant Experience": SubParameterEvaluationSchema,
-      "Complementary Skills": SubParameterEvaluationSchema
-    }),
-    "Culture/Values": z.object({
-      "Mission Alignment": SubParameterEvaluationSchema,
-      "Diversity & Inclusion": SubParameterEvaluationSchema
-    })
+    "Founder-Fit": z.object({ "Relevant Experience": SubParameterEvaluationSchema, "Complementary Skills": SubParameterEvaluationSchema }),
+    "Culture/Values": z.object({ "Mission Alignment": SubParameterEvaluationSchema, "Diversity & Inclusion": SubParameterEvaluationSchema })
   }),
   "External Environment & Compliance": z.object({
-    "Regulatory (India)": z.object({
-      "Data Privacy Compliance": SubParameterEvaluationSchema,
-      "Sector-Specific Compliance": SubParameterEvaluationSchema
-    }),
-    "Sustainability (ESG)": z.object({
-      "Environmental Impact": SubParameterEvaluationSchema,
-      "Social Impact (SDGs)": SubParameterEvaluationSchema
-    }),
-    "Ecosystem Support (India)": z.object({
-      "Government & Institutional Support": SubParameterEvaluationSchema,
-      "Investor & Partner Landscape": SubParameterEvaluationSchema
-    })
+    "Regulatory (India)": z.object({ "Data Privacy Compliance": SubParameterEvaluationSchema, "Sector-Specific Compliance": SubParameterEvaluationSchema }),
+    "Sustainability (ESG)": z.object({ "Environmental Impact": SubParameterEvaluationSchema, "Social Impact (SDGs)": SubParameterEvaluationSchema }),
+    "Ecosystem Support (India)": z.object({ "Government & Institutional Support": SubParameterEvaluationSchema, "Investor & Partner Landscape": SubParameterEvaluationSchema })
   }),
   "Risk & Future Outlook": z.object({
-    "Risk Assessment": z.object({
-      "Technical Risks": SubParameterEvaluationSchema,
-      "Market Risks": SubParameterEvaluationSchema,
-      "Operational Risks": SubParameterEvaluationSchema
-    }),
-    "Investor Attractiveness": z.object({
-      "ROI Potential": SubParameterEvaluationSchema,
-      "Exit Strategy Feasibility": SubParameterEvaluationSchema
-    }),
-    "Academic/National Alignment": z.object({
-      "Research Synergy": SubParameterEvaluationSchema,
-      "National Priority Alignment": SubParameterEvaluationSchema
-    })
+    "Risk Assessment": z.object({ "Technical Risks": SubParameterEvaluationSchema, "Market Risks": SubParameterEvaluationSchema, "Operational Risks": SubParameterEvaluationSchema }),
+    "Investor Attractiveness": z.object({ "ROI Potential": SubParameterEvaluationSchema, "Exit Strategy Feasibility": SubParameterEvaluationSchema }),
+    "Academic/National Alignment": z.object({ "Research Synergy": SubParameterEvaluationSchema, "National Priority Alignment": SubParameterEvaluationSchema })
   })
 });
 

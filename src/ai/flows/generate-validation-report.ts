@@ -48,8 +48,8 @@ Category: {{category}}
 Institution: {{institution}}
 
 **Instructions:**
-1.  **Output Format:** Your response MUST be a single, valid JSON object that conforms to the DetailedEvaluationClustersSchema.
-2.  **Scoring:** For each sub-parameter, assign a score from 1 to 5 (integer) or 'N/A'.
+1.  **Output Format:** Your response MUST be a single, valid JSON object that conforms to the DetailedEvaluationClustersSchema. Do not add any text or formatting before or after the JSON object.
+2.  **Scoring:** For each sub-parameter, assign a score from 1 to 5 (integer). Do not use 'N/A'. If a parameter is not applicable, assign a score of 3.
 3.  **Justification:** For each score, provide a concise 'explanation' (1-3 sentences) and list any 'assumptions' you made as an array of strings.
 `,
 });
@@ -79,12 +79,16 @@ const generateValidationReportFlow = ai.defineFlow(
     for (const clusterName in SUB_PARAMETER_DEFINITIONS) {
         if (!CLUSTER_WEIGHTS[clusterName]) continue;
 
-        for (const paramName in SUB_PARAMETER_DEFINITIONS[clusterName].parameters) {
-            if (!PARAMETER_WEIGHTS[clusterName] || !PARAMETER_WEIGHTS[clusterName][paramName]) continue;
+        const clusterDef = SUB_PARAMETER_DEFINITIONS[clusterName as keyof typeof SUB_PARAMETER_DEFINITIONS];
+        if (!clusterDef || !clusterDef.parameters) continue;
+
+        for (const paramName in clusterDef.parameters) {
+            const paramDef = clusterDef.parameters[paramName as keyof typeof clusterDef.parameters];
+            if (!PARAMETER_WEIGHTS[clusterName] || !PARAMETER_WEIGHTS[clusterName][paramName] || !paramDef.subParameters) continue;
             
-            for (const subParamName in SUB_PARAMETER_DEFINITIONS[clusterName].parameters[paramName].subParameters) {
-                const subParamDef = SUB_PARAMETER_DEFINITIONS[clusterName].parameters[paramName].subParameters[subParamName];
-                const scoreData = detailedEvaluationClusters[clusterName]?.[paramName]?.[subParamName];
+            for (const subParamName in paramDef.subParameters) {
+                const subParamDef = paramDef.subParameters[subParamName as keyof typeof paramDef.subParameters];
+                const scoreData = detailedEvaluationClusters[clusterName as keyof typeof detailedEvaluationClusters]?.[paramName as keyof object]?.[subParamName as keyof object];
 
                 if (scoreData && typeof scoreData.assignedScore === 'number') {
                     const weight = (subParamDef.weight || 0) * (PARAMETER_WEIGHTS[clusterName][paramName] || 0) * (CLUSTER_WEIGHTS[clusterName] || 0);
@@ -94,8 +98,8 @@ const generateValidationReportFlow = ai.defineFlow(
             }
         }
     }
-
-    const overallScore = totalWeightUsed > 0 ? totalWeightedScore / totalWeightUsed : 0;
+    
+    const overallScore = totalWeightUsed > 0 ? (totalWeightedScore / totalWeightUsed) : 0;
     
     // Step 3: Determine outcome based on the calculated score
     const validationOutcome = 
