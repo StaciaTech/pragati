@@ -5,16 +5,16 @@
 
 @layer base {
   :root {
-    --background: 240 10% 96.1%;
+    --background: 240 10% 98%;
     --foreground: 222.2 84% 4.9%;
  
-    --card: 240 10% 96.1%;
+    --card: 240 10% 98%;
     --card-foreground: 222.2 84% 4.9%;
  
-    --popover: 240 10% 96.1%;
+    --popover: 240 10% 98%;
     --popover-foreground: 222.2 84% 4.9%;
  
-    --primary: 244.8 95.2% 67.3%;
+    --primary: 262 82% 62%;
     --primary-foreground: 0 0% 98%;
  
     --secondary: 346.8 77.2% 49.8%;
@@ -31,7 +31,7 @@
 
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 244.8 95.2% 67.3%;
+    --ring: 262 82% 62%;
  
     --radius: 0.75rem;
 
@@ -68,7 +68,7 @@
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
  
-    --primary: 244.8 95.2% 67.3%;
+    --primary: 262 82% 62%;
     --primary-foreground: 0 0% 98%;
  
     --secondary: 346.8 77.2% 49.8%;
@@ -85,7 +85,7 @@
  
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 244.8 95.2% 67.3%;
+    --ring: 262 82% 62%;
   }
 }
  
@@ -101,5 +101,9 @@
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  .dot-bg {
+    background-image: radial-gradient(circle at 1px 1px, hsl(var(--primary-foreground) / 0.2) 1px, transparent 0);
+    background-size: 2rem 2rem;
   }
 }

@@ -130,8 +130,8 @@ export default function LoginPage() {
              <p className="text-xs text-muted-foreground text-center">© 2024 PragatiAI by Stacia Corp</p>
           </div>
       </div>
-      <div className="relative hidden h-full flex-col bg-primary p-10 text-white dark:border-r lg:flex">
-          <div className="absolute inset-0 bg-primary" />
+      <div className="relative hidden h-full flex-col bg-primary p-10 text-primary-foreground dark:border-r lg:flex">
+          <div className="absolute inset-0 dot-bg animate-move-dots" />
            <div className="relative z-20 h-full flex flex-col justify-between">
                 <div className="flex items-center gap-2 text-lg font-medium text-primary-foreground">
                     <BrainCircuit className="h-7 w-7" />
