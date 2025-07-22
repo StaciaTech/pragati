@@ -50,6 +50,7 @@ import { INITIAL_CLUSTER_WEIGHTS } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 import { ROLES } from '@/lib/constants';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 const clusterKeys = Object.keys(INITIAL_CLUSTER_WEIGHTS);
 const weightageSchema = clusterKeys.reduce((acc, key) => {
@@ -66,9 +67,9 @@ const submitIdeaSchema = z.object({
   description: z.string().min(1, 'Description is required.'),
   pptFile: z
     .any()
-    .refine((file) => file && file.name, 'PPT file is required.')
+    .refine((files) => files?.[0], 'PPT file is required.')
     .refine(
-      (file) => file?.name?.endsWith('.ppt') || file?.name?.endsWith('.pptx'),
+      (files) => files?.[0]?.name?.endsWith('.ppt') || files?.[0]?.name?.endsWith('.pptx'),
       'Please upload a .ppt or .pptx file.'
     ),
   domain: z.string().min(1, 'Project domain is required.'),
@@ -210,6 +211,7 @@ function Step2({ form }: { form: any }) {
     const { setActiveStep } = useStepper();
     const domain = form.watch('domain');
     const [shakeErrors, setShakeErrors] = React.useState<Partial<Record<keyof SubmitIdeaForm, boolean>>>({});
+    const pptFileRef = React.useRef<HTMLInputElement>(null);
 
     const handleNext = async () => {
         const fieldsToValidate: (keyof SubmitIdeaForm)[] = ['title', 'description', 'domain', 'pptFile'];
@@ -258,13 +260,16 @@ function Step2({ form }: { form: any }) {
                   <FormMessage />
                 </FormItem>
             )} />
-            <FormField control={form.control} name="pptFile" render={({ field }) => (
+            <FormField control={form.control} name="pptFile" render={({ field: { onChange, value, ...rest } }) => (
                 <FormItem>
                   <FormLabel>Upload PPT</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <FileUp className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                      <Input type="file" className={cn("pl-10", shakeErrors.pptFile && 'animate-shake')} accept=".ppt, .pptx" onChange={(e) => field.onChange(e.target.files ? e.target.files[0] : null)} />
+                      <Input type="file" ref={pptFileRef} className={cn("pl-10", shakeErrors.pptFile && 'animate-shake')} accept=".ppt, .pptx" 
+                        onChange={(e) => onChange(e.target.files)}
+                       {...rest}
+                      />
                     </div>
                   </FormControl>
                   <FormDescription>Please adhere to the provided PPT format guidelines.</FormDescription>
@@ -328,7 +333,7 @@ function Step3({ form, isSubmitting }: { form: any, isSubmitting: boolean }) {
                     <CardContent className="text-sm space-y-2">
                         <p><span className="font-medium text-muted-foreground">Title:</span> {allValues.title}</p>
                         <p><span className="font-medium text-muted-foreground">Description:</span> {allValues.description}</p>
-                        <p><span className="font-medium text-muted-foreground">PPT File:</span> {allValues.pptFile?.name || 'Not provided'}</p>
+                        <p><span className="font-medium text-muted-foreground">PPT File:</span> {allValues.pptFile?.[0]?.name || 'Not provided'}</p>
                         <p><span className="font-medium text-muted-foreground">Domain:</span> {allValues.domain === 'Other' ? allValues.otherDomain : allValues.domain}</p>
                     </CardContent>
                 </Card>
@@ -370,6 +375,7 @@ export default function SubmitIdeaPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const isEditing = searchParams.has('idea');
 
   const getInitialValues = () => {
       const ideaParam = searchParams.get('idea');
@@ -458,11 +464,20 @@ export default function SubmitIdeaPage() {
   return (
     <Card className="relative">
       <CardHeader>
-        <CardTitle>Submit New Idea</CardTitle>
-        <CardDescription>
-          Follow the steps to validate and launch your innovation journey.
-        </CardDescription>
-        {searchParams.get('idea') && (
+        <div className="flex justify-between items-center">
+            <div>
+                <CardTitle>Submit New Idea</CardTitle>
+                <CardDescription>
+                Follow the steps to validate and launch your innovation journey.
+                </CardDescription>
+            </div>
+            {isEditing && (
+                <Button variant="outline" asChild>
+                    <Link href={`/dashboard/ideas?role=${ROLES.INNOVATOR}`}>Cancel Resubmission</Link>
+                </Button>
+            )}
+        </div>
+        {isEditing && (
             <p className="text-sm font-medium text-blue-600 bg-blue-100 p-3 rounded-md mt-2">
                 You are editing a previous submission. Please review and make any necessary changes. Resubmitting will cost 1 credit.
             </p>
