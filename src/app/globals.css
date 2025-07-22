@@ -19,46 +19,46 @@ h6 {
   :root {
     --background: 220 20% 98%;
     --foreground: 220 10% 20%;
-    --card: 220 20% 98% / 0.8;
+    --card: 220 20% 100% / 0.8;
     --card-foreground: 220 10% 20%;
-    --popover: 220 20% 98%;
+    --popover: 220 20% 100%;
     --popover-foreground: 220 10% 20%;
-    --primary: 206 100% 35%;
+    --primary: 239 84% 67%; /* Indigo */
     --primary-foreground: 0 0% 100%;
     --secondary: 220 15% 95%;
     --secondary-foreground: 220 10% 20%;
     --muted: 220 15% 95%;
     --muted-foreground: 220 10% 45%;
-    --accent: 200 98% 40%;
-    --accent-foreground: 220 10% 20%;
+    --accent: 188 85% 53%; /* Neon Cyan */
+    --accent-foreground: 220 10% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
     --border: 220 15% 90%;
     --input: 220 15% 90%;
-    --ring: 206 100% 35%;
+    --ring: 239 84% 67%; /* Indigo */
     --radius: 0.75rem;
 
     /* Custom App Colors */
     --color-approved: 142 60% 45%;
-    --color-moderate: 45 90% 55%;
+    --color-moderate: 35 96% 72%; /* Peach */
     --color-rejected: 0 80% 60%;
 
     /* Chart Colors */
-    --chart-1: 206 100% 35%; /* primary */
-    --chart-2: 200 98% 40%; /* accent */
-    --chart-3: 180 82% 40%;
-    --chart-4: 240 82% 66%;
-    --chart-5: 340 82% 66%;
+    --chart-1: 239 84% 67%; /* Indigo */
+    --chart-2: 188 85% 53%; /* Neon Cyan */
+    --chart-3: 325 83% 61%; /* Pink */
+    --chart-4: 258 90% 66%; /* Purple */
+    --chart-5: 35 96% 72%;  /* Peach */
 
     /* Sidebar Colors */
     --sidebar-background: 220 10% 12%;
     --sidebar-foreground: 220 15% 95%;
-    --sidebar-primary: 200 98% 50%;
+    --sidebar-primary: 188 85% 63%;
     --sidebar-primary-foreground: 220 10% 10%;
     --sidebar-accent: 220 10% 20%;
     --sidebar-accent-foreground: 220 15% 95%;
     --sidebar-border: 220 10% 20%;
-    --sidebar-ring: 200 98% 50%;
+    --sidebar-ring: 188 85% 63%;
   }
 
   .dark {
@@ -68,31 +68,31 @@ h6 {
     --card-foreground: 220 15% 95%;
     --popover: 220 10% 12%;
     --popover-foreground: 220 15% 95%;
-    --primary: 200 98% 50%;
-    --primary-foreground: 220 10% 10%;
+    --primary: 239 84% 72%; /* Lighter Indigo */
+    --primary-foreground: 0 0% 100%;
     --secondary: 220 10% 20%;
     --secondary-foreground: 220 15% 95%;
     --muted: 220 10% 20%;
     --muted-foreground: 220 15% 65%;
-    --accent: 206 100% 45%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 188 85% 63%; /* Lighter Neon Cyan */
+    --accent-foreground: 220 10% 10%;
     --destructive: 0 63% 40%;
     --destructive-foreground: 0 0% 100%;
     --border: 220 10% 25%;
     --input: 220 10% 25%;
-    --ring: 200 98% 50%;
+    --ring: 239 84% 72%; /* Lighter Indigo */
 
     /* Custom App Colors */
     --color-approved: 142 60% 55%;
-    --color-moderate: 45 90% 65%;
+    --color-moderate: 35 96% 78%; /* Lighter Peach */
     --color-rejected: 0 80% 70%;
 
     /* Chart Colors */
-    --chart-1: 200 98% 50%; /* primary */
-    --chart-2: 206 100% 45%; /* accent */
-    --chart-3: 180 82% 50%;
-    --chart-4: 240 82% 76%;
-    --chart-5: 340 82% 76%;
+    --chart-1: 239 84% 72%; /* Lighter Indigo */
+    --chart-2: 188 85% 63%; /* Lighter Neon Cyan */
+    --chart-3: 325 83% 71%; /* Lighter Pink */
+    --chart-4: 258 90% 76%; /* Lighter Purple */
+    --chart-5: 35 96% 78%;  /* Lighter Peach */
 
     /* Sidebar Colors are the same as light mode for a consistent dark sidebar */
   }
@@ -116,6 +116,6 @@ h6 {
     text-wrap: balance;
   }
   .glassmorphism {
-      @apply backdrop-blur-lg;
+    @apply bg-card/80 backdrop-blur-lg;
   }
 }
