@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,13 +18,13 @@ h6 {
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 0 0% 98%; /* Off-white */
     --foreground: 222.2 84% 4.9%;
 
-    --card: 0 0% 100%;
+    --card: 0 0% 98%; /* Off-white */
     --card-foreground: 222.2 84% 4.9%;
  
-    --popover: 0 0% 100%;
+    --popover: 0 0% 98%; /* Off-white */
     --popover-foreground: 222.2 84% 4.9%;
  
     --primary: 239 84% 67%; /* Indigo #6366F1 */
