@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -187,8 +188,8 @@ function Step1({ form }: { form: any }) {
             </div>
           </div>
           <div className="md:col-span-1 flex items-center justify-center">
-             <div className="w-full h-64 bg-muted/50 rounded-lg flex items-center justify-center">
-                 <SpiderChart data={form.getValues()} size={250} />
+             <div className="w-full h-80 bg-muted/30 rounded-lg flex items-center justify-center p-4">
+                 <SpiderChart data={form.getValues()} size={300} />
              </div>
           </div>
         </div>
@@ -309,7 +310,7 @@ function Step3({ form, isSubmitting }: { form: any, isSubmitting: boolean }) {
                             ))}
                         </div>
                         <div className="mt-4 flex justify-center">
-                            <SpiderChart data={weights} size={200} />
+                            <SpiderChart data={weights} size={250} />
                         </div>
                     </CardContent>
                 </Card>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -8,10 +9,10 @@ interface SpiderChartProps {
   size?: number;
 }
 
-export function SpiderChart({ data, maxScore = 100, size = 200 }: SpiderChartProps) {
+export function SpiderChart({ data, maxScore = 100, size = 300 }: SpiderChartProps) {
   const centerX = size / 2;
   const centerY = size / 2;
-  const radius = size / 2 - 30; // More padding for labels
+  const radius = size / 2 - 40; // Increased padding for longer labels
 
   const validDataKeys = Object.keys(data).filter(key => typeof data[key] === 'number');
 
@@ -38,7 +39,7 @@ export function SpiderChart({ data, maxScore = 100, size = 200 }: SpiderChartPro
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block mx-auto">
        <defs>
         <radialGradient id="spider-gradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-          <stop offset="0%" style={{ stopColor: 'hsla(var(--primary) / 0.5)', stopOpacity: 1 }} />
+          <stop offset="0%" style={{ stopColor: 'hsla(var(--primary) / 0.4)', stopOpacity: 1 }} />
           <stop offset="100%" style={{ stopColor: 'hsla(var(--primary) / 0.1)', stopOpacity: 1 }} />
         </radialGradient>
       </defs>
@@ -56,12 +57,13 @@ export function SpiderChart({ data, maxScore = 100, size = 200 }: SpiderChartPro
             key={`grid-${levelIndex}`}
             points={gridPoints}
             fill="none"
-            stroke="hsl(var(--border))"
-            strokeWidth="0.5"
+            stroke="hsl(var(--border) / 0.5)"
+            strokeWidth="1"
           />
         );
       })}
       
+      {/* Spokes */}
       {angles.map((angle, i) => {
         const point = getPoint(angle, maxScore);
         return (
@@ -71,8 +73,8 @@ export function SpiderChart({ data, maxScore = 100, size = 200 }: SpiderChartPro
             y1={centerY}
             x2={point.x}
             y2={point.y}
-            stroke="hsl(var(--border))"
-            strokeWidth="0.5"
+            stroke="hsl(var(--border) / 0.5)"
+            strokeWidth="1"
           />
         );
       })}
@@ -82,7 +84,7 @@ export function SpiderChart({ data, maxScore = 100, size = 200 }: SpiderChartPro
         points={points}
         fill="url(#spider-gradient)"
         stroke="hsl(var(--primary))"
-        strokeWidth="2"
+        strokeWidth="2.5"
       />
 
       {/* Data Points */}
@@ -90,21 +92,28 @@ export function SpiderChart({ data, maxScore = 100, size = 200 }: SpiderChartPro
         const value = data[validDataKeys[i]];
         const point = getPoint(angle, value);
         return (
-          <circle
-            key={`dot-${i}`}
-            cx={point.x}
-            cy={point.y}
-            r="4"
-            fill="hsl(var(--primary))"
-            className="transition-transform duration-200 ease-in-out hover:scale-150"
-          />
+          <g key={`dot-group-${i}`} className="group transition-transform duration-200 ease-in-out hover:scale-125">
+             <circle
+                cx={point.x}
+                cy={point.y}
+                r="5"
+                fill="hsl(var(--primary))"
+             />
+             <circle
+                cx={point.x}
+                cy={point.y}
+                r="8"
+                fill="hsl(var(--primary) / 0.3)"
+                className="opacity-0 group-hover:opacity-100 transition-opacity"
+             />
+          </g>
         );
       })}
 
       {/* Labels */}
       {angles.map((angle, i) => {
-        const label = validDataKeys[i].replace(/([A-Z])/g, ' $1').trim(); // Add spaces before caps
-        const textPoint = getPoint(angle, maxScore + 15);
+        const label = validDataKeys[i].replace(/([A-Z&])/g, ' $1').trim(); // Add spaces before caps and ampersand
+        const textPoint = getPoint(angle, maxScore + 20); // Move labels further out
         
         const words = label.split(' ');
         
@@ -114,12 +123,12 @@ export function SpiderChart({ data, maxScore = 100, size = 200 }: SpiderChartPro
             x={textPoint.x}
             y={textPoint.y}
             textAnchor="middle"
-            alignmentBaseline="middle"
-            fontSize="10"
-            className="fill-muted-foreground font-medium"
+            dominantBaseline="central"
+            fontSize="11"
+            className="fill-muted-foreground font-semibold"
           >
             {words.map((word, wordIndex) => (
-              <tspan key={wordIndex} x={textPoint.x} dy={wordIndex === 0 ? 0 : '1.2em'}>{word}</tspan>
+              <tspan key={wordIndex} x={textPoint.x} dy={wordIndex === 0 ? '-0.6em' : '1.2em'}>{word}</tspan>
             ))}
           </text>
         );
