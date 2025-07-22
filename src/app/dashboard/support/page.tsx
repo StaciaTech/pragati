@@ -16,9 +16,35 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
 
 
 export default function SupportPage() {
+    const { toast } = useToast();
+    const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+    const handleSubmitSupportRequest = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        toast({
+            title: "Message Sent!",
+            description: "Your message has been sent to support@staciacorp.com. We will get back to you shortly.",
+        });
+        setIsModalOpen(false);
+    }
+
   return (
     <div className="space-y-6">
        <div>
@@ -103,10 +129,48 @@ export default function SupportPage() {
                   Still have questions? Launch our chatbot for instant help or contact our support team directly.
                 </p>
             </div>
-            <div className="flex flex-wrap gap-2">
-                <Button variant="outline">Launch Chatbot</Button>
-                <Button>Contact Support</Button>
-            </div>
+            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                <div className="flex flex-wrap gap-2">
+                    <Button variant="outline">Launch Chatbot</Button>
+                    <DialogTrigger asChild>
+                        <Button>Contact Support</Button>
+                    </DialogTrigger>
+                </div>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Contact Support</DialogTitle>
+                        <DialogDescription>
+                            Fill out the form below and we'll get back to you as soon as possible.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleSubmitSupportRequest}>
+                        <div className="grid gap-4 py-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="name">Name</Label>
+                                <Input id="name" name="name" placeholder="Your Name" required />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="email">Email</Label>
+                                <Input id="email" name="email" type="email" placeholder="your.email@example.com" required />
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="subject">Subject</Label>
+                                <Input id="subject" name="subject" placeholder="e.g., Issue with idea submission" required />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="message">Message</Label>
+                                <Textarea id="message" name="message" placeholder="Describe your issue or question here." required />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <DialogClose asChild>
+                                <Button type="button" variant="outline">Cancel</Button>
+                            </DialogClose>
+                            <Button type="submit">Send Message</Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
           </CardContent>
         </Card>
     </div>
