@@ -20,7 +20,6 @@ const config = {
       fontFamily: {
         body: ['var(--font-body)', 'sans-serif'],
         headline: ['var(--font-body)', 'sans-serif'],
-        code: ['var(--font-code)', 'monospace'],
       },
       colors: {
         border: 'hsl(var(--border))',

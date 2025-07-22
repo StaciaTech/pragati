@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
-import { Inter, Source_Code_Pro } from 'next/font/google';
+import { Inter } from 'next/font/google';
 
 export const metadata: Metadata = {
   title: 'PragatiAI',
@@ -14,11 +14,6 @@ const inter = Inter({
   variable: '--font-body',
 });
 
-const sourceCodePro = Source_Code_Pro({
-  subsets: ['latin'],
-  variable: '--font-code',
-});
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -26,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${sourceCodePro.variable} font-body antialiased`}>
+      <body className={`${inter.variable} font-body antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
