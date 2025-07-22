@@ -1,4 +1,6 @@
+
 import type { ValidationReport } from '@/ai/schemas';
+import { ROLES, type Role } from './constants';
 
 export const MOCK_INNOVATOR_USER = {
   id: 'innovator-001',
@@ -703,3 +705,25 @@ export const STATUS_COLORS: { [key: string]: string } = {
       "Business Model": 15, "Team": 10, "Compliance": 10, "Risk & Strategy": 10
     },
   };
+
+  export const MOCK_NOTIFICATIONS: Record<Role, { id: number; title: string; description: string; read: boolean; }[]> = {
+  [ROLES.INNOVATOR]: [
+    { id: 1, title: 'Idea "Smart Farming" Validated', description: 'Your idea has been successfully validated with an "Approved" status.', read: false },
+    { id: 2, title: 'Credit Request Approved', description: 'Your request for 5 credits has been approved by your TTC.', read: true },
+    { id: 3, title: 'Upcoming Consultation', description: 'Your meeting with Dr. Emily White is scheduled for tomorrow at 10 AM.', read: false },
+  ],
+  [ROLES.COORDINATOR]: [
+    { id: 1, title: 'New Credit Request', description: 'Innovator Jane Doe has requested 2 credits.', read: false },
+    { id: 2, title: 'Consultation Scheduled', description: 'Innovator John Smith has scheduled a consultation with you.', read: true },
+    { id: 3, title: 'Your Credit Request Approved', description: 'Your request for 20 credits has been approved by the Principal.', read: false },
+  ],
+  [ROLES.PRINCIPAL]: [
+    { id: 1, title: 'New Credit Request from TTC', description: 'TTC Dr. Priya Sharma has requested 20 credits.', read: false },
+    { id: 2, title: 'Plan Upgrade Recommended', description: 'Your usage is high. Consider upgrading to the Advance Pro plan.', read: false },
+    { id: 3, title: 'Payment Due', description: 'Your monthly subscription payment is due next week.', read: true },
+  ],
+  [ROLES.SUPER_ADMIN]: [
+    { id: 1, title: 'New Support Ticket #12345', description: 'A new high-priority support ticket has been opened.', read: false },
+    { id: 2, title: 'System Load Normal', description: 'System performance is stable.', read: true },
+  ],
+};

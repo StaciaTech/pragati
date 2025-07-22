@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Suspense } from 'react';
@@ -21,6 +22,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { NAV_LINKS, ROLES, type Role } from '@/lib/constants';
 import { MOCK_INNOVATOR_USER, MOCK_TTCS, MOCK_COLLEGES } from '@/lib/mock-data';
 import { CreditCard, LogOut } from 'lucide-react';
+import { Notifications } from '@/components/notifications';
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -48,7 +50,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       <Sidebar>
         <SidebarHeader>
           <div className="flex items-center gap-2">
-            <Logo className="size-7 text-primary" />
+            <Logo className="size-7 text-sidebar-foreground" />
             <span className="text-lg font-semibold text-sidebar-foreground">
               PragatiAI
             </span>
@@ -98,6 +100,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                     <span>{credits} Credits</span>
                 </div>
             )}
+            <Notifications role={role} />
             <ThemeToggle />
           </div>
         </header>
