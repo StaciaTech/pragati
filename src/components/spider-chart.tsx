@@ -33,7 +33,7 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: SpiderChartPro
     return `${point.x},${point.y}`;
   }).join(' ');
 
-  const gridLevels = 20; // For increments of 5 up to 100
+  const gridLevels = 4; // For increments of 25 up to 100
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block mx-auto">
