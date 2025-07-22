@@ -200,7 +200,22 @@ function Step1({ form }: { form: any }) {
 }
 
 function Step2({ form }: { form: any }) {
+    const { setActiveStep } = useStepper();
     const domain = form.watch('domain');
+
+    const handleNext = async () => {
+        const fieldsToValidate: ('title' | 'description' | 'domain' | 'otherDomain')[] = ['title', 'description', 'domain'];
+        if (form.getValues('domain') === 'Other') {
+            fieldsToValidate.push('otherDomain');
+        }
+        
+        const isValid = await form.trigger(fieldsToValidate);
+
+        if (isValid) {
+            setActiveStep(2);
+        }
+    };
+
 
     return (
         <StepperItem index={1}>
@@ -270,7 +285,7 @@ function Step2({ form }: { form: any }) {
           </div>
           <div className="flex justify-between">
               <StepperPrevious variant="outline" />
-              <StepperNext>Review & Submit</StepperNext>
+              <Button onClick={handleNext}>Review & Submit</Button>
           </div>
         </StepperContent>
       </StepperItem>
