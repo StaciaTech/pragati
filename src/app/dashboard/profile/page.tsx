@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { MOCK_INNOVATOR_USER, MOCK_TTCS, MOCK_PRINCIPAL_USERS, MOCK_COLLEGES } from '@/lib/mock-data';
 import { ROLES, type Role } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
-import { Pencil, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { Pencil, Eye, EyeOff } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -26,14 +26,16 @@ import { Progress } from '@/components/ui/progress';
 export default function ProfilePage() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = React.useState(false);
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
+  const [showNewPassword, setShowNewPassword] = React.useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
 
   const role = (searchParams.get('role') as Role) || ROLES.INNOVATOR;
 
   let user: any = {};
   let college: any = {};
-  let mockPassword = "password123"; // Mock password for display
 
   // Mock fetching user data based on role
   switch (role) {
@@ -61,13 +63,22 @@ export default function ProfilePage() {
   };
 
 
-  const handleSave = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSaveProfile = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     toast({
         title: "Profile Updated",
         description: "Your profile information has been saved.",
     });
-    setIsModalOpen(false);
+    setIsEditProfileModalOpen(false);
+  }
+  
+  const handleSavePassword = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    toast({
+        title: "Password Updated",
+        description: "Your password has been changed successfully.",
+    });
+    setIsChangePasswordModalOpen(false);
   }
 
 
@@ -92,7 +103,7 @@ export default function ProfilePage() {
                             <CardTitle>Profile Information</CardTitle>
                             <CardDescription>Your personal details.</CardDescription>
                         </div>
-                        <Button variant="outline" size="sm" onClick={() => setIsModalOpen(true)}>
+                        <Button variant="outline" size="sm" onClick={() => setIsEditProfileModalOpen(true)}>
                             <Pencil className="mr-2 h-4 w-4" />
                             Edit
                         </Button>
@@ -121,7 +132,7 @@ export default function ProfilePage() {
                                 <Label>Password</Label>
                                 <p className="font-mono tracking-wider">************</p>
                             </div>
-                            <Button variant="outline" size="sm">Change</Button>
+                            <Button variant="outline" size="sm" onClick={() => setIsChangePasswordModalOpen(true)}>Change</Button>
                         </div>
                     </CardContent>
                 </Card>
@@ -167,7 +178,7 @@ export default function ProfilePage() {
           </div>
       </div>
 
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      <Dialog open={isEditProfileModalOpen} onOpenChange={setIsEditProfileModalOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit Profile</DialogTitle>
@@ -175,7 +186,7 @@ export default function ProfilePage() {
               Make changes to your profile here. Click save when you're done.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSave}>
+          <form onSubmit={handleSaveProfile}>
               <div className="grid gap-4 py-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
@@ -185,10 +196,31 @@ export default function ProfilePage() {
                   <Label htmlFor="email">Email</Label>
                   <Input id="email" name="email" type="email" defaultValue={user.email} />
                 </div>
-                 <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button type="button" variant="outline">Cancel</Button>
+                </DialogClose>
+                <Button type="submit">Save Changes</Button>
+              </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+      
+      <Dialog open={isChangePasswordModalOpen} onOpenChange={setIsChangePasswordModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change Password</DialogTitle>
+            <DialogDescription>
+              Enter your current and new password.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSavePassword}>
+              <div className="grid gap-4 py-4">
+                <div className="space-y-2">
+                    <Label htmlFor="currentPassword">Current Password</Label>
                     <div className="relative">
-                        <Input id="password" name="password" type={showPassword ? "text" : "password"} defaultValue={mockPassword} />
+                        <Input id="currentPassword" name="currentPassword" type={showPassword ? "text" : "password"} required />
                         <Button
                             type="button"
                             variant="ghost"
@@ -201,12 +233,44 @@ export default function ProfilePage() {
                         </Button>
                     </div>
                 </div>
+                <div className="space-y-2">
+                    <Label htmlFor="newPassword">New Password</Label>
+                    <div className="relative">
+                        <Input id="newPassword" name="newPassword" type={showNewPassword ? "text" : "password"} required />
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                            onClick={() => setShowNewPassword(prev => !prev)}
+                        >
+                            {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            <span className="sr-only">{showNewPassword ? 'Hide password' : 'Show password'}</span>
+                        </Button>
+                    </div>
+                </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                    <div className="relative">
+                        <Input id="confirmPassword" name="confirmPassword" type={showConfirmPassword ? "text" : "password"} required />
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                            onClick={() => setShowConfirmPassword(prev => !prev)}
+                        >
+                            {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            <span className="sr-only">{showConfirmPassword ? 'Hide password' : 'Show password'}</span>
+                        </Button>
+                    </div>
+                </div>
               </div>
               <DialogFooter>
                 <DialogClose asChild>
                   <Button type="button" variant="outline">Cancel</Button>
                 </DialogClose>
-                <Button type="submit">Save Changes</Button>
+                <Button type="submit">Save Password</Button>
               </DialogFooter>
           </form>
         </DialogContent>
