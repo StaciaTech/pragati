@@ -2,7 +2,6 @@
 
 'use client';
 
-import { Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import {
@@ -24,6 +23,7 @@ import { MOCK_INNOVATOR_USER, MOCK_TTCS, MOCK_COLLEGES } from '@/lib/mock-data';
 import { CreditCard, LogOut } from 'lucide-react';
 import { Notifications } from '@/components/notifications';
 import { cn } from '@/lib/utils';
+import { Suspense } from 'react';
 
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
@@ -48,25 +48,18 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const credits = getCredits();
   
   return (
-    <>
+    <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                className="!h-12 !p-2"
-                tooltip={{ children: 'Home', side: 'right' }}
-              >
-                <Link href={`/dashboard?role=${role}`}>
-                  <Logo className="size-7" />
-                  <span className="text-lg font-semibold text-sidebar-foreground">
-                    PragatiAI
-                  </span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
+          <Link
+            href={`/dashboard?role=${role}`}
+            className="flex h-12 items-center gap-2 overflow-hidden px-3"
+          >
+            <Logo className="h-8 w-8 shrink-0" />
+            <span className="truncate text-lg font-semibold text-sidebar-foreground transition-opacity duration-200 group-data-[state=collapsed]/sidebar:opacity-0">
+              PragatiAI
+            </span>
+          </Link>
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
@@ -120,17 +113,15 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         </header>
         <main className="flex-1 overflow-y-auto p-4 sm:p-6">{children}</main>
       </SidebarInset>
-    </>
+    </SidebarProvider>
   );
 }
 
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     return (
-        <SidebarProvider>
-            <Suspense fallback={<div>Loading...</div>}>
-              <DashboardLayoutContent>{children}</DashboardLayoutContent>
-            </Suspense>
-        </SidebarProvider>
+        <Suspense fallback={<div>Loading...</div>}>
+            <DashboardLayoutContent>{children}</DashboardLayoutContent>
+        </Suspense>
     )
 }
