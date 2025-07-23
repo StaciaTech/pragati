@@ -17,14 +17,14 @@
     --primary: 258 75% 42%; /* #3813C2 */
     --primary-foreground: 0 0% 98%;
  
-    --secondary: 325 100% 72%; /* #FF6FD8 */
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
  
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
  
-    --accent: 325 100% 72%; /* #FF6FD8 */
-    --accent-foreground: 222.2 84% 4.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
  
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
@@ -42,7 +42,7 @@
 
     /* Chart Colors */
     --chart-1: 258 75% 42%;
-    --chart-2: 325 100% 72%;
+    --chart-2: 210 80% 60%;
     --chart-3: 244.8 95.2% 67.3%;
     --chart-4: 22.1 94.8% 59.4%;
     --chart-5: 22.1 94.8% 59.4%;
@@ -50,12 +50,12 @@
     /* Sidebar Colors */
     --sidebar-background: 240 10% 3.9%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 325 100% 72%;
+    --sidebar-primary: 210 80% 60%;
     --sidebar-primary-foreground: 240 10% 3.9%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 325 100% 72%;
+    --sidebar-ring: 210 80% 60%;
   }
  
   .dark {
@@ -71,14 +71,14 @@
     --primary: 258 75% 52%; /* Lighter indigo for dark mode */
     --primary-foreground: 0 0% 98%;
  
-    --secondary: 325 100% 72%; /* Pink */
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
  
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
  
-    --accent: 325 100% 72%; /* Pink */
-    --accent-foreground: 240 10% 3.9%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
  
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
