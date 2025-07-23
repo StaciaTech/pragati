@@ -108,6 +108,10 @@ const config = {
           '0%, 100%': { transform: 'translate(0, 0) scale(1)', opacity: '0.5' },
           '50%': { transform: 'translate(20px, -20px) scale(1.05)', opacity: '0.7' },
         },
+        'ripple': {
+            '0%': { transform: 'scale(0)', opacity: '0.5' },
+            '100%': { transform: 'scale(30)', opacity: '0' },
+        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -116,6 +120,7 @@ const config = {
         'move-dots': 'move-dots 6s linear infinite',
         'wavy-bounce-1': 'wavy-bounce-1 8s ease-in-out infinite alternate',
         'wavy-bounce-2': 'wavy-bounce-2 10s ease-in-out infinite alternate',
+        'ripple': 'ripple 5s infinite linear',
       },
     },
   },

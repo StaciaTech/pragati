@@ -35,8 +35,7 @@ export default function LoginPage() {
              <p className="text-xs text-muted-foreground text-center">© 2024 PragatiAI by Stacia Corp</p>
           </div>
       </div>
-      <div className="relative hidden h-full flex-col bg-primary p-10 text-primary-foreground dark:border-r lg:flex overflow-hidden">
-          <div className="absolute inset-0 dot-bg animate-move-dots" />
+      <div className="relative hidden h-full flex-col bg-primary p-10 text-primary-foreground dark:border-r lg:flex overflow-hidden dot-bg ripple-bg">
           <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/30 blur-3xl animate-wavy-bounce-1"></div>
           <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-primary/20 blur-3xl animate-wavy-bounce-2"></div>
            <div className="relative z-20 h-full flex flex-col justify-between">
