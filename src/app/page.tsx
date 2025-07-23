@@ -5,8 +5,11 @@ import * as React from 'react';
 import dynamic from 'next/dynamic';
 import { Logo } from '@/components/icons';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { BrainCircuit } from 'lucide-react';
+import { BrainCircuit, Lightbulb, Users, BarChart } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import Autoplay from "embla-carousel-autoplay"
+import Image from 'next/image';
 
 const LoginForm = dynamic(() => import('@/components/login-form').then(mod => mod.LoginForm), {
   ssr: false,
@@ -35,25 +38,57 @@ export default function LoginPage() {
              <p className="text-xs text-muted-foreground text-center">© 2024 PragatiAI by Stacia Corp</p>
           </div>
       </div>
-      <div className="relative hidden h-full flex-col bg-primary p-10 text-primary-foreground dark:border-r lg:flex overflow-hidden dot-bg ripple-bg">
-          <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/30 blur-3xl animate-wavy-bounce-1"></div>
-          <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-primary/20 blur-3xl animate-wavy-bounce-2"></div>
-           <div className="relative z-20 h-full flex flex-col justify-between">
-                <div className="flex items-center gap-2 text-lg font-medium text-primary-foreground">
-                    <BrainCircuit className="h-7 w-7" />
-                    <span>Innovation at Lightspeed</span>
+      <div className="relative hidden h-full flex-col bg-primary p-10 text-primary-foreground dark:border-r lg:flex overflow-hidden">
+        <Carousel
+            plugins={[
+                Autoplay({
+                  delay: 4000,
+                }),
+            ]}
+            opts={{
+                loop: true,
+            }}
+            className="w-full max-w-md mx-auto h-full flex flex-col justify-center"
+        >
+          <CarouselContent>
+            <CarouselItem>
+                <div className="text-center space-y-4">
+                    <Image src="https://placehold.co/600x400.png" alt="AI Validation" width={600} height={400} className="rounded-lg object-cover mx-auto" data-ai-hint="innovation abstract" />
+                    <div className="flex items-center justify-center gap-2 text-lg font-medium text-primary-foreground">
+                        <BrainCircuit className="h-7 w-7" />
+                        <span>AI-Powered Validation</span>
+                    </div>
+                    <p className="text-primary-foreground/80">
+                        Leverage advanced AI to get instant, data-driven feedback on your innovative ideas.
+                    </p>
                 </div>
-                <Card className="bg-background/80 text-foreground backdrop-blur-sm">
-                    <CardHeader>
-                        <CardTitle>AI-Powered Validation</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-muted-foreground">
-                            "Our platform leverages advanced AI to provide instant, data-driven feedback on your innovative ideas, helping you refine and succeed faster than ever before."
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
+            </CarouselItem>
+             <CarouselItem>
+                <div className="text-center space-y-4">
+                    <Image src="https://placehold.co/600x400.png" alt="Data Analytics" width={600} height={400} className="rounded-lg object-cover mx-auto" data-ai-hint="data abstract" />
+                     <div className="flex items-center justify-center gap-2 text-lg font-medium text-primary-foreground">
+                        <BarChart className="h-7 w-7" />
+                        <span>Insightful Analytics</span>
+                    </div>
+                    <p className="text-primary-foreground/80">
+                        Track your progress and understand your strengths with our comprehensive analytics dashboards.
+                    </p>
+                </div>
+            </CarouselItem>
+             <CarouselItem>
+                <div className="text-center space-y-4">
+                    <Image src="https://placehold.co/600x400.png" alt="Collaboration" width={600} height={400} className="rounded-lg object-cover mx-auto" data-ai-hint="collaboration abstract" />
+                     <div className="flex items-center justify-center gap-2 text-lg font-medium text-primary-foreground">
+                        <Users className="h-7 w-7" />
+                        <span>Expert Collaboration</span>
+                    </div>
+                    <p className="text-primary-foreground/80">
+                        Connect with mentors and coordinators to refine your ideas and guide them to success.
+                    </p>
+                </div>
+            </CarouselItem>
+          </CarouselContent>
+        </Carousel>
        </div>
     </main>
   );
