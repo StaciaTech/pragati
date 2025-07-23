@@ -55,12 +55,12 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             <SidebarMenuItem>
               <SidebarMenuButton
                 asChild
-                className="!h-auto !p-2"
+                className="!h-12 !p-2"
                 tooltip={{ children: 'Home', side: 'right' }}
               >
                 <Link href={`/dashboard?role=${role}`}>
-                  <Logo className="size-7 text-sidebar-foreground" />
-                  <span className="text-lg font-semibold text-sidebar-foreground group-data-[state=expanded]/sidebar:opacity-100 group-data-[state=collapsed]/sidebar:opacity-0 transition-opacity duration-200">
+                  <Logo className="size-7" />
+                  <span className="text-lg font-semibold text-sidebar-foreground">
                     PragatiAI
                   </span>
                 </Link>
