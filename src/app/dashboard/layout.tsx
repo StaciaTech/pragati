@@ -47,7 +47,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   
   return (
     <SidebarProvider>
-      <Sidebar>
+      <Sidebar collapsible="icon">
         <SidebarHeader>
           <div className="flex items-center gap-2">
             <Logo className="size-7 text-sidebar-foreground" />
