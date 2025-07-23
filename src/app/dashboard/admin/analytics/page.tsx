@@ -25,6 +25,16 @@ export default function AdminAnalyticsPage() {
     approvalRate: data.total > 0 ? ((data.approved / data.total) * 100) : 0,
     totalIdeas: data.total,
   }));
+  
+  const submissionsByCollege = MOCK_IDEAS.reduce((acc, idea) => {
+    acc[idea.collegeName] = (acc[idea.collegeName] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const collegeSubmissionData = Object.entries(submissionsByCollege)
+    .map(([name, submissions]) => ({ name, submissions }))
+    .sort((a, b) => a.submissions - b.submissions);
+
 
   return (
     <>
@@ -49,7 +59,7 @@ export default function AdminAnalyticsPage() {
                 <BarChart data={domainTrends} layout="vertical" margin={{ left: 20, right: 20 }}>
                   <CartesianGrid horizontal={false} />
                   <XAxis type="number" dataKey="approvalRate" unit="%" />
-                  <YAxis type="category" dataKey="domain" tickLine={false} axisLine={false} width={80} />
+                  <YAxis type="category" dataKey="domain" tickLine={false} axisLine={false} width={120} />
                   <ChartTooltip 
                     cursor={false}
                     content={<ChartTooltipContent
@@ -63,6 +73,36 @@ export default function AdminAnalyticsPage() {
                     />} 
                   />
                   <Bar dataKey="approvalRate" fill="hsl(var(--chart-2))" radius={5} />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+        </CardContent>
+      </Card>
+      
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Global Submission Distribution</CardTitle>
+          <CardDescription>Total idea submissions from each institution.</CardDescription>
+        </CardHeader>
+        <CardContent>
+           <ChartContainer config={{}} className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={collegeSubmissionData} layout="vertical" margin={{ left: 20, right: 20 }}>
+                  <CartesianGrid horizontal={false} />
+                  <XAxis type="number" dataKey="submissions" allowDecimals={false} />
+                  <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={150} interval={0} />
+                  <ChartTooltip 
+                    cursor={false}
+                    content={<ChartTooltipContent
+                        contentStyle={{background: "hsl(var(--background))", border: "1px solid hsl(var(--border))"}}
+                        labelClassName="font-bold"
+                        formatter={(value, name) => {
+                            if (name === 'submissions') return [value, 'Total Submissions'];
+                            return [value, name];
+                        }}
+                    />} 
+                  />
+                  <Bar dataKey="submissions" fill="hsl(var(--chart-1))" radius={5} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>
