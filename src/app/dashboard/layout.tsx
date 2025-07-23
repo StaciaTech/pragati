@@ -51,12 +51,22 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     <>
       <Sidebar>
         <SidebarHeader>
-          <div className="flex items-center gap-2">
-            <Logo className="size-7 text-sidebar-foreground" />
-            <span className="text-lg font-semibold text-sidebar-foreground group-data-[state=expanded]/sidebar:opacity-100 group-data-[state=collapsed]/sidebar:opacity-0 transition-opacity duration-200">
-              PragatiAI
-            </span>
-          </div>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                className="!h-auto !p-2"
+                tooltip={{ children: 'Home', side: 'right' }}
+              >
+                <Link href={`/dashboard?role=${role}`}>
+                  <Logo className="size-7 text-sidebar-foreground" />
+                  <span className="text-lg font-semibold text-sidebar-foreground group-data-[state=expanded]/sidebar:opacity-100 group-data-[state=collapsed]/sidebar:opacity-0 transition-opacity duration-200">
+                    PragatiAI
+                  </span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
@@ -117,10 +127,10 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <SidebarProvider>
+        <SidebarProvider>
+            <Suspense fallback={<div>Loading...</div>}>
               <DashboardLayoutContent>{children}</DashboardLayoutContent>
-            </SidebarProvider>
-        </Suspense>
+            </Suspense>
+        </SidebarProvider>
     )
 }
