@@ -16,7 +16,6 @@ import {
   SidebarInset,
   SidebarTrigger,
   SidebarFooter,
-  useSidebar,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/icons';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -31,7 +30,6 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const role = (searchParams.get('role') as Role) || ROLES.INNOVATOR;
-  const { open, setOpen } = useSidebar();
 
   const navLinks = NAV_LINKS[role] || [];
   
@@ -51,15 +49,11 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   
   return (
     <>
-      <Sidebar 
-        className="border-r group-hover/sidebar-wrapper:w-[--sidebar-width] group-hover/sidebar-wrapper:shadow-lg"
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
-      >
+      <Sidebar>
         <SidebarHeader>
           <div className="flex items-center gap-2">
             <Logo className="size-7 text-sidebar-foreground" />
-            <span className={cn("text-lg font-semibold text-sidebar-foreground", !open && "hidden")}>
+            <span className="text-lg font-semibold text-sidebar-foreground group-data-[state=expanded]/sidebar:opacity-100 group-data-[state=collapsed]/sidebar:opacity-0 transition-opacity duration-200">
               PragatiAI
             </span>
           </div>
@@ -74,10 +68,8 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                     tooltip={{ children: link.title }}
                   >
                     <Link href={link.href}>
-                      <>
-                        <link.icon />
-                        <span className="flex-1 inline-block truncate">{link.title}</span>
-                      </>
+                      <link.icon />
+                      <span className="flex-1 inline-block truncate">{link.title}</span>
                     </Link>
                   </SidebarMenuButton>
               </SidebarMenuItem>
