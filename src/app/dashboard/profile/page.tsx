@@ -185,7 +185,7 @@ export default function ProfilePage() {
                 </Card>
             </div>
             <div className="space-y-6">
-                {user.credits !== undefined && (
+                {role === ROLES.INNOVATOR && user.credits !== undefined && (
                      <Card>
                         <CardHeader>
                             <CardTitle>Credits</CardTitle>
@@ -202,6 +202,25 @@ export default function ProfilePage() {
                             </div>
                             <Button className="w-full" asChild>
                               <Link href={`/dashboard/request-credits?role=${role}`}>Request More Credits</Link>
+                            </Button>
+                        </CardContent>
+                    </Card>
+                )}
+                 {role === ROLES.COORDINATOR && college?.creditsAvailable !== undefined && (
+                     <Card>
+                        <CardHeader>
+                            <CardTitle>College Credits</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="text-center">
+                                <p className="text-4xl font-bold text-primary">{college.creditsAvailable}</p>
+                                <p className="text-muted-foreground">Credits Available for College</p>
+                            </div>
+                             <p className="text-xs text-muted-foreground text-center">
+                                You assign credits to innovators from this pool.
+                            </p>
+                            <Button className="w-full" asChild>
+                              <Link href={`/dashboard/coordinator/logs?role=${role}`}>Request Credits from Principal</Link>
                             </Button>
                         </CardContent>
                     </Card>
