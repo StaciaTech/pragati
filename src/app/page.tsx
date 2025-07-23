@@ -37,8 +37,8 @@ export default function LoginPage() {
       </div>
       <div className="relative hidden h-full flex-col bg-primary p-10 text-primary-foreground dark:border-r lg:flex overflow-hidden">
           <div className="absolute inset-0 dot-bg animate-move-dots" />
-          <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-blue-400/30 blur-3xl animate-wavy-bounce-1"></div>
-          <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-blue-500/30 blur-3xl animate-wavy-bounce-2"></div>
+          <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/30 blur-3xl animate-wavy-bounce-1"></div>
+          <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-primary/20 blur-3xl animate-wavy-bounce-2"></div>
            <div className="relative z-20 h-full flex flex-col justify-between">
                 <div className="flex items-center gap-2 text-lg font-medium text-primary-foreground">
                     <BrainCircuit className="h-7 w-7" />

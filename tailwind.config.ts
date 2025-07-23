@@ -101,12 +101,12 @@ const config = {
             '75%': { 'background-position': '1rem 0' },
         },
         'wavy-bounce-1': {
-          '0%, 100%': { transform: 'scale(1)', opacity: '0.6' },
-          '50%': { transform: 'scale(1.1)', opacity: '0.8' },
+          '0%, 100%': { transform: 'translate(0, 0) scale(1)', opacity: '0.6' },
+          '50%': { transform: 'translate(-20px, 20px) scale(1.1)', opacity: '0.8' },
         },
         'wavy-bounce-2': {
-          '0%, 100%': { transform: 'scale(1)', opacity: '0.5' },
-          '50%': { transform: 'scale(1.05)', opacity: '0.7' },
+          '0%, 100%': { transform: 'translate(0, 0) scale(1)', opacity: '0.5' },
+          '50%': { transform: 'translate(20px, -20px) scale(1.05)', opacity: '0.7' },
         },
       },
       animation: {
