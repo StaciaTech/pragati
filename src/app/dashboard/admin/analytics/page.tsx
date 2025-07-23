@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button";
 import { MOCK_IDEAS } from '@/lib/mock-data';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Pie, PieChart, Cell } from "recharts";
 
 export default function AdminAnalyticsPage() {
   
@@ -32,8 +32,12 @@ export default function AdminAnalyticsPage() {
   }, {} as Record<string, number>);
 
   const collegeSubmissionData = Object.entries(submissionsByCollege)
-    .map(([name, submissions]) => ({ name, submissions }))
-    .sort((a, b) => a.submissions - b.submissions);
+    .map(([name, submissions], index) => ({ 
+        name, 
+        submissions,
+        fill: `hsl(var(--chart-${index + 1}))`
+    }))
+    .sort((a, b) => b.submissions - a.submissions);
 
 
   return (
@@ -87,23 +91,30 @@ export default function AdminAnalyticsPage() {
         <CardContent>
            <ChartContainer config={{}} className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={collegeSubmissionData} layout="vertical" margin={{ left: 20, right: 20 }}>
-                  <CartesianGrid horizontal={false} />
-                  <XAxis type="number" dataKey="submissions" allowDecimals={false} />
-                  <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={150} interval={0} />
-                  <ChartTooltip 
-                    cursor={false}
-                    content={<ChartTooltipContent
-                        contentStyle={{background: "hsl(var(--background))", border: "1px solid hsl(var(--border))"}}
-                        labelClassName="font-bold"
-                        formatter={(value, name) => {
-                            if (name === 'submissions') return [value, 'Total Submissions'];
-                            return [value, name];
-                        }}
-                    />} 
-                  />
-                  <Bar dataKey="submissions" fill="hsl(var(--chart-1))" radius={5} />
-                </BarChart>
+                 <PieChart>
+                    <ChartTooltip 
+                        cursor={false}
+                        content={<ChartTooltipContent
+                            contentStyle={{background: "hsl(var(--background))", border: "1px solid hsl(var(--border))"}}
+                            labelClassName="font-bold"
+                            formatter={(value, name) => [value, "Submissions"]}
+                            indicator="dot"
+                        />} 
+                    />
+                    <Pie 
+                        data={collegeSubmissionData} 
+                        dataKey="submissions" 
+                        nameKey="name" 
+                        cx="50%" 
+                        cy="50%" 
+                        outerRadius={100} 
+                        label
+                    >
+                        {collegeSubmissionData.map((entry) => (
+                            <Cell key={entry.name} fill={entry.fill} />
+                        ))}
+                    </Pie>
+                 </PieChart>
               </ResponsiveContainer>
             </ChartContainer>
         </CardContent>
