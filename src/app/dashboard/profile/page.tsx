@@ -185,23 +185,6 @@ export default function ProfilePage() {
                 </Card>
             </div>
             <div className="space-y-6">
-                {college && (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>College Information</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                             <div>
-                                <Label>College Name</Label>
-                                <p className="font-medium">{college.name}</p>
-                            </div>
-                            <div>
-                                <Label>Principal Email</Label>
-                                <p className="font-medium">{college.principalEmail}</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
                 {user.credits !== undefined && (
                      <Card>
                         <CardHeader>
