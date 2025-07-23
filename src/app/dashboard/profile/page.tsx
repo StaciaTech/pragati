@@ -22,6 +22,8 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
+import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 export default function ProfilePage() {
   const searchParams = useSearchParams();
@@ -170,7 +172,9 @@ export default function ProfilePage() {
                                <Progress value={33} className="mt-2" />
                                <p className="text-xs text-muted-foreground mt-1 text-right">5 / 15 credits used</p>
                             </div>
-                           <Button className="w-full">Request More Credits</Button>
+                            <Button className="w-full" asChild>
+                              <Link href={`/dashboard/request-credits?role=${role}`}>Request More Credits</Link>
+                            </Button>
                         </CardContent>
                     </Card>
                 )}
@@ -194,7 +198,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" name="email" type="email" defaultValue={user.email} />
+                  <Input id="email" name="email" type="email" defaultValue={user.email} readOnly className="cursor-not-allowed bg-muted/50" />
                 </div>
               </div>
               <DialogFooter>
