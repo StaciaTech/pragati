@@ -56,7 +56,7 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
             key={`grid-${levelIndex}`}
             points={gridPoints}
             fill="none"
-            stroke="hsl(var(--border) / 0.8)"
+            stroke="hsl(var(--border))"
             strokeWidth="0.5"
           />
         );
@@ -74,7 +74,7 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
               y1={centerY}
               x2={point.x}
               y2={point.y}
-              stroke="hsl(var(--border) / 0.8)"
+              stroke="hsl(var(--border))"
               strokeWidth="0.5"
             />
             {isFirstSpoke && Array.from({ length: gridLevels }).map((_, levelIndex) => {
