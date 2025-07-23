@@ -48,7 +48,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const credits = getCredits();
   
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <Sidebar collapsible="icon">
         <SidebarHeader>
             <Link
