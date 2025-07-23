@@ -536,7 +536,7 @@ const SidebarMenuButton = React.forwardRef<
     ref
   ) => {
     const Comp = asChild ? Slot : "button"
-    const { isMobile, state, open } = useSidebar()
+    const { isMobile, state } = useSidebar()
 
     const button = (
       <Comp
@@ -548,7 +548,6 @@ const SidebarMenuButton = React.forwardRef<
         {...props}
       >
         {children}
-        <span className={cn("flex-1", open ? "inline-block" : "hidden")}>{props.title}</span>
       </Comp>
     )
 

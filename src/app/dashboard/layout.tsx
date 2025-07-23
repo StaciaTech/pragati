@@ -52,7 +52,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Sidebar 
-        className="border-r" 
+        className="border-r group-hover/sidebar-wrapper:w-[--sidebar-width] group-hover/sidebar-wrapper:shadow-lg"
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
       >
@@ -72,10 +72,12 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                     asChild
                     isActive={pathname === new URL(link.href, 'http://a').pathname}
                     tooltip={{ children: link.title }}
-                    title={link.title}
                   >
                     <Link href={link.href}>
-                      <link.icon />
+                      <>
+                        <link.icon />
+                        <span className="flex-1 inline-block truncate">{link.title}</span>
+                      </>
                     </Link>
                   </SidebarMenuButton>
               </SidebarMenuItem>
@@ -85,9 +87,12 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         <SidebarFooter>
            <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip={{ children: 'Log Out' }} title="Log Out">
+                <SidebarMenuButton asChild tooltip={{ children: 'Log Out' }}>
                   <Link href="/">
-                    <LogOut />
+                    <>
+                      <LogOut />
+                      <span className="flex-1 inline-block truncate">Log Out</span>
+                    </>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
