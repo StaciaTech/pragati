@@ -22,8 +22,8 @@ import { NAV_LINKS, ROLES, type Role } from '@/lib/constants';
 import { MOCK_INNOVATOR_USER, MOCK_TTCS, MOCK_COLLEGES } from '@/lib/mock-data';
 import { CreditCard, LogOut } from 'lucide-react';
 import { Notifications } from '@/components/notifications';
-import { cn } from '@/lib/utils';
 import { Suspense } from 'react';
+import { HydrationSafeContent } from '@/components/hydration-safe-content';
 
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
@@ -51,15 +51,15 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-          <Link
-            href={`/dashboard?role=${role}`}
-            className="flex h-8 items-center gap-2 rounded-md p-2 group-data-[state=collapsed]/sidebar:justify-center"
-          >
-            <Logo className="h-8 w-8 shrink-0" />
-            <span className="truncate text-lg font-semibold text-sidebar-foreground transition-opacity duration-200 group-data-[state=collapsed]/sidebar:opacity-0">
-              PragatiAI
-            </span>
-          </Link>
+            <Link
+                href={`/dashboard?role=${role}`}
+                className="flex h-8 items-center gap-2 rounded-md p-2 group-data-[state=collapsed]/sidebar:justify-center"
+            >
+                <Logo className="h-8 w-8 shrink-0" />
+                <span className="truncate text-lg font-semibold text-sidebar-foreground transition-opacity duration-200 group-data-[state=collapsed]/sidebar:opacity-0">
+                PragatiAI
+                </span>
+            </Link>
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
@@ -71,8 +71,10 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                     tooltip={{ children: link.title }}
                   >
                     <Link href={link.href}>
-                      <link.icon />
-                      <span className="flex-1 inline-block truncate">{link.title}</span>
+                      <>
+                        <link.icon />
+                        <span className="flex-1 inline-block truncate">{link.title}</span>
+                      </>
                     </Link>
                   </SidebarMenuButton>
               </SidebarMenuItem>
@@ -121,7 +123,9 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <DashboardLayoutContent>{children}</DashboardLayoutContent>
+            <HydrationSafeContent>
+                <DashboardLayoutContent>{children}</DashboardLayoutContent>
+            </HydrationSafeContent>
         </Suspense>
     )
 }
