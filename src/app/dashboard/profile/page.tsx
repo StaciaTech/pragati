@@ -225,6 +225,26 @@ export default function ProfilePage() {
                         </CardContent>
                     </Card>
                 )}
+                {role === ROLES.PRINCIPAL && college?.creditsAvailable !== undefined && (
+                     <Card>
+                        <CardHeader>
+                            <CardTitle>Plan &amp; Credits</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div>
+                                <Label>Current Plan</Label>
+                                <p className="font-medium">{MOCK_COLLEGES[0].currentPlanId.replace('PLAN00', 'Plan ').replace('-M', ' Monthly')}</p>
+                            </div>
+                            <div>
+                                <Label>Credits Remaining</Label>
+                                <p className="text-2xl font-bold text-primary">{college.creditsAvailable}</p>
+                            </div>
+                             <Button className="w-full" asChild>
+                              <Link href={`/dashboard/principal/plan-payment?role=${role}`}>Manage Plan &amp; Payment</Link>
+                            </Button>
+                        </CardContent>
+                    </Card>
+                )}
             </div>
           </div>
       </div>
