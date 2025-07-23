@@ -53,7 +53,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         <SidebarHeader>
           <Link
             href={`/dashboard?role=${role}`}
-            className="flex h-12 items-center gap-2 overflow-hidden px-3"
+            className="flex h-8 items-center gap-2 rounded-md p-2"
           >
             <Logo className="h-8 w-8 shrink-0" />
             <span className="truncate text-lg font-semibold text-sidebar-foreground transition-opacity duration-200 group-data-[state=collapsed]/sidebar:opacity-0">
