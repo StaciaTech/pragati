@@ -68,7 +68,6 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                   <SidebarMenuButton
                     asChild
                     isActive={pathname === new URL(link.href, 'http://a').pathname}
-                    tooltip={{ children: link.title }}
                   >
                     <Link href={link.href}>
                       <>
@@ -84,7 +83,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         <SidebarFooter>
            <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip={{ children: 'Log Out' }}>
+                <SidebarMenuButton asChild>
                   <Link href="/">
                     <>
                       <LogOut />
