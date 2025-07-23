@@ -14,7 +14,7 @@
     --popover: 240 10% 98%;
     --popover-foreground: 222.2 84% 4.9%;
  
-    --primary: 256 82% 45%;
+    --primary: 275 93% 29%;
     --primary-foreground: 0 0% 98%;
  
     --secondary: 210 40% 96.1%;
@@ -31,7 +31,7 @@
 
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 256 82% 45%;
+    --ring: 275 93% 29%;
  
     --radius: 0.75rem;
 
@@ -68,7 +68,7 @@
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
  
-    --primary: 256 82% 50%;
+    --primary: 275 93% 35%;
     --primary-foreground: 0 0% 98%;
  
     --secondary: 217.2 32.6% 17.5%;
@@ -85,7 +85,7 @@
  
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 256 82% 50%;
+    --ring: 275 93% 35%;
 
     /* Sidebar Colors (Dark Mode) */
     --sidebar-background: 240 10% 3.9%;
