@@ -14,7 +14,7 @@
     --popover: 240 10% 98%;
     --popover-foreground: 222.2 84% 4.9%;
  
-    --primary: 258 75% 42%; /* #3813C2 */
+    --primary: 206 90% 52%; /* hsl(206, 90%, 52%) */
     --primary-foreground: 0 0% 98%;
  
     --secondary: 210 40% 96.1%;
@@ -31,7 +31,7 @@
 
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 258 75% 42%;
+    --ring: 206 90% 52%;
  
     --radius: 0.75rem;
 
@@ -41,21 +41,21 @@
     --color-rejected: 0 72.2% 50.6%;
 
     /* Chart Colors */
-    --chart-1: 258 75% 42%;
-    --chart-2: 210 80% 60%;
-    --chart-3: 244.8 95.2% 67.3%;
-    --chart-4: 22.1 94.8% 59.4%;
+    --chart-1: 206 90% 52%;
+    --chart-2: 142.1 76.2% 36.3%;
+    --chart-3: 24.6 95% 53.1%;
+    --chart-4: 0 72.2% 50.6%;
     --chart-5: 22.1 94.8% 59.4%;
 
-    /* Sidebar Colors */
-    --sidebar-background: 240 10% 3.9%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 210 80% 60%;
-    --sidebar-primary-foreground: 240 10% 3.9%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 210 80% 60%;
+    /* Sidebar Colors (Light Mode) */
+    --sidebar-background: 240 10% 98%;
+    --sidebar-foreground: 222.2 84% 4.9%;
+    --sidebar-primary: 206 90% 52%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 210 40% 94.1%;
+    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
+    --sidebar-border: 240 5.9% 90%;
+    --sidebar-ring: 206 90% 52%;
   }
  
   .dark {
@@ -68,7 +68,7 @@
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
  
-    --primary: 258 75% 52%; /* Lighter indigo for dark mode */
+    --primary: 206 90% 62%;
     --primary-foreground: 0 0% 98%;
  
     --secondary: 217.2 32.6% 17.5%;
@@ -85,7 +85,17 @@
  
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 258 75% 52%;
+    --ring: 206 90% 62%;
+
+    /* Sidebar Colors (Dark Mode) */
+    --sidebar-background: 240 10% 3.9%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 206 90% 62%;
+    --sidebar-primary-foreground: 240 10% 3.9%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 206 90% 62%;
   }
 }
  
