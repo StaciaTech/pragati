@@ -123,16 +123,6 @@ export default function ProfilePage() {
                             </div>
                             <Button variant="outline" size="sm">Change</Button>
                         </div>
-                        <div className="flex items-center justify-between p-4 border rounded-lg bg-green-50 dark:bg-green-900/30">
-                            <div className="flex items-center gap-2">
-                                <ShieldCheck className="text-green-600" />
-                                <div>
-                                    <Label>Two-Factor Authentication</Label>
-                                    <p className="font-medium text-green-700 dark:text-green-400">Enabled</p>
-                                </div>
-                            </div>
-                            <Button variant="outline" size="sm">Manage</Button>
-                        </div>
                     </CardContent>
                 </Card>
             </div>
