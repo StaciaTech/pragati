@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { MOCK_INNOVATOR_USER, MOCK_TTCS, MOCK_PRINCIPAL_USERS, MOCK_COLLEGES } from '@/lib/mock-data';
 import { ROLES, type Role } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
-import { Pencil, Eye, EyeOff } from 'lucide-react';
+import { Pencil, Eye, EyeOff, Upload } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -23,7 +23,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
 
 export default function ProfilePage() {
   const searchParams = useSearchParams();
@@ -33,6 +32,9 @@ export default function ProfilePage() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [showNewPassword, setShowNewPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+  const [avatarPreview, setAvatarPreview] = React.useState<string | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
 
   const role = (searchParams.get('role') as Role) || ROLES.INNOVATOR;
 
@@ -83,15 +85,49 @@ export default function ProfilePage() {
     setIsChangePasswordModalOpen(false);
   }
 
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSaveAvatar = () => {
+    toast({
+      title: 'Avatar Updated',
+      description: 'Your new profile picture has been saved.',
+    });
+    setAvatarPreview(null);
+  };
 
   return (
     <>
       <div className="space-y-6">
           <div className="flex flex-col md:flex-row items-center gap-6">
-              <Avatar className="h-24 w-24 border-4 border-primary">
-                <AvatarImage src={`https://avatar.vercel.sh/${user.name}.png`} alt={user.name} />
-                <AvatarFallback className="text-3xl">{getInitials(user.name)}</AvatarFallback>
-              </Avatar>
+              <div className="relative group cursor-pointer" onClick={handleAvatarClick}>
+                <Avatar className="h-24 w-24 border-4 border-primary">
+                  <AvatarImage src={avatarPreview || `https://avatar.vercel.sh/${user.name}.png`} alt={user.name} />
+                  <AvatarFallback className="text-3xl">{getInitials(user.name)}</AvatarFallback>
+                </Avatar>
+                <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Upload className="h-8 w-8 text-white" />
+                </div>
+                <Input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept="image/png, image/jpeg, image/gif"
+                />
+              </div>
               <div>
                 <h2 className="text-3xl font-bold">{user.name}</h2>
                 <p className="text-muted-foreground">{user.role || role}</p>
@@ -105,10 +141,15 @@ export default function ProfilePage() {
                             <CardTitle>Profile Information</CardTitle>
                             <CardDescription>Your personal details.</CardDescription>
                         </div>
-                        <Button variant="outline" size="sm" onClick={() => setIsEditProfileModalOpen(true)}>
-                            <Pencil className="mr-2 h-4 w-4" />
-                            Edit
-                        </Button>
+                        <div className="flex gap-2">
+                           {avatarPreview && (
+                              <Button onClick={handleSaveAvatar}>Save Photo</Button>
+                           )}
+                           <Button variant="outline" size="sm" onClick={() => setIsEditProfileModalOpen(true)}>
+                               <Pencil className="mr-2 h-4 w-4" />
+                               Edit
+                           </Button>
+                        </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
