@@ -17,7 +17,7 @@ export default function LoginPage() {
   const [animationData, setAnimationData] = React.useState(null);
 
   React.useEffect(() => {
-    fetch('https://lottiefiles.com/free-animation/hero-section-background-animation-BlCkdojieu.json')
+    fetch('https://lottie.host/e2d44934-22b6-4a4b-9721-255269781378/Hhxk83DViI.json')
       .then(res => res.json())
       .then(data => setAnimationData(data));
   }, []);
