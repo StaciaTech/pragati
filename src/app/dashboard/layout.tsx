@@ -72,7 +72,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                     <Link href={link.href}>
                       <>
                         <link.icon />
-                        <span className="flex-1 inline-block truncate">{link.title}</span>
+                        <span className="inline-block truncate">{link.title}</span>
                       </>
                     </Link>
                   </SidebarMenuButton>
