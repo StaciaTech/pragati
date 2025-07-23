@@ -112,13 +112,17 @@ export default function ProfilePage() {
     <>
       <div className="space-y-6">
           <div className="flex flex-col md:flex-row items-center gap-6">
-              <div className="relative group cursor-pointer" onClick={handleAvatarClick}>
+              <div className="relative group">
                 <Avatar className="h-24 w-24 border-4 border-primary">
                   <AvatarImage src={avatarPreview || `https://avatar.vercel.sh/${user.name}.png`} alt={user.name} />
                   <AvatarFallback className="text-3xl">{getInitials(user.name)}</AvatarFallback>
                 </Avatar>
-                <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Upload className="h-8 w-8 text-white" />
+                <div 
+                    onClick={handleAvatarClick} 
+                    className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-2 cursor-pointer hover:bg-primary/90 transition-colors"
+                    title="Change profile picture"
+                >
+                    <Pencil className="h-4 w-4" />
                 </div>
                 <Input
                     type="file"
