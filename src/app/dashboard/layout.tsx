@@ -49,71 +49,103 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   
   return (
     <SidebarProvider defaultOpen={false}>
-      <Sidebar collapsible="icon">
-        <SidebarHeader>
-            <Link
-                href={`/dashboard?role=${role}`}
-                className="flex h-8 items-center gap-2 rounded-md p-2 group-data-[state=collapsed]/sidebar:justify-center"
-            >
-                <Logo className="h-8 w-8 shrink-0" />
-                <span className="truncate text-lg font-semibold text-sidebar-foreground transition-opacity duration-200 group-data-[state=collapsed]/sidebar:opacity-0">
-                PragatiAI
-                </span>
-            </Link>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarMenu>
+      <Sidebar collapsible="icon" className="group/sidebar">
+          <SidebarHeader>
+              <Link
+                  href={`/dashboard?role=${role}`}
+                  className="flex h-8 items-center gap-2 rounded-md p-2 group-data-[state=collapsed]/sidebar:justify-center"
+              >
+                  <Logo className="h-8 w-8 shrink-0" />
+                  <span className="truncate text-lg font-semibold text-sidebar-foreground transition-opacity duration-200 group-data-[state=collapsed]/sidebar:opacity-0">
+                  PragatiAI
+                  </span>
+              </Link>
+          </SidebarHeader>
+          <SidebarContent>
+            <SidebarMenu>
             {navLinks.map((link) => (
               <SidebarMenuItem key={link.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname === new URL(link.href, 'http://a').pathname}
-                  >
-                    <Link href={link.href}>
-                      <>
-                        <link.icon />
-                        <span className="inline-block truncate">{link.title}</span>
-                      </>
-                    </Link>
-                  </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarContent>
-        <SidebarFooter>
-           <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/">
-                    <>
-                      <LogOut />
-                      <span className="flex-1 inline-block truncate">Log Out</span>
-                    </>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === new URL(link.href, 'http://a').pathname}
+                  // No additional className here for the Link, let sidebarMenuButtonVariants handle it
+                >
+                  {/* Remove the className from Link and let sidebarMenuButtonVariants manage it */}
+                  <Link href={link.href}>
+                    {/* Keep icon wrapper with fixed width for collapsed state, but add transition */}
+                    <div className="w-10 flex justify-center items-center shrink-0 transition-all duration-300 ease-in-out">
+                      <link.icon className="w-5 h-5" />
+                    </div>
+                    {/* Text span: key is to control its width/overflow and transition */}
+                    <span
+                      className="
+                        flex-1 overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out
+                        group-data-[state=collapsed]/sidebar:w-0
+                        group-data-[state=collapsed]/sidebar:ml-0
+                        group-data-[state=collapsed]/sidebar:opacity-0
+                        group-data-[state=collapsed]/sidebar:invisible
+                        group-data-[state=expanded]/sidebar:w-auto
+                        group-data-[state=expanded]/sidebar:ml-2
+                        group-data-[state=expanded]/sidebar:opacity-100
+                        group-data-[state=expanded]/sidebar:visible
+                      "
+                    >
+                      {link.title}
+                    </span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+            ))}
             </SidebarMenu>
-        </SidebarFooter>
-      </Sidebar>
-      <SidebarInset>
-        <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:h-16 sm:px-6">
-          <SidebarTrigger className="sm:hidden" />
-          <div className="flex-1">
-            <h1 className="text-lg font-semibold">{role} Portal</h1>
-          </div>
-          <div className="flex items-center gap-4">
-             {(role === ROLES.INNOVATOR || role === ROLES.COORDINATOR) && credits !== null && (
-                <div className="flex items-center gap-2 text-sm font-medium">
-                    <CreditCard className="size-5 text-primary" />
-                    <span>{credits} Credits</span>
-                </div>
-            )}
-            <Notifications role={role} />
-            <ThemeToggle />
-          </div>
-        </header>
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
-      </SidebarInset>
+          </SidebarContent>
+          <SidebarFooter>
+             <SidebarMenu>
+             <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/" className="flex items-center gap-3 min-w-0"> {/* Re-evaluate `gap-3` */}
+                    <div className="w-5 shrink-0 flex items-center justify-center transition-all duration-200 ease-in-out">
+                      <LogOut className="w-5 h-5" />
+                    </div>
+                    <span
+                      className="
+                        flex-1 overflow-hidden whitespace-nowrap transition-all duration-200 ease-in-out
+                        group-data-[state=collapsed]/sidebar:w-0
+                        group-data-[state=collapsed]/sidebar:ml-0
+                        group-data-[state=collapsed]/sidebar:opacity-0
+                        group-data-[state=collapsed]/sidebar:invisible
+                        group-data-[state=expanded]/sidebar:w-auto
+                        group-data-[state=expanded]/sidebar:ml-2 /* Adjust as needed */
+                        group-data-[state=expanded]/sidebar:opacity-100
+                        group-data-[state=expanded]/sidebar:visible
+                      "
+                    >
+                      Log Out
+                    </span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+          </SidebarMenu>
+          </SidebarFooter>
+        </Sidebar>
+        <SidebarInset>
+          <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:h-16 sm:px-6">
+            <SidebarTrigger className="sm:hidden" />
+            <div className="flex-1">
+              <h1 className="text-lg font-semibold">{role} Portal</h1>
+            </div>
+            <div className="flex items-center gap-4">
+               {(role === ROLES.INNOVATOR || role === ROLES.COORDINATOR) && credits !== null && (
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                      <CreditCard className="size-5 text-primary" />
+                      <span>{credits} Credits</span>
+                  </div>
+              )}
+              <Notifications role={role} />
+              <ThemeToggle />
+            </div>
+          </header>
+          <main className="flex-1 overflow-y-auto px-4 py-6">{children}</main>
+        </SidebarInset>
     </SidebarProvider>
   );
 }
