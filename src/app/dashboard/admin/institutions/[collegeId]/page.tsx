@@ -4,12 +4,12 @@
 import * as React from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { MOCK_COLLEGES, MOCK_INNOVATORS, MOCK_TTCS } from "@/lib/mock-data";
+import { MOCK_COLLEGES, MOCK_INNOVATORS, MOCK_TTCS, MOCK_IDEAS } from "@/lib/mock-data";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Lightbulb } from 'lucide-react';
 import { ROLES } from '@/lib/constants';
 import {
   Dialog,
@@ -55,6 +55,10 @@ export default function InstitutionDetailsPage() {
         setSelectedTtc(ttc);
         setIsModalOpen(true);
     };
+
+    const getIdeaCountForInnovator = (innovatorEmail: string) => {
+        return MOCK_IDEAS.filter(idea => idea.innovatorEmail === innovatorEmail).length;
+    }
 
     return (
         <>
@@ -122,7 +126,13 @@ export default function InstitutionDetailsPage() {
                                         </Avatar>
                                         <span className="text-sm font-medium">{innovator.name}</span>
                                     </div>
-                                    <Badge variant={innovator.status === 'Active' ? 'default' : 'destructive'}>{innovator.status}</Badge>
+                                    <div className="flex items-center gap-3">
+                                        <Badge variant="secondary" className="flex items-center gap-1">
+                                            <Lightbulb className="h-3 w-3" />
+                                            {getIdeaCountForInnovator(innovator.email)}
+                                        </Badge>
+                                        <Badge variant={innovator.status === 'Active' ? 'default' : 'destructive'}>{innovator.status}</Badge>
+                                    </div>
                                 </li>
                             ))}
                         </ul>
