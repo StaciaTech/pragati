@@ -62,7 +62,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                        group-data-[state=expanded]/sidebar:justify-start" // Ensure left-justified when expanded
           >
             <Logo
-            className="h-8 w-8  transition-transform duration-300 ease-in-out
+            className="h-10 w-8  transition-transform duration-300 ease-in-out
                       group-data-[state=collapsed]/sidebar:scale-125 /* Adjust scale factor as needed */
                       group-data-[state=expanded]/sidebar:scale-150" /* Default scale */
             />
@@ -74,10 +74,12 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                 group-data-[state=collapsed]/sidebar:ml-0
                 group-data-[state=collapsed]/sidebar:opacity-0
                 group-data-[state=collapsed]/sidebar:invisible
+                group-data-[state=expanded]/sidebar:py-1
                 group-data-[state=expanded]/sidebar:w-auto
                 group-data-[state=expanded]/sidebar:ml-4 {/* Adjust this gap as desired for expanded state */}
                 group-data-[state=expanded]/sidebar:opacity-100
                 group-data-[state=expanded]/sidebar:visible
+                group-data-[state=expanded]/sidebar:py-4
               "
             >
               PragatiAI
@@ -86,10 +88,10 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
           {/* ADD THE SEPARATOR HERE */}
           <div className="flex w-full justify-end pr-32"> {/* Container to push separator right and add right margin */}
-            <SidebarSeparator className="w-20" /> {/* Set separator width */}
+            <SidebarSeparator className="w-0" /> {/* Set separator width */}
           </div>
           {/* Add some vertical margin below the separator if needed */}
-          <div className="mb-0"></div> {/* Optional: Add space below the separator */}
+          {/* <div className="mb-0"></div> Optional: Add space below the separator */}
 
           </SidebarHeader>
           <SidebarContent>
@@ -102,17 +104,17 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
               >
                 <Link href={link.href}>
                   {/* Apply scaling classes to the icon's wrapper div */}
-                  <div className="w-10 flex justify-center items-center shrink-0 
+                  <div className="w-10 h-4 flex justify-center items-center shrink-0 
                                   transition-all duration-300 ease-in-out
                                   group-data-[state=collapsed]/sidebar:scale-100 /* Scale icon when collapsed */
                                   group-data-[state=expanded]/sidebar:scale-110"> {/* Reset scale when expanded */}
-                    <link.icon className="w-5 h-5" />
+                    <link.icon className="w-5 h-6" />
                   </div>
                   <span
                     className="
                       flex-1 overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out
                       group-data-[state=collapsed]/sidebar:w-0
-                      group-data-[state=collapsed]/sidebar:ml-0
+                      group-data-[state=collapsed]/sidebar:ml-1
                       group-data-[state=collapsed]/sidebar:opacity-0
                       group-data-[state=collapsed]/sidebar:invisible
                       group-data-[state=expanded]/sidebar:w-auto
@@ -163,7 +165,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-          <header className="sticky top-0 z-40 flex h-4 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:h-16 sm:px-6">
+          <header className="sticky top-0 z-40 flex h-4 items-center gap-4 bg-background/80 px-4 backdrop-blur-sm sm:h-16 sm:px-6">
             <SidebarTrigger className="sm:hidden" />
             <div className="flex-1">
               <h1 className="text-lg font-semibold">{role} Portal</h1>
@@ -179,6 +181,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
               <ThemeToggle />
             </div>
           </header>
+          <div className="border-b ml-4 w-[calc(100%-2rem)]" />
           <main className="flex-1 overflow-y-auto px-4 py-6">{children}</main>
         </SidebarInset>
     </SidebarProvider>
