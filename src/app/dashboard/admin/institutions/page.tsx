@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -17,6 +18,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 export default function InstitutionManagementPage() {
     const { toast } = useToast();
@@ -73,7 +75,11 @@ export default function InstitutionManagementPage() {
               {colleges.map((college) => (
                 <TableRow key={college.id}>
                   <TableCell>{college.id}</TableCell>
-                  <TableCell className="font-medium">{college.name}</TableCell>
+                  <TableCell className="font-medium">
+                    <Link href={`/dashboard/admin/institutions/${college.id}?role=Super Admin`} className="hover:underline text-primary">
+                        {college.name}
+                    </Link>
+                  </TableCell>
                   <TableCell>{college.principalEmail}</TableCell>
                   <TableCell>
                     <Badge variant={college.status === 'Active' ? 'default' : 'destructive'}>
