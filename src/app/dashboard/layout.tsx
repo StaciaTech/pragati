@@ -15,6 +15,7 @@ import {
   SidebarInset,
   SidebarTrigger,
   SidebarFooter,
+  SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/icons';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -51,84 +52,118 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     <SidebarProvider defaultOpen={false}>
       <Sidebar collapsible="icon" className="group/sidebar">
           <SidebarHeader>
-              <Link
-                  href={`/dashboard?role=${role}`}
-                  className="flex h-8 items-center gap-2 rounded-md p-2 group-data-[state=collapsed]/sidebar:justify-center"
-              >
-                  <Logo className="h-8 w-8 shrink-0" />
-                  <span className="truncate text-lg font-semibold text-sidebar-foreground transition-opacity duration-200 group-data-[state=collapsed]/sidebar:opacity-0">
-                  PragatiAI
-                  </span>
-              </Link>
+          <Link
+            href={`/dashboard?role=${role}`}
+            // 1. Remove fixed gap-2. We'll control gap with ml on span.
+            // 2. Adjust justify classes for smooth transition
+            className="flex h-23 items-center rounded-md p-2 
+                       transition-all duration-300 ease-in-out
+                       group-data-[state=collapsed]/sidebar:justify-center
+                       group-data-[state=expanded]/sidebar:justify-start" // Ensure left-justified when expanded
+          >
+            <Logo
+            className="h-8 w-8  transition-transform duration-300 ease-in-out
+                      group-data-[state=collapsed]/sidebar:scale-125 /* Adjust scale factor as needed */
+                      group-data-[state=expanded]/sidebar:scale-150" /* Default scale */
+            />
+            <span
+              className="
+                flex-1 overflow-hidden whitespace-nowrap text-lg font-semibold text-sidebar-foreground
+                transition-all duration-300 ease-in-out
+                group-data-[state=collapsed]/sidebar:w-0
+                group-data-[state=collapsed]/sidebar:ml-0
+                group-data-[state=collapsed]/sidebar:opacity-0
+                group-data-[state=collapsed]/sidebar:invisible
+                group-data-[state=expanded]/sidebar:w-auto
+                group-data-[state=expanded]/sidebar:ml-4 {/* Adjust this gap as desired for expanded state */}
+                group-data-[state=expanded]/sidebar:opacity-100
+                group-data-[state=expanded]/sidebar:visible
+              "
+            >
+              PragatiAI
+            </span>
+          </Link>
+
+          {/* ADD THE SEPARATOR HERE */}
+          <div className="flex w-full justify-end pr-4"> {/* Container to push separator right and add right margin */}
+            <SidebarSeparator className="w-32" /> {/* Set separator width */}
+          </div>
+          {/* Add some vertical margin below the separator if needed */}
+          <div className="mb-2"></div> {/* Optional: Add space below the separator */}
+          
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu>
             {navLinks.map((link) => (
-              <SidebarMenuItem key={link.title}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === new URL(link.href, 'http://a').pathname}
-                  // No additional className here for the Link, let sidebarMenuButtonVariants handle it
-                >
-                  {/* Remove the className from Link and let sidebarMenuButtonVariants manage it */}
-                  <Link href={link.href}>
-                    {/* Keep icon wrapper with fixed width for collapsed state, but add transition */}
-                    <div className="w-10 flex justify-center items-center shrink-0 transition-all duration-300 ease-in-out">
-                      <link.icon className="w-5 h-5" />
-                    </div>
-                    {/* Text span: key is to control its width/overflow and transition */}
-                    <span
-                      className="
-                        flex-1 overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out
-                        group-data-[state=collapsed]/sidebar:w-0
-                        group-data-[state=collapsed]/sidebar:ml-0
-                        group-data-[state=collapsed]/sidebar:opacity-0
-                        group-data-[state=collapsed]/sidebar:invisible
-                        group-data-[state=expanded]/sidebar:w-auto
-                        group-data-[state=expanded]/sidebar:ml-2
-                        group-data-[state=expanded]/sidebar:opacity-100
-                        group-data-[state=expanded]/sidebar:visible
-                      "
-                    >
-                      {link.title}
-                    </span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
+            <SidebarMenuItem key={link.title}>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === new URL(link.href, 'http://a').pathname}
+              >
+                <Link href={link.href}>
+                  {/* Apply scaling classes to the icon's wrapper div */}
+                  <div className="w-10 flex justify-center items-center shrink-0 
+                                  transition-all duration-300 ease-in-out
+                                  group-data-[state=collapsed]/sidebar:scale-100 /* Scale icon when collapsed */
+                                  group-data-[state=expanded]/sidebar:scale-110"> {/* Reset scale when expanded */}
+                    <link.icon className="w-5 h-5" />
+                  </div>
+                  <span
+                    className="
+                      flex-1 overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out
+                      group-data-[state=collapsed]/sidebar:w-0
+                      group-data-[state=collapsed]/sidebar:ml-0
+                      group-data-[state=collapsed]/sidebar:opacity-0
+                      group-data-[state=collapsed]/sidebar:invisible
+                      group-data-[state=expanded]/sidebar:w-auto
+                      group-data-[state=expanded]/sidebar:ml-1
+                      group-data-[state=expanded]/sidebar:opacity-100
+                      group-data-[state=expanded]/sidebar:visible
+                    "
+                  >
+                    {link.title}
+                  </span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
              <SidebarMenu>
              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/" className="flex items-center gap-3 min-w-0"> {/* Re-evaluate `gap-3` */}
-                    <div className="w-5 shrink-0 flex items-center justify-center transition-all duration-200 ease-in-out">
-                      <LogOut className="w-5 h-5" />
-                    </div>
-                    <span
-                      className="
-                        flex-1 overflow-hidden whitespace-nowrap transition-all duration-200 ease-in-out
-                        group-data-[state=collapsed]/sidebar:w-0
-                        group-data-[state=collapsed]/sidebar:ml-0
-                        group-data-[state=collapsed]/sidebar:opacity-0
-                        group-data-[state=collapsed]/sidebar:invisible
-                        group-data-[state=expanded]/sidebar:w-auto
-                        group-data-[state=expanded]/sidebar:ml-2 /* Adjust as needed */
-                        group-data-[state=expanded]/sidebar:opacity-100
-                        group-data-[state=expanded]/sidebar:visible
-                      "
-                    >
-                      Log Out
-                    </span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link href="/" className="flex items-center gap-3 min-w-0">
+                  {/* Apply scaling classes to the icon's wrapper div */}
+                  <div className="w-5 shrink-0 flex items-center justify-center 
+                                  transition-all duration-200 ease-in-out
+                                  group-data-[state=collapsed]/sidebar:scale-100 /* Scale icon when collapsed */
+                                  group-data-[state=expanded]/sidebar:scale-110"> {/* Reset scale when expanded */}
+                    <LogOut className="w-5 h-5" />
+                  </div>
+                  <span
+                    className="
+                      flex-1 overflow-hidden whitespace-nowrap transition-all duration-200 ease-in-out
+                      group-data-[state=collapsed]/sidebar:w-0
+                      group-data-[state=collapsed]/sidebar:ml-0
+                      group-data-[state=collapsed]/sidebar:opacity-0
+                      group-data-[state=collapsed]/sidebar:invisible
+                      group-data-[state=expanded]/sidebar:w-auto
+                      group-data-[state=expanded]/sidebar:ml-1
+                      group-data-[state=expanded]/sidebar:opacity-100
+                      group-data-[state=expanded]/sidebar:visible
+                    "
+                  >
+                    Log Out
+                  </span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           </SidebarMenu>
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-          <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:h-16 sm:px-6">
+          <header className="sticky top-0 z-40 flex h-4 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:h-16 sm:px-6">
             <SidebarTrigger className="sm:hidden" />
             <div className="flex-1">
               <h1 className="text-lg font-semibold">{role} Portal</h1>
