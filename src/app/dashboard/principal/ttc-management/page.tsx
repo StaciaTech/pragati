@@ -32,6 +32,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Lightbulb } from 'lucide-react';
 import { ROLES } from '@/lib/constants';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
 
 type Ttc = (typeof MOCK_TTCS)[0];
 
