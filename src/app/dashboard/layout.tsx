@@ -85,12 +85,12 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           </Link>
 
           {/* ADD THE SEPARATOR HERE */}
-          <div className="flex w-full justify-end pr-4"> {/* Container to push separator right and add right margin */}
-            <SidebarSeparator className="w-32" /> {/* Set separator width */}
+          <div className="flex w-full justify-end pr-32"> {/* Container to push separator right and add right margin */}
+            <SidebarSeparator className="w-20" /> {/* Set separator width */}
           </div>
           {/* Add some vertical margin below the separator if needed */}
-          <div className="mb-2"></div> {/* Optional: Add space below the separator */}
-          
+          <div className="mb-0"></div> {/* Optional: Add space below the separator */}
+
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu>
