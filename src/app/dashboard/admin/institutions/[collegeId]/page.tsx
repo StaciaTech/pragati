@@ -110,7 +110,7 @@ export default function InstitutionDetailsPage() {
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Innovators for {selectedTtc?.name}</DialogTitle>
+                        <DialogTitle>Innovators under {selectedTtc?.name}</DialogTitle>
                          <DialogDescription>
                             List of innovators managed by this TTC.
                         </DialogDescription>
