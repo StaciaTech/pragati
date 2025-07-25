@@ -94,12 +94,6 @@ const config = {
           '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
           '40%, 60%': { transform: 'translate3d(4px, 0, 0)' },
         },
-        'move-dots': {
-            '0%, 100%': { 'background-position': '0 0' },
-            '25%': { 'background-position': '0 1rem' },
-            '50%': { 'background-position': '1rem 1rem' },
-            '75%': { 'background-position': '1rem 0' },
-        },
         'wavy-bounce-1': {
           '0%, 100%': { transform: 'translate(0, 0) scale(1)', opacity: '0.6' },
           '50%': { transform: 'translate(-20px, 20px) scale(1.1)', opacity: '0.8' },
@@ -108,19 +102,13 @@ const config = {
           '0%, 100%': { transform: 'translate(0, 0) scale(1)', opacity: '0.5' },
           '50%': { transform: 'translate(20px, -20px) scale(1.05)', opacity: '0.7' },
         },
-        'ripple': {
-            '0%': { transform: 'scale(0)', opacity: '0.5' },
-            '100%': { transform: 'scale(30)', opacity: '0' },
-        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'shake': 'shake 0.82s cubic-bezier(.36,.07,.19,.97) both',
-        'move-dots': 'move-dots 6s linear infinite',
         'wavy-bounce-1': 'wavy-bounce-1 8s ease-in-out infinite alternate',
         'wavy-bounce-2': 'wavy-bounce-2 10s ease-in-out infinite alternate',
-        'ripple': 'ripple 5s infinite linear',
       },
     },
   },

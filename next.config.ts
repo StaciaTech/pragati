@@ -20,6 +20,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+   webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.watchOptions = {
+        poll: 1000,
+      };
+    }
+    return config;
+  },
 };
 
 export default nextConfig;

@@ -56,8 +56,9 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
             key={`grid-${levelIndex}`}
             points={gridPoints}
             fill="none"
-            stroke="hsl(var(--border) / 0.8)"
-            strokeWidth="0.5"
+            stroke="hsl(var(--muted-foreground))"
+            strokeWidth="1"
+            strokeDasharray="2 4"
           />
         );
       })}
@@ -74,8 +75,8 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
               y1={centerY}
               x2={point.x}
               y2={point.y}
-              stroke="hsl(var(--border) / 0.8)"
-              strokeWidth="0.5"
+              stroke="hsl(var(--muted-foreground))"
+              strokeWidth="1"
             />
             {isFirstSpoke && Array.from({ length: gridLevels }).map((_, levelIndex) => {
               const value = (maxScore / gridLevels) * (levelIndex + 1);

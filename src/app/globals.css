@@ -23,7 +23,7 @@
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
  
-    --accent: 210 40% 96.1%;
+    --accent: 240 4.8% 85%;
     --accent-foreground: 222.2 47.4% 11.2%;
  
     --destructive: 0 84.2% 60.2%;
@@ -113,20 +113,7 @@
     text-wrap: balance;
   }
   .dot-bg {
-    background-image: radial-gradient(circle at 1px 1px, hsl(var(--primary-foreground) / 0.2) 1px, transparent 0);
+    background-image: radial-gradient(circle at 1px 1px, hsl(var(--primary-foreground) / 0.1) 1px, transparent 0);
     background-size: 1rem 1rem;
-  }
-  .ripple-bg::after {
-    content: '';
-    position: absolute;
-    width: 2rem;
-    height: 2rem;
-    top: 50%;
-    left: 50%;
-    border-radius: 50%;
-    background-color: hsl(var(--primary-foreground) / 0.1);
-    transform-origin: center;
-    animation: ripple 5s infinite linear;
-    z-index: 0;
   }
 }

@@ -62,6 +62,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import Lottie from 'lottie-react';
 
 const clusterKeys = Object.keys(INITIAL_CLUSTER_WEIGHTS);
 const weightageSchema = clusterKeys.reduce((acc, key) => {
@@ -386,7 +387,14 @@ export default function SubmitIdeaPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [animationData, setAnimationData] = React.useState(null);
   const isEditing = searchParams.has('idea');
+
+  React.useEffect(() => {
+    fetch('https://lottie.host/e2c73365-2a29-4720-a845-a436940b3b4f/QfUPpEkD0F.json')
+      .then(res => res.json())
+      .then(data => setAnimationData(data));
+  }, []);
 
   const getInitialValues = () => {
       const ideaParam = searchParams.get('idea');
@@ -521,10 +529,10 @@ export default function SubmitIdeaPage() {
           </form>
         </Form>
       </CardContent>
-       {isSubmitting && (
+       {isSubmitting && animationData && (
         <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center z-10 rounded-lg">
-            <div className="flex items-center space-x-2">
-                <BrainCircuit className="h-8 w-8 animate-pulse text-primary" />
+            <div className="w-48 h-48">
+              <Lottie animationData={animationData} loop={true} autoplay={true} />
             </div>
              <p className="text-muted-foreground mt-2 font-medium">AI is validating your idea...</p>
              <p className="text-muted-foreground text-sm">Please wait, this may take a moment.</p>
