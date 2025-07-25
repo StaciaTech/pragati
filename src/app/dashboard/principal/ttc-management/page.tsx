@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MOCK_CREDIT_REQUESTS, MOCK_TTCS, MOCK_INNOVATORS, MOCK_IDEAS, MOCK_COLLEGES } from '@/lib/mock-data';
+import { MOCK_CREDIT_REQUESTS, MOCK_TTCS, MOCK_INNOVATORS, MOCK_IDEAS, MOCK_COLLEGES, STATUS_COLORS } from '@/lib/mock-data';
 import {
   Dialog,
   DialogContent,
@@ -33,6 +33,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Lightbulb } from 'lucide-react';
 import { ROLES } from '@/lib/constants';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 
 type Ttc = (typeof MOCK_TTCS)[0];
@@ -101,8 +107,8 @@ export default function TTCManagementPage() {
         setIsInnovatorModalOpen(true);
     };
 
-    const getIdeaCountForInnovator = (innovatorEmail: string) => {
-        return MOCK_IDEAS.filter(idea => idea.innovatorEmail === innovatorEmail).length;
+    const getIdeasForInnovator = (innovatorEmail: string) => {
+        return MOCK_IDEAS.filter(idea => idea.innovatorEmail === innovatorEmail);
     }
 
   return (
@@ -262,45 +268,65 @@ export default function TTCManagementPage() {
         </DialogContent>
       </Dialog>
 
-       <Dialog open={isInnovatorModalOpen} onOpenChange={setIsInnovatorModalOpen}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Innovators under {selectedTtcForInnovators?.name}</DialogTitle>
-                     <DialogDescription>
-                        List of innovators managed by this TTC.
-                    </DialogDescription>
-                </DialogHeader>
-                {innovatorsByTtc[selectedTtcForInnovators?.id || '']?.length > 0 ? (
-                    <ul className="space-y-2 py-4">
-                        {innovatorsByTtc[selectedTtcForInnovators?.id || ''].map(innovator => (
-                            <li key={innovator.id} className="flex items-center justify-between p-2 rounded-md bg-muted/50">
-                                <div className="flex items-center gap-2">
-                                    <Avatar className="h-6 w-6 text-xs">
-                                        <AvatarImage src={`https://avatar.vercel.sh/${innovator.name}.png`} alt={innovator.name} />
-                                        <AvatarFallback>{getInitials(innovator.name)}</AvatarFallback>
-                                    </Avatar>
-                                    <span className="text-sm font-medium">{innovator.name}</span>
+      <Dialog open={isInnovatorModalOpen} onOpenChange={setIsInnovatorModalOpen}>
+        <DialogContent className="max-w-2xl">
+            <DialogHeader>
+                <DialogTitle>Innovators under {selectedTtcForInnovators?.name}</DialogTitle>
+                <DialogDescription>
+                    List of innovators managed by this TTC. Click an innovator to see their ideas.
+                </DialogDescription>
+            </DialogHeader>
+            {innovatorsByTtc[selectedTtcForInnovators?.id || '']?.length > 0 ? (
+                 <Accordion type="single" collapsible className="w-full">
+                    {innovatorsByTtc[selectedTtcForInnovators?.id || ''].map(innovator => {
+                        const ideas = getIdeasForInnovator(innovator.email);
+                        return (
+                        <AccordionItem value={innovator.id} key={innovator.id}>
+                            <AccordionTrigger>
+                                <div className="flex items-center justify-between w-full pr-4">
+                                    <div className="flex items-center gap-2">
+                                        <Avatar className="h-6 w-6 text-xs">
+                                            <AvatarImage src={`https://avatar.vercel.sh/${innovator.name}.png`} alt={innovator.name} />
+                                            <AvatarFallback>{getInitials(innovator.name)}</AvatarFallback>
+                                        </Avatar>
+                                        <span className="text-sm font-medium">{innovator.name}</span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <Badge variant="secondary" className="flex items-center gap-1">
+                                            <Lightbulb className="h-3 w-3" />
+                                            {ideas.length}
+                                        </Badge>
+                                        <Badge variant={innovator.status === 'Active' ? 'default' : 'destructive'}>{innovator.status}</Badge>
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    <Badge variant="secondary" className="flex items-center gap-1">
-                                        <Lightbulb className="h-3 w-3" />
-                                        {getIdeaCountForInnovator(innovator.email)}
-                                    </Badge>
-                                    <Badge variant={innovator.status === 'Active' ? 'default' : 'destructive'}>{innovator.status}</Badge>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p className="text-sm text-muted-foreground text-center py-8">No innovators assigned to this TTC.</p>
-                )}
-                 <DialogFooter>
-                    <DialogClose asChild>
-                        <Button variant="outline">Close</Button>
-                    </DialogClose>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                                {ideas.length > 0 ? (
+                                    <ul className="space-y-1 pl-8 pr-4">
+                                        {ideas.map(idea => (
+                                            <li key={idea.id} className="text-xs flex justify-between items-center">
+                                                <span>- {idea.title}</span>
+                                                <Badge className={`${STATUS_COLORS[idea.status]} text-white`}>{idea.status}</Badge>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p className="text-xs text-muted-foreground pl-8">No ideas submitted by this innovator.</p>
+                                )}
+                            </AccordionContent>
+                        </AccordionItem>
+                    )})}
+                </Accordion>
+            ) : (
+                <p className="text-sm text-muted-foreground text-center py-8">No innovators assigned to this TTC.</p>
+            )}
+            <DialogFooter>
+                <DialogClose asChild>
+                    <Button variant="outline">Close</Button>
+                </DialogClose>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
     </>
   );
 }
