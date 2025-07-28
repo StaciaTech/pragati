@@ -11,7 +11,6 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
 } from '@/components/ui/command';
 import { Search, Lightbulb, Users, Briefcase, Settings, FileText } from 'lucide-react';
 import type { Role } from '@/lib/constants';
@@ -28,8 +27,14 @@ interface Searchable {
 export function UniversalSearch({ role }: { role: Role }) {
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
+  const [os, setOs] = React.useState<'mac' | 'windows' | null>(null);
 
   React.useEffect(() => {
+    // Set OS for shortcut display
+    if (typeof window !== "undefined") {
+      setOs(navigator.userAgent.toLowerCase().includes('mac') ? 'mac' : 'windows');
+    }
+
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
@@ -83,17 +88,16 @@ export function UniversalSearch({ role }: { role: Role }) {
   return (
     <>
       <Button
-        variant="outline"
+        variant="ghost"
         className={cn(
-          'relative h-8 w-full justify-start rounded-md bg-background text-sm font-normal text-muted-foreground shadow-none sm:pr-12 md:w-40 lg:w-64'
+          'relative h-9 w-9 p-0 text-muted-foreground hover:text-foreground sm:h-10 sm:w-auto sm:px-3 sm:justify-start'
         )}
         onClick={() => setOpen(true)}
       >
-        <Search className="h-4 w-4 mr-2" />
-        <span className="hidden lg:inline-flex">Search...</span>
-        <span className="inline-flex lg:hidden">Search...</span>
-        <kbd className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
-          <span className="text-xs">⌘</span>K
+        <Search className="h-4 w-4" />
+        <span className="hidden sm:inline-flex sm:ml-2">Search...</span>
+        <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+          {os === 'mac' ? <span className="text-xs">⌘</span> : <span className="text-xs">Ctrl</span>}K
         </kbd>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
