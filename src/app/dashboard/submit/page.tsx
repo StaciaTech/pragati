@@ -137,7 +137,7 @@ function Step1({ form }: { form: any }) {
   const { toast } = useToast();
   const preset = form.watch('preset');
   const watchedWeights = form.watch(clusters);
-  const totalWeight = clusters.reduce((acc, cluster, i) => acc + (watchedWeights[i] || 0), 0);
+  const totalWeight = clusters.reduce((acc, cluster) => acc + Math.round(form.getValues(cluster) || 0), 0);
   
   const handlePresetChange = (presetKey: keyof typeof presets | 'Manual') => {
       form.setValue('preset', presetKey);
@@ -236,11 +236,11 @@ function Step1({ form }: { form: any }) {
             </div>
             
             {preset === 'Manual' && (
-              <Alert variant="default" className="border-yellow-500/50 text-yellow-700 dark:text-yellow-300">
-                <TriangleAlert className="h-4 w-4 !text-yellow-600" />
-                <AlertTitle>Manual Mode</AlertTitle>
+              <Alert variant="default" className="border-orange-500/50 text-orange-700 dark:text-orange-300">
+                <TriangleAlert className="h-4 w-4 !text-orange-600" />
+                <AlertTitle>Expert Mode Activated</AlertTitle>
                 <AlertDescription>
-                  You are in manual mode. The total weightage must sum to exactly 100%. Adjusting one slider will automatically balance the others.
+                  You are in full control. For best results, we recommend our pre-calibrated presets unless you are a pro!
                 </AlertDescription>
               </Alert>
             )}
