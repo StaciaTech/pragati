@@ -34,11 +34,12 @@ export default function LoginPage() {
              <p className="text-xs text-muted-foreground text-center">© 2024 PragatiAI by Stacia Corp</p>
           </div>
       </div>
-      <div className="relative hidden h-full flex-col bg-primary/10 p-10 text-white dark:border-r lg:flex overflow-hidden">
+      <div className="relative hidden h-full flex-col items-center justify-center bg-primary/10 p-10 text-white dark:border-r lg:flex overflow-hidden">
         <div className="absolute inset-0 bg-primary dot-bg" />
-        <div className="absolute -top-1/4 -left-1/4 h-1/2 w-1/2 animate-wavy-bounce-1 rounded-full bg-gradient-to-br from-[#06B6D4] to-[#F472B6] opacity-60 blur-3xl filter" />
-        <div className="absolute -bottom-1/4 -right-1/4 h-1/2 w-1/2 animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-[#F472B6] to-[#06B6D4] opacity-50 blur-3xl filter" />
-        <div className="relative z-10 m-auto flex flex-col items-center text-center">
+        <div className="absolute -top-1/2 -left-1/2 h-full w-full animate-wavy-bounce-1 rounded-full bg-gradient-to-br from-[#06B6D4] to-[#F472B6] opacity-30 blur-3xl filter" />
+        <div className="absolute -bottom-1/2 -right-1/2 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-[#F472B6] to-[#06B6D4] opacity-20 blur-3xl filter" />
+        
+        <div className="relative z-10 m-auto flex flex-col items-center text-center backdrop-blur-lg bg-white/10 p-8 rounded-2xl border border-white/20 shadow-lg">
            <h2 className="text-4xl font-bold">
             Catalyze Innovation
            </h2>
@@ -50,4 +51,3 @@ export default function LoginPage() {
     </main>
   );
 }
-
