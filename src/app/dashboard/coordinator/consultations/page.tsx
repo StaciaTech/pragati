@@ -18,17 +18,6 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTrigger,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-} from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -48,6 +37,8 @@ export default function CoordinatorConsultationsPage() {
   const [filterStatus, setFilterStatus] = React.useState('all');
   
   const [isRescheduleModalOpen, setIsRescheduleModalOpen] = React.useState(false);
+  const [isRsvpModalOpen, setIsRsvpModalOpen] = React.useState(false);
+
   const [selectedIdea, setSelectedIdea] = React.useState<Idea | null>(null);
   const [rescheduleDate, setRescheduleDate] = React.useState<Date | undefined>(undefined);
   const [rescheduleTime, setRescheduleTime] = React.useState('');
@@ -61,17 +52,24 @@ export default function CoordinatorConsultationsPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const handleRsvp = (ideaId: string, action: 'Accepted' | 'Declined') => {
+  const handleRsvp = (ideaId: string, action: 'Accepted' | 'Declined' | 'Tentative') => {
     toast({
         title: `Consultation ${action}`,
         description: `The consultation request for idea ${ideaId} has been ${action.toLowerCase()}.`
     });
+    setIsRsvpModalOpen(false);
     // Here you would update the backend.
   }
 
   const openRescheduleModal = (idea: Idea) => {
     setSelectedIdea(idea);
     setIsRescheduleModalOpen(true);
+    setIsRsvpModalOpen(false); // Close RSVP modal if open
+  }
+  
+  const openRsvpModal = (idea: Idea) => {
+    setSelectedIdea(idea);
+    setIsRsvpModalOpen(true);
   }
 
   const handleRescheduleSubmit = (e: React.FormEvent) => {
@@ -133,39 +131,7 @@ export default function CoordinatorConsultationsPage() {
                 </TableCell>
                 <TableCell className="text-right">
                   {idea.consultationStatus === 'Pending' ? (
-                     <div className="flex justify-end gap-2">
-                         <AlertDialog>
-                            <AlertDialogTrigger asChild><Button size="sm">Accept</Button></AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Accept Consultation?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        This will confirm the consultation time with the innovator.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleRsvp(idea.id, 'Accepted')}>Accept</AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                         </AlertDialog>
-                         <AlertDialog>
-                             <AlertDialogTrigger asChild><Button variant="destructive" size="sm">Decline</Button></AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Decline Consultation?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        This will cancel the consultation request. Are you sure?
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleRsvp(idea.id, 'Declined')}>Decline</AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                         </AlertDialog>
-                        <Button variant="outline" size="sm" onClick={() => openRescheduleModal(idea)}>Reschedule</Button>
-                     </div>
+                     <Button variant="outline" size="sm" onClick={() => openRsvpModal(idea)}>Respond</Button>
                   ) : (
                     <Button variant="link" size="sm">View Details</Button>
                   )}
@@ -181,6 +147,27 @@ export default function CoordinatorConsultationsPage() {
         </Table>
       </CardContent>
     </Card>
+
+    <Dialog open={isRsvpModalOpen} onOpenChange={setIsRsvpModalOpen}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Respond to Consultation Request</DialogTitle>
+                <DialogDescription>
+                    Review the request from {selectedIdea?.innovatorName} for the idea "{selectedIdea?.title}".
+                </DialogDescription>
+            </DialogHeader>
+             <div className="space-y-4 py-4">
+                 <p><span className="font-semibold text-muted-foreground">Requested Date & Time:</span> {selectedIdea?.consultationDate} at {selectedIdea?.consultationTime}</p>
+                 <p><span className="font-semibold text-muted-foreground">Topics for Discussion:</span> A mock set of topics would go here.</p>
+            </div>
+            <DialogFooter className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                <Button className="sm:col-span-2" onClick={() => handleRsvp(selectedIdea!.id, 'Accepted')}>Accept</Button>
+                <Button variant="outline" onClick={() => handleRsvp(selectedIdea!.id, 'Tentative')}>Mark as Tentative</Button>
+                <Button variant="destructive" onClick={() => handleRsvp(selectedIdea!.id, 'Declined')}>Decline</Button>
+                <Button className="sm:col-span-4" variant="secondary" onClick={() => openRescheduleModal(selectedIdea!)}>Suggest New Time</Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
 
     <Dialog open={isRescheduleModalOpen} onOpenChange={setIsRescheduleModalOpen}>
         <DialogContent>
@@ -233,7 +220,7 @@ export default function CoordinatorConsultationsPage() {
                     </div>
                      <div className="space-y-2">
                         <Label htmlFor="comment">Comment (Optional)</Label>
-                        <Textarea id="comment" placeholder="Add a comment to explain the reason for rescheduling..." />
+                        <Textarea id="comment" name="comment" placeholder="Add a comment to explain the reason for rescheduling..." />
                     </div>
                 </div>
                 <DialogFooter>
@@ -246,5 +233,3 @@ export default function CoordinatorConsultationsPage() {
     </>
   );
 }
-
-    
