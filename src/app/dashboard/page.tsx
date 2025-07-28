@@ -318,18 +318,47 @@ function DashboardPageContent() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Title</TableHead>
+                        <TableHead>Date</TableHead>
                         <TableHead>Status</TableHead>
+                        <TableHead>Score</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {ideas.slice(0, 3).map((idea) => {
                         const status = getStatus(idea);
                         return (
-                        <TableRow key={idea.id} onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)} className="cursor-pointer">
+                        <TableRow key={idea.id}>
                           <TableCell className="font-medium">{idea.title}</TableCell>
+                          <TableCell>{idea.dateSubmitted}</TableCell>
                           <TableCell>
                             <Badge className={STATUS_COLORS[status]}>{status}</Badge>
                           </TableCell>
+                           <TableCell>{getOverallScore(idea)}</TableCell>
+                           <TableCell className="text-right">
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                    <span className="sr-only">More actions</span>
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem onSelect={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
+                                    View Report
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onSelect={() => handleResubmit(idea)}>
+                                    Resubmit
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onSelect={() => handleDownload(idea.id)}>
+                                    Download
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onSelect={() => handleTrackHistory(idea)}>
+                                    Track History
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
                         </TableRow>
                       )})}
                     </TableBody>
