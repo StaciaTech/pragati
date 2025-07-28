@@ -236,7 +236,7 @@ function DashboardPageContent() {
                     {recentIdeas.map((idea) => {
                       const status = getStatus(idea);
                       return (
-                      <TableRow key={idea.id} >
+                      <TableRow key={idea.id} className="cursor-pointer" onClick={() => handleRowClick(idea.id)}>
                         <TableCell className="font-medium">{idea.title}</TableCell>
                         <TableCell>{idea.dateSubmitted}</TableCell>
                         <TableCell>
@@ -256,13 +256,13 @@ function DashboardPageContent() {
                                 <DropdownMenuItem onSelect={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
                                   View Report
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onSelect={() => handleResubmit(idea)}>
+                                <DropdownMenuItem onSelect={(e) => {e.stopPropagation(); handleResubmit(idea)}}>
                                   Resubmit
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onSelect={() => handleDownload(idea.id)}>
+                                <DropdownMenuItem onSelect={(e) => {e.stopPropagation(); handleDownload(idea.id)}}>
                                   Download
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onSelect={() => handleTrackHistory(idea)}>
+                                <DropdownMenuItem onSelect={(e) => {e.stopPropagation(); handleTrackHistory(idea)}}>
                                   Track History
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
