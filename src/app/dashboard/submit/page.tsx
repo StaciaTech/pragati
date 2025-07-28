@@ -136,8 +136,8 @@ function Step1({ form }: { form: any }) {
   const { toast } = useToast();
   const preset = form.watch('preset');
   const watchedWeights = form.watch(clusters);
-  const totalWeight = clusters.reduce((acc, cluster, i) => acc + (form.getValues(cluster) || 0), 0);
-
+  const totalWeight = clusters.reduce((acc, cluster, i) => acc + (watchedWeights[i] || 0), 0);
+  
   const handlePresetChange = (presetKey: keyof typeof presets | 'Manual') => {
       form.setValue('preset', presetKey);
       if (presetKey !== 'Manual') {
@@ -148,13 +148,61 @@ function Step1({ form }: { form: any }) {
       }
   };
 
+  const handleManualWeightChange = (changedCluster: string, newValue: number) => {
+    if (preset !== 'Manual') return;
+
+    const currentValue = form.getValues(changedCluster);
+    const delta = newValue - currentValue;
+    form.setValue(changedCluster, newValue, { shouldDirty: true });
+
+    const otherClusters = clusters.filter(c => c !== changedCluster);
+    const otherClustersTotal = otherClusters.reduce((sum, c) => sum + form.getValues(c), 0);
+
+    if (otherClustersTotal === 0 && delta > 0) {
+      // If other sliders are all at 0, we can't distribute proportionally.
+      // Distribute the change equally.
+      const adjustment = -delta / otherClusters.length;
+      otherClusters.forEach(cluster => {
+        const current = form.getValues(cluster);
+        form.setValue(cluster, Math.max(0, current + adjustment));
+      });
+
+    } else {
+        // Distribute change proportionally
+        otherClusters.forEach(cluster => {
+            const clusterValue = form.getValues(cluster);
+            const proportion = otherClustersTotal > 0 ? clusterValue / otherClustersTotal : (1 / otherClusters.length);
+            const adjustment = -delta * proportion;
+            const finalValue = Math.max(0, Math.min(100, clusterValue + adjustment));
+            form.setValue(cluster, finalValue);
+        });
+    }
+
+    // Final pass to ensure total is exactly 100 due to rounding
+    let currentTotal = clusters.reduce((sum, c) => sum + form.getValues(c), 0);
+    let finalDelta = 100 - currentTotal;
+
+    if (finalDelta !== 0) {
+        const clusterToAdjust = otherClusters.find(c => form.getValues(c) > 0 && c !== changedCluster) || otherClusters[0];
+        if (clusterToAdjust) {
+            form.setValue(clusterToAdjust, form.getValues(clusterToAdjust) + finalDelta);
+        }
+    }
+
+    // Re-validate all cluster fields to update the spider chart
+    clusters.forEach(c => form.trigger(c));
+  };
+
+
   const handleNext = () => {
-    const totalWeight = clusters.reduce((acc, cluster) => acc + (form.getValues(cluster) || 0), 0);
-    if (preset === 'Manual' && totalWeight !== 100) {
+    const currentTotal = clusters.reduce((acc, cluster) => acc + (form.getValues(cluster) || 0), 0);
+    
+    // Allow for small floating point inaccuracies
+    if (preset === 'Manual' && Math.abs(100 - currentTotal) > 0.1) {
         toast({
             variant: "destructive",
             title: "Weightage Error",
-            description: "In Manual mode, the total weightage must sum to 100%.",
+            description: `In Manual mode, the total weightage must sum to 100%. Current total: ${currentTotal.toFixed(2)}%`,
         });
         return;
     }
@@ -186,16 +234,26 @@ function Step1({ form }: { form: any }) {
                     <FormItem>
                       <FormLabel className="flex items-center justify-between">
                         <span>{key}</span>
-                        <span className="text-primary font-bold">{field.value}%</span>
                       </FormLabel>
                       <FormControl>
-                        <Slider
-                          value={[field.value]}
-                          onValueChange={(value) => field.onChange(value[0])}
-                          max={100}
-                          step={1}
-                          disabled={preset !== 'Manual'}
-                        />
+                        <div className="flex items-center gap-4">
+                            <Slider
+                              value={[field.value || 0]}
+                              onValueChange={(value) => handleManualWeightChange(key, value[0])}
+                              max={100}
+                              step={1}
+                              disabled={preset !== 'Manual'}
+                            />
+                            <Input 
+                                type="number"
+                                className="w-20"
+                                value={Math.round(field.value || 0)}
+                                onChange={(e) => handleManualWeightChange(key, parseInt(e.target.value, 10) || 0)}
+                                disabled={preset !== 'Manual'}
+                                min="0"
+                                max="100"
+                            />
+                        </div>
                       </FormControl>
                     </FormItem>
                   )}
@@ -203,11 +261,11 @@ function Step1({ form }: { form: any }) {
               ))}
             </div>
              <div className={cn("relative text-sm font-medium p-3 border rounded-lg flex justify-between items-center overflow-hidden",
-                totalWeight === 100 
+                Math.abs(100 - totalWeight) < 0.1
                 ? 'bg-green-100 dark:bg-green-900/30 text-green-900 dark:text-green-100 border-green-300 dark:border-green-700' 
                 : 'bg-red-100 dark:bg-red-900/30 text-red-900 dark:text-red-100 border-red-300 dark:border-red-700'
              )}>
-                {totalWeight === 100 ? (
+                {Math.abs(100 - totalWeight) < 0.1 ? (
                   <>
                     <div className="absolute -top-1/4 -left-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-br from-teal-400 to-green-600 opacity-20 blur-2xl filter" />
                     <div className="absolute -bottom-1/4 -right-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-lime-400 to-green-500 opacity-10 blur-2xl filter" />
@@ -219,7 +277,7 @@ function Step1({ form }: { form: any }) {
                   </>
                 )}
                 <span className="relative z-10">Total Weight:</span>
-                <span className="relative z-10 font-bold text-xl">{totalWeight}%</span>
+                <span className="relative z-10 font-bold text-xl">{totalWeight.toFixed(0)}%</span>
             </div>
           </div>
           <div className="w-full bg-background rounded-lg p-4">
