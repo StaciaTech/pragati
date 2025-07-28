@@ -181,7 +181,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
               <ThemeToggle />
             </div>
           </header>
-          <div className="border-b ml-4 w-[calc(100%-2rem)]" />
+          <div className="h-[2px] ml-4 w-[calc(100%-2rem)] bg-gradient-to-r from-primary via-purple-500 to-indigo-500 bg-[length:200%_auto] animate-background-pan" />
           <main className="flex-1 overflow-y-auto px-4 py-6">{children}</main>
         </SidebarInset>
     </SidebarProvider>
