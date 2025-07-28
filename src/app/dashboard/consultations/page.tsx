@@ -54,7 +54,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 type Consultation = (typeof MOCK_CONSULTATIONS)[0];
 
-const ConsultationTable = ({ consultations, onRowClick }: { consultations: Consultation[], onRowClick: (c: Consultation) => void }) => (
+const ConsultationTable = ({ consultations, onRowClick, onActionSelect }: { consultations: Consultation[], onRowClick: (c: Consultation) => void, onActionSelect: (action: 'reschedule' | 'cancel', c: Consultation) => void }) => (
     <Table>
         <TableHeader>
             <TableRow>
@@ -85,8 +85,8 @@ const ConsultationTable = ({ consultations, onRowClick }: { consultations: Consu
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuItem onSelect={() => onRowClick(consultation)}>View Details</DropdownMenuItem>
-                            {consultation.status === 'Scheduled' && <DropdownMenuItem>Reschedule</DropdownMenuItem>}
-                            {consultation.status === 'Scheduled' && <DropdownMenuItem className="text-red-500">Cancel</DropdownMenuItem>}
+                            {consultation.status === 'Scheduled' && <DropdownMenuItem onSelect={() => onActionSelect('reschedule', consultation)}>Reschedule</DropdownMenuItem>}
+                            {consultation.status === 'Scheduled' && <DropdownMenuItem className="text-red-500" onSelect={() => onActionSelect('cancel', consultation)}>Cancel</DropdownMenuItem>}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </TableCell>
@@ -110,6 +110,14 @@ export default function ConsultationsPage() {
   const handleViewDetails = (consultation: Consultation) => {
     setSelectedConsultation(consultation);
     setIsModalOpen(true);
+  }
+
+  const handleAction = (action: 'reschedule' | 'cancel', consultation: Consultation) => {
+    if (action === 'reschedule') {
+        toast({ title: 'Feature in Development', description: 'Rescheduling is not yet implemented.' });
+    } else if (action === 'cancel') {
+        toast({ title: 'Feature in Development', description: 'Cancellation is not yet implemented.' });
+    }
   }
   
   const handleRequestSubmit = (event: React.FormEvent) => {
@@ -189,7 +197,7 @@ export default function ConsultationsPage() {
                 <CardContent>
                     <TabsContent value="upcoming">
                         {upcomingConsultations.length > 0 ? (
-                           <ConsultationTable consultations={upcomingConsultations} onRowClick={handleViewDetails} />
+                           <ConsultationTable consultations={upcomingConsultations} onRowClick={handleViewDetails} onActionSelect={handleAction} />
                         ) : (
                              <div className="text-center py-10">
                                 <p className="text-muted-foreground">You have no upcoming consultations.</p>
@@ -198,7 +206,7 @@ export default function ConsultationsPage() {
                     </TabsContent>
                      <TabsContent value="past">
                          {pastConsultations.length > 0 ? (
-                           <ConsultationTable consultations={pastConsultations} onRowClick={handleViewDetails} />
+                           <ConsultationTable consultations={pastConsultations} onRowClick={handleViewDetails} onActionSelect={handleAction} />
                          ) : (
                              <div className="text-center py-10">
                                 <p className="text-muted-foreground">You have no past consultations.</p>
@@ -237,8 +245,10 @@ export default function ConsultationsPage() {
                     </ul>
                 </div>
                  {selectedConsultation?.status === 'Scheduled' && (
-                    <div className="pt-4">
+                    <div className="pt-4 flex gap-2">
                        <Button className="w-full">Join Meeting</Button>
+                       <Button variant="outline" className="w-full" onClick={() => handleAction('reschedule', selectedConsultation!)}>Request Reschedule</Button>
+                       <Button variant="destructive" className="w-full" onClick={() => handleAction('cancel', selectedConsultation!)}>Cancel</Button>
                     </div>
                  )}
             </div>
@@ -322,7 +332,3 @@ export default function ConsultationsPage() {
     </>
   );
 }
-
-    
-
-    
