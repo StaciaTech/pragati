@@ -132,7 +132,7 @@ export default function AnalyticsPage() {
       </Card>
 
        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
+        <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
             <TrendingUp className="w-4 h-4 text-muted-foreground" />
@@ -142,7 +142,7 @@ export default function AnalyticsPage() {
             <p className="text-xs text-muted-foreground">ideas submitted all time</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Average Score</CardTitle>
             <Award className="w-4 h-4 text-muted-foreground" />
@@ -152,7 +152,7 @@ export default function AnalyticsPage() {
             <p className="text-xs text-muted-foreground">across all validated ideas</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Approval Rate</CardTitle>
             <Clock className="w-4 h-4 text-muted-foreground" />
@@ -166,7 +166,7 @@ export default function AnalyticsPage() {
 
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-2 border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
           <CardHeader>
             <CardTitle>Idea Status Distribution</CardTitle>
           </CardHeader>
@@ -194,7 +194,7 @@ export default function AnalyticsPage() {
             </ChartContainer>
           </CardContent>
         </Card>
-        <Card className="lg:col-span-3">
+        <Card className="lg:col-span-3 border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
           <CardHeader>
             <CardTitle>Submission Trend</CardTitle>
           </CardHeader>
@@ -225,7 +225,7 @@ export default function AnalyticsPage() {
         </Card>
       </div>
 
-       <Card>
+       <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
           <CardHeader>
             <CardTitle>Overall Score Trend</CardTitle>
              <CardDescription>Shows the evaluation score for each idea you've submitted.</CardDescription>
