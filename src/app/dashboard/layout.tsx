@@ -181,6 +181,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             <SidebarTrigger className="sm:hidden" />
             <div className="flex-1" />
             <div className="flex items-center gap-2 sm:gap-4">
+              <UniversalSearch role={role} />
                {(role === ROLES.INNOVATOR || role === ROLES.COORDINATOR) && credits !== null && (
                  <TooltipProvider>
                     <Tooltip>
@@ -198,7 +199,6 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                     </Tooltip>
                  </TooltipProvider>
               )}
-              <UniversalSearch role={role} />
               <Notifications role={role} />
               <ThemeToggle />
             </div>
