@@ -1,6 +1,7 @@
 
 'use client';
 
+import * as React from 'react';
 import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -51,8 +52,30 @@ import { ROLES, type Role } from '@/lib/constants';
 import { MOCK_INNOVATOR_USER, MOCK_IDEAS, STATUS_COLORS } from '@/lib/mock-data';
 import type { ValidationReport } from '@/ai/schemas';
 import { useToast } from '@/hooks/use-toast';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { Bar, BarChart, CartesianGrid, Pie, PieChart, ResponsiveContainer, Tooltip, Cell, Sector } from 'recharts';
+import type { PieSectorDataItem } from 'recharts/types/polar/Pie';
 
 type Idea = (typeof MOCK_IDEAS)[0];
+
+const chartConfig = {
+  ideas: {
+    label: 'Ideas',
+    color: 'hsl(var(--chart-1))',
+  },
+  approved: {
+    label: 'Approved',
+    color: 'hsl(var(--color-approved))',
+  },
+  moderate: {
+    label: 'Moderate',
+    color: 'hsl(var(--color-moderate))',
+  },
+  rejected: {
+    label: 'Rejected',
+    color: 'hsl(var(--color-rejected))',
+  },
+};
 
 const mockHistory = [
     { version: "V1.0", date: "2024-01-15", status: "Approved", score: 88 },
@@ -60,6 +83,48 @@ const mockHistory = [
     { version: "V0.8", date: "2024-01-05", status: "Rejected", score: 45 },
 ];
 
+const ActiveShape = (props: any) => {
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload, value } = props;
+
+  return (
+    <g>
+      <text x={cx} y={cy} dy={-4} textAnchor="middle" fill={fill} className="text-2xl font-bold">
+        {value}
+      </text>
+       <text x={cx} y={cy} dy={16} textAnchor="middle" fill="hsl(var(--muted-foreground))" className="text-sm">
+        {payload.name}
+      </text>
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={innerRadius}
+        outerRadius={outerRadius}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        fill={fill}
+      />
+      <Sector
+        cx={cx}
+        cy={cy}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        innerRadius={outerRadius + 6}
+        outerRadius={outerRadius + 10}
+        fill={fill}
+      />
+    </g>
+  );
+};
+
+function getDashboardPath(role: Role) {
+    switch (role) {
+        case ROLES.INNOVATOR: return '/dashboard';
+        case ROLES.COORDINATOR: return '/dashboard/coordinator';
+        case ROLES.PRINCIPAL: return '/dashboard/principal';
+        case ROLES.SUPER_ADMIN: return '/dashboard/admin';
+        default: return '/dashboard';
+    }
+}
 
 function DashboardPageContent() {
   const searchParams = useSearchParams();
@@ -74,6 +139,14 @@ function DashboardPageContent() {
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
   const [selectedIdeaForHistory, setSelectedIdeaForHistory] = useState<Idea | null>(null);
   const [selectedAction, setSelectedAction] = useState<{ action?: () => void, title?: string, description?: string }>({});
+  
+  const [activeIndex, setActiveIndex] = React.useState(0);
+  const onPieEnter = React.useCallback(
+    (_: any, index: number) => {
+      setActiveIndex(index);
+    },
+    [setActiveIndex]
+  );
 
   useEffect(() => {
     // Simulate fetching data for the logged-in innovator
@@ -82,13 +155,39 @@ function DashboardPageContent() {
     setIsLoading(false);
   }, []);
 
-  const recentIdeas = ideas.slice(0, 5);
+  const recentIdeas = ideas.slice(0, 3);
   const totalIdeas = ideas.length;
   const validatedIdeas = ideas.filter(idea => idea.report?.overallScore);
   const averageScore = validatedIdeas.length > 0 ? (validatedIdeas.reduce((acc, item) => acc + item.report!.overallScore, 0) / validatedIdeas.length) : 0;
   const approvedCount = ideas.filter(idea => (idea.report?.validationOutcome || idea.status) === 'Approved').length;
   const approvalRate = totalIdeas > 0 ? (approvedCount / totalIdeas * 100) : 0;
   
+  const ideaStatusData = React.useMemo(() => {
+    const statuses: Record<string, number> = { Approved: 0, Moderate: 0, Rejected: 0 };
+    ideas.forEach((idea) => {
+      const status = idea.report?.validationOutcome || idea.status;
+      if (status in statuses) {
+        statuses[status as keyof typeof statuses]++;
+      }
+    });
+    return [
+      { name: 'Approved', value: statuses.Approved, fill: 'hsl(var(--color-approved))' },
+      { name: 'Moderate', value: statuses.Moderate, fill: 'hsl(var(--color-moderate))' },
+      { name: 'Rejected', value: statuses.Rejected, fill: 'hsl(var(--color-rejected))' },
+    ];
+  }, [ideas]);
+
+  const submissionTrendData = React.useMemo(() => {
+    const trends: { [key: string]: number } = {};
+    const sortedIdeas = [...ideas].sort((a,b) => new Date(a.dateSubmitted).getTime() - new Date(b.dateSubmitted).getTime());
+    
+    sortedIdeas.forEach((idea) => {
+      const month = new Date(idea.dateSubmitted).toLocaleString('default', { month: 'short', year: '2-digit' });
+      trends[month] = (trends[month] || 0) + 1;
+    });
+    return Object.entries(trends).map(([name, ideas]) => ({ name, ideas }));
+  }, [ideas]);
+
   const handleActionConfirm = useCallback(() => {
     if (selectedAction.action) {
       selectedAction.action();
@@ -126,10 +225,11 @@ function DashboardPageContent() {
   }, [router]);
 
   if (role !== ROLES.INNOVATOR) {
-    // Fallback for other roles if they land here
-    const roleDashboardPath = `/dashboard/${role.toLowerCase().replace(/\s+/g, '')}`;
+    const roleDashboardPath = getDashboardPath(role);
     useEffect(() => {
-        router.push(roleDashboardPath);
+        if (roleDashboardPath !== '/dashboard') {
+            router.push(roleDashboardPath);
+        }
     }, [router, roleDashboardPath]);
     
     return (
@@ -212,11 +312,72 @@ function DashboardPageContent() {
         </Card>
       </div>
 
+       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Idea Status Distribution</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+              <ResponsiveContainer width="100%" height={250}>
+                 <PieChart>
+                  <Pie
+                    activeIndex={activeIndex}
+                    activeShape={ActiveShape}
+                    data={ideaStatusData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    dataKey="value"
+                    onMouseEnter={onPieEnter}
+                  >
+                     {ideaStatusData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+        <Card className="lg:col-span-3">
+          <CardHeader>
+            <CardTitle>Submission Trend</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={submissionTrendData}>
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="name"
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                  />
+                   <YAxis />
+                  <Tooltip
+                    cursor={true}
+                    content={<ChartTooltipContent 
+                        contentStyle={{background: "hsl(var(--background))", border: "1px solid hsl(var(--border))"}}
+                        labelClassName="font-bold"
+                    />}
+                  />
+                  <Bar dataKey="ideas" fill="hsl(var(--chart-1))" radius={8} />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      </div>
+
+
       <Card>
             <CardHeader>
                 <div className="flex justify-between items-center">
                     <CardTitle>My Recent Ideas</CardTitle>
-                     {ideas.length > 5 && (
+                     {ideas.length > 3 && (
                         <Button variant="link" asChild>
                             <Link href={`/dashboard/ideas?role=${ROLES.INNOVATOR}`}>View All</Link>
                         </Button>
@@ -246,7 +407,7 @@ function DashboardPageContent() {
                     {recentIdeas.map((idea) => {
                       const status = getStatus(idea);
                       return (
-                      <TableRow key={idea.id} className="cursor-pointer" onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
+                      <TableRow key={idea.id}>
                         <TableCell className="font-medium">{idea.title}</TableCell>
                         <TableCell>{idea.dateSubmitted}</TableCell>
                         <TableCell>
@@ -344,6 +505,7 @@ function DashboardPageContent() {
   );
 }
 
+
 export default function DashboardPage() {
     return (
         <Suspense fallback={<div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>}>
@@ -351,5 +513,3 @@ export default function DashboardPage() {
         </Suspense>
     );
 }
-
-    

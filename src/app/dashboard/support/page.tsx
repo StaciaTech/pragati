@@ -16,41 +16,52 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
+import { LifeBuoy, Search } from 'lucide-react';
+import { ChatbotWidget } from '@/components/chatbot-widget';
 
 
 export default function SupportPage() {
-    const { toast } = useToast();
-    const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-    const handleSubmitSupportRequest = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        toast({
-            title: "Message Sent!",
-            description: "Your message has been sent to support@staciacorp.com. We will get back to you shortly.",
-        });
-        setIsModalOpen(false);
-    }
+  const faqs = [
+    {
+      question: "How long does validation take?",
+      answer: "The AI validation process is typically completed within a few minutes. You will receive an email notification once your report is ready.",
+    },
+    {
+      question: "What does the 'Moderate' verdict mean?",
+      answer: "A 'Moderate' verdict indicates that your idea has potential but also has some weaknesses that need to be addressed. The detailed report will provide specific recommendations for improvement.",
+    },
+    {
+      question: "Can I get more credits?",
+      answer: "Yes, innovators can request more credits from the 'Request Credits' page, which will be sent to your TTC Coordinator for approval. College Principals can purchase additional credits in the 'Plan & Payment' section.",
+    },
+     {
+      question: "Where can I find my validation report?",
+      answer: "Your validation reports are available in the 'My Ideas' section. Click on any idea to view its detailed report.",
+    },
+  ]
 
   return (
+    <>
     <div className="space-y-6">
-       <div>
-            <h2 className="text-2xl font-bold">Support & Help Center</h2>
-            <p className="text-muted-foreground">Find answers to your questions and get help.</p>
+       <Card className="w-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg border-0 relative overflow-hidden">
+        <div className="absolute -top-1/4 -left-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-br from-[#FF00CC] to-[#333399] opacity-30 blur-3xl filter" />
+        <div className="absolute -bottom-1/4 -right-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-[#F472B6] to-[#06B6D4] opacity-20 blur-3xl filter" />
+        <div className="relative z-10 p-6">
+          <div className="flex flex-col items-center text-center">
+            <LifeBuoy className="w-16 h-16 text-white mb-4" />
+            <h1 className="text-3xl font-bold text-white">How can we help you?</h1>
+            <p className="mt-2 text-primary-foreground/80 max-w-xl">
+              Have a question? Find answers in our FAQs, guides, or chat with our AI assistant.
+            </p>
+             <div className="relative mt-6 w-full max-w-lg">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input placeholder="Search for answers..." className="pl-12 h-12 rounded-full bg-primary-foreground/20 border-0 placeholder:text-primary-foreground/60" />
+            </div>
+          </div>
         </div>
+      </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
@@ -91,88 +102,33 @@ export default function SupportPage() {
             <CardHeader><CardTitle>Frequently Asked Questions</CardTitle></CardHeader>
             <CardContent>
                 <Accordion type="single" collapsible className="w-full">
-                    <AccordionItem value="item-1">
-                        <AccordionTrigger>How long does validation take?</AccordionTrigger>
-                        <AccordionContent>
-                        The AI validation process is typically completed within a few minutes. You will receive an email notification once your report is ready.
-                        </AccordionContent>
-                    </AccordionItem>
-                    <AccordionItem value="item-2">
-                        <AccordionTrigger>What does the "Moderate" verdict mean?</AccordionTrigger>
-                        <AccordionContent>
-                        A "Moderate" verdict indicates that your idea has potential but also has some weaknesses that need to be addressed. The detailed report will provide specific recommendations for improvement.
-                        </AccordionContent>
-                    </AccordionItem>
-                    <AccordionItem value="item-3">
-                        <AccordionTrigger>Can I get more credits?</AccordionTrigger>
-                        <AccordionContent>
-                        Yes, innovators can request more credits from the "Request Credits" page, which will be sent to your TTC Coordinator for approval. College Principals can purchase additional credits in the "Plan & Payment" section.
-                        </AccordionContent>
-                    </AccordionItem>
+                    {faqs.map((faq, i) => (
+                         <AccordionItem value={`item-${i}`} key={i}>
+                            <AccordionTrigger>{faq.question}</AccordionTrigger>
+                            <AccordionContent>{faq.answer}</AccordionContent>
+                        </AccordionItem>
+                    ))}
                 </Accordion>
             </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Contact Support</CardTitle>
+            <CardTitle>Contact Information</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-muted-foreground space-y-4 mb-6">
+            <div className="text-sm text-muted-foreground">
                 <div>
                   <p className="font-semibold text-foreground">Stacia Corp</p>
                   <p>Ground Floor, C-53, Guindy Industrial Estate,</p>
                   <p>Guindy, Chennai - 32, Tamil Nadu</p>
                   <p>support@staciacorp.com</p>
                 </div>
-                <p>
-                  Still have questions? Launch our chatbot for instant help or contact our support team directly.
-                </p>
             </div>
-            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                <div className="flex flex-wrap gap-2">
-                    <Button variant="outline">Launch Chatbot</Button>
-                    <DialogTrigger asChild>
-                        <Button>Contact Support</Button>
-                    </DialogTrigger>
-                </div>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Contact Support</DialogTitle>
-                        <DialogDescription>
-                            Fill out the form below and we'll get back to you as soon as possible.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmitSupportRequest}>
-                        <div className="grid gap-4 py-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="name">Name</Label>
-                                <Input id="name" name="name" placeholder="Your Name" required />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input id="email" name="email" type="email" placeholder="your.email@example.com" required />
-                            </div>
-                             <div className="space-y-2">
-                                <Label htmlFor="subject">Subject</Label>
-                                <Input id="subject" name="subject" placeholder="e.g., Issue with idea submission" required />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="message">Message</Label>
-                                <Textarea id="message" name="message" placeholder="Describe your issue or question here." required />
-                            </div>
-                        </div>
-                        <DialogFooter>
-                            <DialogClose asChild>
-                                <Button type="button" variant="outline">Cancel</Button>
-                            </DialogClose>
-                            <Button type="submit">Send Message</Button>
-                        </DialogFooter>
-                    </form>
-                </DialogContent>
-            </Dialog>
           </CardContent>
         </Card>
     </div>
+    <ChatbotWidget />
+    </>
   );
 }

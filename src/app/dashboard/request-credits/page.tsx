@@ -101,7 +101,7 @@ export default function RequestCreditsPage() {
   return (
     <div className="space-y-6">
       {pendingRequest && (
-        <Card className="border-yellow-500">
+        <Card className="bg-gradient-to-r from-primary via-purple-500 to-indigo-500 bg-[length:200%_auto] animate-background-pan">
           <CardHeader>
             <CardTitle>Pending Request</CardTitle>
             <CardDescription>
