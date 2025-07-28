@@ -99,8 +99,8 @@ const config = {
           '50%': { transform: 'translate(-20px, 20px) scale(1.1)', opacity: '0.8' },
         },
         'wavy-bounce-2': {
-          '0%, 100%': { transform: 'translate(0, 0) scale(1)', opacity: '0.5' },
-          '50%': { transform: 'translate(20px, -20px) scale(1.05)', opacity: '0.7' },
+          '0%, 100%': { transform: 'scale(1)', opacity: '0.5' },
+          '50%': { transform: 'scale(1.05)', opacity: '0.7' },
         },
         'background-pan': {
           '0%': { 'background-position': 'left center' },
