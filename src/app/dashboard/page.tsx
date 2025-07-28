@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { TrendingUp, Award, Clock, MoreHorizontal, Loader2, PlusCircle, Lightbulb, CreditCard } from 'lucide-react';
+import { TrendingUp, Award, Clock, MoreHorizontal, Loader2, PlusCircle, Lightbulb, CreditCard, BarChart3 } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -84,38 +84,6 @@ const mockHistory = [
     { version: "V0.8", date: "2024-01-05", status: "Rejected", score: 45 },
 ];
 
-const ActiveShape = (props: any) => {
-  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload, value } = props;
-
-  return (
-    <g>
-      <text x={cx} y={cy} dy={-4} textAnchor="middle" fill={fill} className="text-2xl font-bold">
-        {value}
-      </text>
-       <text x={cx} y={cy} dy={16} textAnchor="middle" fill="hsl(var(--muted-foreground))" className="text-sm">
-        {payload.name}
-      </text>
-      <Sector
-        cx={cx}
-        cy={cy}
-        innerRadius={innerRadius}
-        outerRadius={outerRadius}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        fill={fill}
-      />
-      <Sector
-        cx={cx}
-        cy={cy}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        innerRadius={outerRadius + 6}
-        outerRadius={outerRadius + 10}
-        fill={fill}
-      />
-    </g>
-  );
-};
 
 function getDashboardPath(role: Role) {
     switch (role) {
@@ -141,13 +109,6 @@ function DashboardPageContent() {
   const [selectedIdeaForHistory, setSelectedIdeaForHistory] = useState<Idea | null>(null);
   const [selectedAction, setSelectedAction] = useState<{ action?: () => void, title?: string, description?: string }>({});
   
-  const [activeIndex, setActiveIndex] = React.useState(0);
-  const onPieEnter = React.useCallback(
-    (_: any, index: number) => {
-      setActiveIndex(index);
-    },
-    [setActiveIndex]
-  );
 
   useEffect(() => {
     // Simulate fetching data for the logged-in innovator
@@ -162,21 +123,6 @@ function DashboardPageContent() {
   const approvedCount = ideas.filter(idea => (idea.report?.validationOutcome || idea.status) === 'Approved').length;
   const approvalRate = totalIdeas > 0 ? (approvedCount / totalIdeas * 100) : 0;
   
-  const ideaStatusData = React.useMemo(() => {
-    const statuses: Record<string, number> = { Approved: 0, Moderate: 0, Rejected: 0 };
-    ideas.forEach((idea) => {
-      const status = idea.report?.validationOutcome || idea.status;
-      if (status in statuses) {
-        statuses[status as keyof typeof statuses]++;
-      }
-    });
-    return [
-      { name: 'Approved', value: statuses.Approved, fill: 'hsl(var(--color-approved))' },
-      { name: 'Moderate', value: statuses.Moderate, fill: 'hsl(var(--color-moderate))' },
-      { name: 'Rejected', value: statuses.Rejected, fill: 'hsl(var(--color-rejected))' },
-    ];
-  }, [ideas]);
-
   const submissionTrendData = React.useMemo(() => {
     const trends: { [key: string]: number } = {};
     const sortedIdeas = [...ideas].sort((a,b) => new Date(a.dateSubmitted).getTime() - new Date(b.dateSubmitted).getTime());
@@ -324,8 +270,8 @@ function DashboardPageContent() {
         </CardContent>
        </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <Card className="lg:col-span-3 lg:row-span-2 border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="lg:col-span-2 border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
           <CardHeader>
             <CardTitle>My Recent Ideas</CardTitle>
             <CardDescription>A quick look at your most recently submitted ideas.</CardDescription>
@@ -392,45 +338,18 @@ function DashboardPageContent() {
               )}
           </CardContent>
         </Card>
-         <Card className="lg:col-span-2 border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
-            <CardHeader>
-              <CardTitle>Idea Status Distribution</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                <ResponsiveContainer width="100%" height={250}>
-                    <PieChart>
-                    <Pie
-                      activeIndex={activeIndex}
-                      activeShape={ActiveShape}
-                      data={ideaStatusData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={80}
-                      dataKey="value"
-                      onMouseEnter={onPieEnter}
-                    >
-                        {ideaStatusData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </CardContent>
-        </Card>
-         <Card className="lg:col-span-2 border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
+        <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
           <CardHeader>
-            <CardTitle>Submission Trend</CardTitle>
+            <CardTitle>Analytics Overview</CardTitle>
+            <CardDescription>A summary of your submission trends and outcomes.</CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-              <ResponsiveContainer width="100%" height={250}>
+            <ChartContainer config={chartConfig} className="h-[200px] w-full">
+              <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={submissionTrendData}>
                   <CartesianGrid vertical={false} />
-                  <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
-                    <YAxis allowDecimals={false} />
+                  <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} style={{fontSize: '10px'}} />
+                  <YAxis allowDecimals={false} />
                   <Tooltip
                     cursor={true}
                     content={<ChartTooltipContent 
@@ -442,6 +361,12 @@ function DashboardPageContent() {
                 </LineChart>
               </ResponsiveContainer>
             </ChartContainer>
+            <Button asChild variant="outline" className="w-full mt-4">
+              <Link href={`/dashboard/analytics?role=${ROLES.INNOVATOR}`}>
+                <BarChart3 className="mr-2 h-4 w-4" />
+                View Full Analytics
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       </div>
