@@ -5,7 +5,7 @@ import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, type FieldError } from 'react-hook-form';
 import { z } from 'zod';
-import { FileUp, BrainCircuit, ArrowRight, ArrowLeft } from 'lucide-react';
+import { FileUp, BrainCircuit, ArrowRight, ArrowLeft, TriangleAlert } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
@@ -63,6 +63,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import Lottie from 'lottie-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const clusterKeys = Object.keys(INITIAL_CLUSTER_WEIGHTS);
 const weightageSchema = clusterKeys.reduce((acc, key) => {
@@ -150,59 +151,68 @@ function Step1({ form }: { form: any }) {
 
   const handleManualWeightChange = (changedCluster: string, newValue: number) => {
     if (preset !== 'Manual') return;
+    
+    // Ensure newValue is an integer between 0 and 100
+    newValue = Math.max(0, Math.min(100, Math.round(newValue)));
 
     const currentValue = form.getValues(changedCluster);
-    const delta = newValue - currentValue;
-    form.setValue(changedCluster, newValue, { shouldDirty: true });
+    let delta = newValue - currentValue;
+    form.setValue(changedCluster, newValue, { shouldDirty: true, shouldValidate: true });
 
     const otherClusters = clusters.filter(c => c !== changedCluster);
-    const otherClustersTotal = otherClusters.reduce((sum, c) => sum + form.getValues(c), 0);
+    
+    // Distribute the delta amongst other clusters
+    let remainingDelta = delta;
+    while (Math.abs(remainingDelta) > 0) {
+        let totalAdjustable = otherClusters.reduce((sum, c) => {
+            const val = form.getValues(c);
+            if (remainingDelta < 0 && val < 100) return sum + (100 - val); // Room to increase
+            if (remainingDelta > 0 && val > 0) return sum + val; // Room to decrease
+            return sum;
+        }, 0);
 
-    if (otherClustersTotal === 0 && delta > 0) {
-      // If other sliders are all at 0, we can't distribute proportionally.
-      // Distribute the change equally.
-      const adjustment = -delta / otherClusters.length;
-      otherClusters.forEach(cluster => {
-        const current = form.getValues(cluster);
-        form.setValue(cluster, Math.max(0, current + adjustment));
-      });
+        if (totalAdjustable === 0) break; // No more room to adjust
 
-    } else {
-        // Distribute change proportionally
+        let appliedDelta = 0;
         otherClusters.forEach(cluster => {
             const clusterValue = form.getValues(cluster);
-            const proportion = otherClustersTotal > 0 ? clusterValue / otherClustersTotal : (1 / otherClusters.length);
-            const adjustment = -delta * proportion;
-            const finalValue = Math.max(0, Math.min(100, clusterValue + adjustment));
-            form.setValue(cluster, finalValue);
+            let adjustment = 0;
+            if (remainingDelta < 0 && clusterValue < 100) { // We need to increase others
+                adjustment = Math.round(Math.abs(remainingDelta) * ((100 - clusterValue) / totalAdjustable));
+            } else if (remainingDelta > 0 && clusterValue > 0) { // We need to decrease others
+                adjustment = -Math.round(Math.abs(remainingDelta) * (clusterValue / totalAdjustable));
+            }
+            
+            const newClusterValue = Math.max(0, Math.min(100, clusterValue + adjustment));
+            form.setValue(cluster, newClusterValue);
+            appliedDelta += (newClusterValue - clusterValue);
         });
+        remainingDelta += appliedDelta;
     }
 
     // Final pass to ensure total is exactly 100 due to rounding
     let currentTotal = clusters.reduce((sum, c) => sum + form.getValues(c), 0);
     let finalDelta = 100 - currentTotal;
-
+    
     if (finalDelta !== 0) {
-        const clusterToAdjust = otherClusters.find(c => form.getValues(c) > 0 && c !== changedCluster) || otherClusters[0];
+        const clusterToAdjust = otherClusters.find(c => form.getValues(c) > 0 && form.getValues(c) < 100) || otherClusters[0];
         if (clusterToAdjust) {
-            form.setValue(clusterToAdjust, form.getValues(clusterToAdjust) + finalDelta);
+            form.setValue(clusterToAdjust, Math.max(0, Math.min(100, form.getValues(clusterToAdjust) + finalDelta)));
         }
     }
-
-    // Re-validate all cluster fields to update the spider chart
+    
     clusters.forEach(c => form.trigger(c));
   };
 
 
   const handleNext = () => {
-    const currentTotal = clusters.reduce((acc, cluster) => acc + (form.getValues(cluster) || 0), 0);
+    const currentTotal = clusters.reduce((acc, cluster) => acc + Math.round(form.getValues(cluster) || 0), 0);
     
-    // Allow for small floating point inaccuracies
-    if (preset === 'Manual' && Math.abs(100 - currentTotal) > 0.1) {
+    if (preset === 'Manual' && currentTotal !== 100) {
         toast({
             variant: "destructive",
             title: "Weightage Error",
-            description: `In Manual mode, the total weightage must sum to 100%. Current total: ${currentTotal.toFixed(2)}%`,
+            description: `In Manual mode, the total weightage must sum to 100%. Current total: ${currentTotal}%`,
         });
         return;
     }
@@ -224,6 +234,17 @@ function Step1({ form }: { form: any }) {
                 <Button size="sm" variant={preset === 'Commercialization-Focused' ? 'default' : 'outline'} onClick={() => handlePresetChange('Commercialization-Focused')}>Commercialization-Focused</Button>
                 <Button size="sm" variant={preset === 'Manual' ? 'default' : 'outline'} onClick={() => handlePresetChange('Manual')}>Manual</Button>
             </div>
+            
+            {preset === 'Manual' && (
+              <Alert variant="default" className="border-yellow-500/50 text-yellow-700 dark:text-yellow-300">
+                <TriangleAlert className="h-4 w-4 !text-yellow-600" />
+                <AlertTitle>Manual Mode</AlertTitle>
+                <AlertDescription>
+                  You are in manual mode. The total weightage must sum to exactly 100%. Adjusting one slider will automatically balance the others.
+                </AlertDescription>
+              </Alert>
+            )}
+
             <div className="space-y-4">
               {clusters.map((key) => (
                 <FormField
@@ -266,11 +287,11 @@ function Step1({ form }: { form: any }) {
               ))}
             </div>
              <div className={cn("relative text-sm font-medium p-3 border rounded-lg flex justify-between items-center overflow-hidden",
-                Math.abs(100 - totalWeight) < 0.1
+                totalWeight === 100
                 ? 'bg-green-100 dark:bg-green-900/30 text-green-900 dark:text-green-100 border-green-300 dark:border-green-700' 
                 : 'bg-red-100 dark:bg-red-900/30 text-red-900 dark:text-red-100 border-red-300 dark:border-red-700'
              )}>
-                {Math.abs(100 - totalWeight) < 0.1 ? (
+                {totalWeight === 100 ? (
                   <>
                     <div className="absolute -top-1/4 -left-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-br from-teal-400 to-green-600 opacity-20 blur-2xl filter" />
                     <div className="absolute -bottom-1/4 -right-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-lime-400 to-green-500 opacity-10 blur-2xl filter" />
@@ -282,7 +303,7 @@ function Step1({ form }: { form: any }) {
                   </>
                 )}
                 <span className="relative z-10">Total Weight:</span>
-                <span className="relative z-10 font-bold text-xl">{totalWeight.toFixed(0)}%</span>
+                <span className="relative z-10 font-bold text-xl">{Math.round(totalWeight)}%</span>
             </div>
           </div>
           <div className="w-full bg-background rounded-lg p-4">
@@ -451,7 +472,7 @@ function Step3({ form, isSubmitting }: { form: any, isSubmitting: boolean }) {
                         <p className="text-sm text-muted-foreground mb-4"><span className="font-medium">Preset:</span> {allValues.preset}</p>
                         <div className="grid grid-cols-2 gap-2 text-sm">
                             {Object.entries(weights).map(([key, value]) => (
-                                <p key={key}><span className="font-medium text-muted-foreground">{key}:</span> {value as number}%</p>
+                                <p key={key}><span className="font-medium text-muted-foreground">{key}:</span> {Math.round(value as number)}%</p>
                             ))}
                         </div>
                         <div className="mt-4 flex justify-center">
@@ -637,4 +658,3 @@ export default function SubmitIdeaPage() {
     </Card>
   );
 }
-
