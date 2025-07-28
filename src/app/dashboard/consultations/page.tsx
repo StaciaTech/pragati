@@ -91,7 +91,7 @@ export default function ConsultationsPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card>
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className="text-sm font-medium">Total Consultations</CardTitle>
                     <MessageSquare className="w-4 h-4 text-muted-foreground" />
@@ -100,7 +100,7 @@ export default function ConsultationsPage() {
                     <div className="text-2xl font-bold">{totalConsultations}</div>
                 </CardContent>
             </Card>
-            <Card>
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className="text-sm font-medium">Completed</CardTitle>
                     <CheckCircle className="w-4 h-4 text-muted-foreground" />
@@ -109,7 +109,7 @@ export default function ConsultationsPage() {
                     <div className="text-2xl font-bold">{completedConsultations}</div>
                 </CardContent>
             </Card>
-            <Card>
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className="text-sm font-medium">Scheduled</CardTitle>
                     <Clock className="w-4 h-4 text-muted-foreground" />
@@ -144,7 +144,7 @@ export default function ConsultationsPage() {
                 </TableHeader>
                 <TableBody>
                     {consultations.map((consultation) => (
-                    <TableRow key={consultation.id}>
+                    <TableRow key={consultation.id} className="cursor-pointer" onClick={() => handleViewDetails(consultation)}>
                         <TableCell className="font-medium">
                         {consultation.title}
                         </TableCell>
@@ -154,7 +154,7 @@ export default function ConsultationsPage() {
                         <Badge className={STATUS_COLORS[consultation.status]}>{consultation.status}</Badge>
                         </TableCell>
                         <TableCell className="text-right">
-                            <Button variant="link" size="sm" onClick={() => handleViewDetails(consultation)}>View Details</Button>
+                            <Button variant="link" size="sm" onClick={(e) => { e.stopPropagation(); handleViewDetails(consultation); }}>View Details</Button>
                         </TableCell>
                     </TableRow>
                     ))}
