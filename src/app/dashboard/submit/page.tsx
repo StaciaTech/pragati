@@ -151,56 +151,52 @@ function Step1({ form }: { form: any }) {
 
   const handleManualWeightChange = (changedCluster: string, newValue: number) => {
     if (preset !== 'Manual') return;
-    
-    // Ensure newValue is an integer between 0 and 100
+
     newValue = Math.max(0, Math.min(100, Math.round(newValue)));
 
-    const currentValue = form.getValues(changedCluster);
-    let delta = newValue - currentValue;
-    form.setValue(changedCluster, newValue, { shouldDirty: true, shouldValidate: true });
-
     const otherClusters = clusters.filter(c => c !== changedCluster);
+    const oldTotal = clusters.reduce((sum, c) => sum + form.getValues(c), 0);
+    const oldValueForChanged = form.getValues(changedCluster);
+    let delta = newValue - oldValueForChanged;
     
-    // Distribute the delta amongst other clusters
-    let remainingDelta = delta;
-    while (Math.abs(remainingDelta) > 0) {
-        let totalAdjustable = otherClusters.reduce((sum, c) => {
-            const val = form.getValues(c);
-            if (remainingDelta < 0 && val < 100) return sum + (100 - val); // Room to increase
-            if (remainingDelta > 0 && val > 0) return sum + val; // Room to decrease
-            return sum;
-        }, 0);
+    form.setValue(changedCluster, newValue, { shouldDirty: true });
 
-        if (totalAdjustable === 0) break; // No more room to adjust
+    let remainingDelta = 100 - (oldTotal - oldValueForChanged + newValue);
+    
+    const adjustableClusters = otherClusters.filter(c => form.getValues(c) > 0 || remainingDelta > 0);
 
-        let appliedDelta = 0;
-        otherClusters.forEach(cluster => {
+    // Single pass redistribution
+    let totalAdjustableValue = adjustableClusters.reduce((sum, c) => sum + form.getValues(c), 0);
+
+    if (totalAdjustableValue > 0) {
+        let distributedDelta = 0;
+        adjustableClusters.forEach(cluster => {
             const clusterValue = form.getValues(cluster);
-            let adjustment = 0;
-            if (remainingDelta < 0 && clusterValue < 100) { // We need to increase others
-                adjustment = Math.round(Math.abs(remainingDelta) * ((100 - clusterValue) / totalAdjustable));
-            } else if (remainingDelta > 0 && clusterValue > 0) { // We need to decrease others
-                adjustment = -Math.round(Math.abs(remainingDelta) * (clusterValue / totalAdjustable));
-            }
-            
+            const proportion = clusterValue / totalAdjustableValue;
+            const adjustment = Math.round(remainingDelta * proportion);
             const newClusterValue = Math.max(0, Math.min(100, clusterValue + adjustment));
             form.setValue(cluster, newClusterValue);
-            appliedDelta += (newClusterValue - clusterValue);
+            distributedDelta += newClusterValue - clusterValue;
         });
-        remainingDelta += appliedDelta;
-    }
 
-    // Final pass to ensure total is exactly 100 due to rounding
-    let currentTotal = clusters.reduce((sum, c) => sum + form.getValues(c), 0);
-    let finalDelta = 100 - currentTotal;
+        remainingDelta -= distributedDelta;
+    }
     
+    // Final pass to correct rounding errors
+    let finalTotal = clusters.reduce((sum, c) => sum + form.getValues(c), 0);
+    let finalDelta = 100 - finalTotal;
+
     if (finalDelta !== 0) {
-        const clusterToAdjust = otherClusters.find(c => form.getValues(c) > 0 && form.getValues(c) < 100) || otherClusters[0];
+        const clusterToAdjust = otherClusters.find(c => {
+            const val = form.getValues(c);
+            return finalDelta > 0 ? val < 100 : val > 0;
+        }) || otherClusters[0];
+        
         if (clusterToAdjust) {
             form.setValue(clusterToAdjust, Math.max(0, Math.min(100, form.getValues(clusterToAdjust) + finalDelta)));
         }
     }
-    
+
     clusters.forEach(c => form.trigger(c));
   };
 

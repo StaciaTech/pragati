@@ -376,7 +376,7 @@ const SidebarContent = React.forwardRef<
       className={cn(
         "flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden",
         "group-data-[state=collapsed]/sidebar:overflow-hidden",
-        "pt-4",
+        "pt-0 group-data-[state=collapsed]/sidebar",
         className
       )}
       {...props}
