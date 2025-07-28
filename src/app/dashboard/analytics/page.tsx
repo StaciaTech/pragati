@@ -242,7 +242,7 @@ export default function AnalyticsPage() {
                         </defs>
                         <CartesianGrid vertical={false} strokeDasharray="3 3" />
                         <XAxis dataKey="name" tick={{ fontSize: 12 }} angle={-45} textAnchor="end" interval={0} />
-                        <YAxis domain={[1, 5]} />
+                        <YAxis domain={[0, 100]} />
                         <Tooltip 
                             content={<ChartTooltipContent 
                                 contentStyle={{background: "hsl(var(--background))", border: "1px solid hsl(var(--border))"}}

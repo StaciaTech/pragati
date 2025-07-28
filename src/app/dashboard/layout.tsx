@@ -24,6 +24,7 @@ import { CreditCard, LogOut } from 'lucide-react';
 import { Notifications } from '@/components/notifications';
 import { Suspense } from 'react';
 import { HydrationSafeContent } from '@/components/hydration-safe-content';
+import { UniversalSearch } from '@/components/universal-search';
 
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
@@ -177,7 +178,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-border/0 bg-background/80 px-4 backdrop-blur-sm sm:px-6">
             <SidebarTrigger className="sm:hidden" />
             <div className="flex-1">
-              <h1 className="text-lg font-semibold hidden sm:block">{role} Portal</h1>
+              <UniversalSearch role={role} />
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
                {(role === ROLES.INNOVATOR || role === ROLES.COORDINATOR) && credits !== null && (
