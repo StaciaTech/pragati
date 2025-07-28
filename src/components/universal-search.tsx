@@ -90,7 +90,7 @@ export function UniversalSearch({ role }: { role: Role }) {
       <Button
         variant="ghost"
         className={cn(
-          'relative h-9 w-9 p-0 text-muted-foreground hover:text-foreground sm:h-10 sm:w-auto sm:px-3 sm:justify-start'
+          'relative h-9 w-9 p-0 text-muted-foreground hover:text-foreground sm:h-10 sm:w-64 sm:px-3 sm:justify-start'
         )}
         onClick={() => setOpen(true)}
       >
