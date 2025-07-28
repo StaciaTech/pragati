@@ -3,7 +3,7 @@
 'use client';
 
 import { Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 import {
@@ -29,6 +29,7 @@ import type { ValidationReport } from '@/ai/schemas';
 
 function DashboardPageContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const role = (searchParams.get('role') as Role) || ROLES.INNOVATOR;
 
   if (role !== ROLES.INNOVATOR) {
@@ -60,6 +61,10 @@ function DashboardPageContent() {
   const getStatus = (idea: (typeof ideas)[0]) => {
     return idea.report?.validationOutcome || idea.status;
   }
+
+  const handleRowClick = (ideaId: string) => {
+    router.push(`/dashboard/ideas/${ideaId}?role=${ROLES.INNOVATOR}`);
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -116,7 +121,11 @@ function DashboardPageContent() {
                     {recentIdeas.map((idea) => {
                       const status = getStatus(idea);
                       return (
-                      <TableRow key={idea.id}>
+                      <TableRow 
+                        key={idea.id} 
+                        onClick={() => handleRowClick(idea.id)}
+                        className="cursor-pointer"
+                      >
                         <TableCell className="font-medium">{idea.title}</TableCell>
                         <TableCell>{idea.dateSubmitted}</TableCell>
                         <TableCell>
@@ -125,7 +134,7 @@ function DashboardPageContent() {
                         <TableCell className="font-semibold">{getOverallScore(idea)}</TableCell>
                         <TableCell className="text-right">
                           {idea.report ? (
-                            <Button variant="link" asChild className="p-0 h-auto">
+                            <Button variant="link" asChild className="p-0 h-auto" onClick={(e) => e.stopPropagation()}>
                                 <Link href={`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`}>View Report</Link>
                             </Button>
                           ) : (
