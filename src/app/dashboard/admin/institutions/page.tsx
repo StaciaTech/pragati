@@ -52,7 +52,7 @@ export default function InstitutionManagementPage() {
   return (
     <>
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
                 <CardTitle>Institution Management</CardTitle>
                 <CardDescription>Add, edit, and manage colleges and their settings.</CardDescription>
@@ -60,47 +60,49 @@ export default function InstitutionManagementPage() {
             <Button onClick={() => handleOpenModal('add')}>Add New College</Button>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Principal Email</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Credits</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {colleges.map((college) => (
-                <TableRow key={college.id}>
-                  <TableCell>{college.id}</TableCell>
-                  <TableCell className="font-medium">
-                    <Link href={`/dashboard/admin/institutions/${college.id}?role=Super Admin`} className="hover:underline text-primary">
-                        {college.name}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{college.principalEmail}</TableCell>
-                  <TableCell>
-                    <Badge variant={college.status === 'Active' ? 'default' : 'destructive'}>
-                        {college.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{college.creditsAvailable}</TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Button variant="outline" size="sm" onClick={() => handleOpenModal('edit', college)}>Edit</Button>
-                     <Button 
-                        variant={college.status === 'Active' ? 'destructive' : 'default'} 
-                        size="sm" 
-                        onClick={() => handleToggleStatus(college.id)}
-                    >
-                      {college.status === 'Active' ? 'Deactivate' : 'Activate'}
-                    </Button>
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Principal Email</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Credits</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {colleges.map((college) => (
+                  <TableRow key={college.id}>
+                    <TableCell>{college.id}</TableCell>
+                    <TableCell className="font-medium">
+                      <Link href={`/dashboard/admin/institutions/${college.id}?role=Super Admin`} className="hover:underline text-primary">
+                          {college.name}
+                      </Link>
+                    </TableCell>
+                    <TableCell>{college.principalEmail}</TableCell>
+                    <TableCell>
+                      <Badge variant={college.status === 'Active' ? 'default' : 'destructive'}>
+                          {college.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{college.creditsAvailable}</TableCell>
+                    <TableCell className="text-right space-x-2 whitespace-nowrap">
+                      <Button variant="outline" size="sm" onClick={() => handleOpenModal('edit', college)}>Edit</Button>
+                       <Button 
+                          variant={college.status === 'Active' ? 'destructive' : 'default'} 
+                          size="sm" 
+                          onClick={() => handleToggleStatus(college.id)}
+                      >
+                        {college.status === 'Active' ? 'Deactivate' : 'Activate'}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 
@@ -119,7 +121,7 @@ export default function InstitutionManagementPage() {
                   <Label htmlFor="principalEmail">Principal Email</Label>
                   <Input id="principalEmail" name="principalEmail" type="email" defaultValue={currentCollege?.principalEmail} required />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="ttcLimit">TTC Limit</Label>
                       <Input id="ttcLimit" name="ttcLimit" type="number" defaultValue={currentCollege?.ttcLimit} required />

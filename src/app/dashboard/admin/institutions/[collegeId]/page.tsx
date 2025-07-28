@@ -26,6 +26,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 type Ttc = (typeof MOCK_TTCS)[0];
 
@@ -87,15 +88,15 @@ export default function InstitutionDetailsPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {ttcsInCollege.map(ttc => (
                         <Card key={ttc.id} className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleTtcClick(ttc)}>
-                            <CardHeader className="flex flex-row items-center gap-4">
-                                <Avatar>
+                            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                <Avatar className="h-16 w-16">
                                     <AvatarImage src={`https://avatar.vercel.sh/${ttc.name}.png`} alt={ttc.name} />
                                     <AvatarFallback>{getInitials(ttc.name)}</AvatarFallback>
                                 </Avatar>
-                                <div>
+                                <div className="flex-1">
                                     <CardTitle>{ttc.name}</CardTitle>
                                     <CardDescription>{ttc.email}</CardDescription>
-                                    <div className="flex gap-1 mt-1">
+                                    <div className="flex flex-wrap gap-1 mt-2">
                                         {ttc.expertise.map(e => <Badge key={e} variant="secondary">{e}</Badge>)}
                                     </div>
                                 </div>
@@ -114,13 +115,14 @@ export default function InstitutionDetailsPage() {
             </div>
 
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                <DialogContent className="max-w-2xl">
+                <DialogContent className="max-w-2xl h-[90vh] flex flex-col">
                     <DialogHeader>
                         <DialogTitle>Innovators under {selectedTtc?.name}</DialogTitle>
                          <DialogDescription>
                             List of innovators managed by this TTC. Click an innovator to see their ideas.
                         </DialogDescription>
                     </DialogHeader>
+                    <ScrollArea className="flex-1 -mx-6 px-6">
                     {innovatorsByTtc[selectedTtc?.id || '']?.length > 0 ? (
                         <Accordion type="single" collapsible className="w-full">
                             {innovatorsByTtc[selectedTtc?.id || ''].map(innovator => {
@@ -137,7 +139,7 @@ export default function InstitutionDetailsPage() {
                                                 <span className="text-sm font-medium">{innovator.name}</span>
                                             </div>
                                             <div className="flex items-center gap-3">
-                                                <Badge variant="secondary" className="flex items-center gap-1">
+                                                <Badge variant="secondary" className="hidden sm:flex items-center gap-1">
                                                     <Lightbulb className="h-3 w-3" />
                                                     {ideas.length}
                                                 </Badge>
@@ -165,6 +167,7 @@ export default function InstitutionDetailsPage() {
                     ) : (
                         <p className="text-sm text-muted-foreground text-center py-8">No innovators assigned to this TTC.</p>
                     )}
+                    </ScrollArea>
                      <DialogFooter>
                         <DialogClose asChild>
                             <Button variant="outline">Close</Button>

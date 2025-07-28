@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import Link from 'next/link';
@@ -175,16 +174,16 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-          <header className="sticky top-0 z-40 flex h-4 items-center gap-4 bg-background/80 px-4 backdrop-blur-sm sm:h-16 sm:px-6">
+          <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-border/0 bg-background/80 px-4 backdrop-blur-sm sm:px-6">
             <SidebarTrigger className="sm:hidden" />
             <div className="flex-1">
-              <h1 className="text-lg font-semibold">{role} Portal</h1>
+              <h1 className="text-lg font-semibold hidden sm:block">{role} Portal</h1>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
                {(role === ROLES.INNOVATOR || role === ROLES.COORDINATOR) && credits !== null && (
                  <Link href={getCreditRequestLink()} className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors">
                     <CreditCard className="size-5 text-primary" />
-                    <span>{credits} Credits</span>
+                    <span className="hidden sm:inline">{credits} Credits</span>
                  </Link>
               )}
               <Notifications role={role} />
@@ -192,7 +191,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             </div>
           </header>
           <div className="h-[2px] ml-4 w-[calc(100%-2rem)] bg-gradient-to-r from-primary via-purple-500 to-indigo-500 bg-[length:200%_auto] animate-background-pan" />
-          <main className="flex-1 overflow-y-auto px-4 py-6">{children}</main>
+          <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">{children}</main>
         </SidebarInset>
     </SidebarProvider>
   );
