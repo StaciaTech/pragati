@@ -53,7 +53,7 @@ import { MOCK_INNOVATOR_USER, MOCK_IDEAS, STATUS_COLORS } from '@/lib/mock-data'
 import type { ValidationReport } from '@/ai/schemas';
 import { useToast } from '@/hooks/use-toast';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Bar, BarChart, CartesianGrid, Pie, PieChart, ResponsiveContainer, Tooltip, Cell, Sector } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Pie, PieChart, ResponsiveContainer, Tooltip, Cell, Sector, XAxis, YAxis } from 'recharts';
 import type { PieSectorDataItem } from 'recharts/types/polar/Pie';
 
 type Idea = (typeof MOCK_IDEAS)[0];
@@ -228,9 +228,9 @@ function DashboardPageContent() {
     const roleDashboardPath = getDashboardPath(role);
     useEffect(() => {
         if (roleDashboardPath !== '/dashboard') {
-            router.push(roleDashboardPath);
+            router.push(`${roleDashboardPath}?role=${role}`);
         }
-    }, [router, roleDashboardPath]);
+    }, [router, roleDashboardPath, role]);
     
     return (
         <div className="flex justify-center items-center h-full">
