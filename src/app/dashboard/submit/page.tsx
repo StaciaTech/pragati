@@ -202,7 +202,7 @@ function Step1({ form }: { form: any }) {
                 />
               ))}
             </div>
-             <div className={`text-sm font-medium p-3 border rounded-lg flex justify-between items-center ${ totalWeight === 100 ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 border-green-500' : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 border-red-500'}`}>
+             <div className={`text-sm font-medium p-3 border rounded-lg flex justify-between items-center ${ totalWeight === 100 ? 'bg-gradient-to-r from-green-100 to-green-200 dark:from-green-800/50 dark:to-green-900/50 text-green-900 dark:text-green-100 border-green-300 dark:border-green-700' : 'bg-gradient-to-r from-red-100 to-red-200 dark:from-red-800/50 dark:to-red-900/50 text-red-900 dark:text-red-100 border-red-300 dark:border-red-700'}`}>
                 <span>Total Weight:</span>
                 <span className="font-bold text-xl">{totalWeight}%</span>
             </div>
