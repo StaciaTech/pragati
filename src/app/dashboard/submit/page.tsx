@@ -244,15 +244,20 @@ function Step1({ form }: { form: any }) {
                               step={1}
                               disabled={preset !== 'Manual'}
                             />
-                            <Input 
-                                type="number"
-                                className="w-20"
-                                value={Math.round(field.value || 0)}
-                                onChange={(e) => handleManualWeightChange(key, parseInt(e.target.value, 10) || 0)}
-                                disabled={preset !== 'Manual'}
-                                min="0"
-                                max="100"
-                            />
+                             <div className="w-24 text-right">
+                                {preset === 'Manual' ? (
+                                    <Input 
+                                        type="number"
+                                        className="w-20 text-center"
+                                        value={Math.round(field.value || 0)}
+                                        onChange={(e) => handleManualWeightChange(key, parseInt(e.target.value, 10) || 0)}
+                                        min="0"
+                                        max="100"
+                                    />
+                                ) : (
+                                    <span className="font-semibold text-lg">{Math.round(field.value || 0)}%</span>
+                                )}
+                            </div>
                         </div>
                       </FormControl>
                     </FormItem>
@@ -632,3 +637,4 @@ export default function SubmitIdeaPage() {
     </Card>
   );
 }
+
