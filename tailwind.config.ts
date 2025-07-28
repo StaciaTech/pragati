@@ -128,7 +128,6 @@ const config = {
         'background-pan': 'background-pan 3s linear infinite alternate',
         'slide-out-to-left-16': 'slide-out-to-left-16 0.3s ease-out',
         'slide-in-from-right-16': 'slide-in-from-right-16 0.3s ease-out',
-        'breathing': 'breathing 4s ease-in-out infinite alternate',
       },
     },
   },

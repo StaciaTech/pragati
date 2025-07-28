@@ -185,7 +185,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                  <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                             <Button className="text-white bg-gradient-to-r from-purple-500 to-indigo-500 bg-[length:200%_auto] animate-breathing" asChild>
+                             <Button className="text-white bg-gradient-to-r from-purple-500 to-indigo-500" asChild>
                                 <Link href={getCreditRequestLink()}>
                                     <CreditCard className="size-5" />
                                     <span className="ml-2 hidden sm:inline">{credits} Credits</span>
