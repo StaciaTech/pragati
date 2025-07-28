@@ -36,6 +36,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { Textarea } from '@/components/ui/textarea';
 
 type Idea = (typeof MOCK_IDEAS)[0];
 
@@ -60,7 +61,7 @@ export default function CoordinatorConsultationsPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const handleRsvp = (ideaId: string, action: 'Approved' | 'Rejected') => {
+  const handleRsvp = (ideaId: string, action: 'Accepted' | 'Declined') => {
     toast({
         title: `Consultation ${action}`,
         description: `The consultation request for idea ${ideaId} has been ${action.toLowerCase()}.`
@@ -134,32 +135,32 @@ export default function CoordinatorConsultationsPage() {
                   {idea.consultationStatus === 'Pending' ? (
                      <div className="flex justify-end gap-2">
                          <AlertDialog>
-                            <AlertDialogTrigger asChild><Button size="sm">Approve</Button></AlertDialogTrigger>
+                            <AlertDialogTrigger asChild><Button size="sm">Accept</Button></AlertDialogTrigger>
                             <AlertDialogContent>
                                 <AlertDialogHeader>
-                                    <AlertDialogTitle>Approve Consultation?</AlertDialogTitle>
+                                    <AlertDialogTitle>Accept Consultation?</AlertDialogTitle>
                                     <AlertDialogDescription>
                                         This will confirm the consultation time with the innovator.
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleRsvp(idea.id, 'Approved')}>Approve</AlertDialogAction>
+                                    <AlertDialogAction onClick={() => handleRsvp(idea.id, 'Accepted')}>Accept</AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
                          </AlertDialog>
                          <AlertDialog>
-                             <AlertDialogTrigger asChild><Button variant="destructive" size="sm">Reject</Button></AlertDialogTrigger>
+                             <AlertDialogTrigger asChild><Button variant="destructive" size="sm">Decline</Button></AlertDialogTrigger>
                             <AlertDialogContent>
                                 <AlertDialogHeader>
-                                    <AlertDialogTitle>Reject Consultation?</AlertDialogTitle>
+                                    <AlertDialogTitle>Decline Consultation?</AlertDialogTitle>
                                     <AlertDialogDescription>
                                         This will cancel the consultation request. Are you sure?
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleRsvp(idea.id, 'Rejected')}>Reject</AlertDialogAction>
+                                    <AlertDialogAction onClick={() => handleRsvp(idea.id, 'Declined')}>Decline</AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
                          </AlertDialog>
@@ -229,6 +230,10 @@ export default function CoordinatorConsultationsPage() {
                             required 
                           />
                         </div>
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="comment">Comment (Optional)</Label>
+                        <Textarea id="comment" placeholder="Add a comment to explain the reason for rescheduling..." />
                     </div>
                 </div>
                 <DialogFooter>
