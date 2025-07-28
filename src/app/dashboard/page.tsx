@@ -1,11 +1,10 @@
 
-
 'use client';
 
-import { Suspense, useState, useEffect, useCallback } from 'react';
+import { Suspense, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-
+import { TrendingUp, Award, Clock, MoreHorizontal } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -51,7 +50,6 @@ import { Button } from '@/components/ui/button';
 import { ROLES, type Role } from '@/lib/constants';
 import { MOCK_INNOVATOR_USER, MOCK_IDEAS, STATUS_COLORS } from '@/lib/mock-data';
 import type { ValidationReport } from '@/ai/schemas';
-import { MoreHorizontal } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 
@@ -93,7 +91,13 @@ function DashboardPageContent() {
 
   const user = MOCK_INNOVATOR_USER;
   const ideas = MOCK_IDEAS.filter(idea => idea.innovatorEmail === user.email);
-  const recentIdeas = ideas.slice(0, 3);
+  const recentIdeas = ideas.slice(0, 5);
+
+  const totalIdeas = ideas.length;
+  const validatedIdeas = ideas.filter(idea => idea.report?.overallScore);
+  const averageScore = validatedIdeas.length > 0 ? (validatedIdeas.reduce((acc, item) => acc + item.report!.overallScore, 0) / validatedIdeas.length) : 0;
+  const approvedCount = ideas.filter(idea => (idea.report?.validationOutcome || idea.status) === 'Approved').length;
+  const approvalRate = totalIdeas > 0 ? (approvedCount / totalIdeas * 100) : 0;
   
   const getOverallScore = (idea: (typeof ideas)[0]) => {
      if (idea.report) {
@@ -164,15 +168,45 @@ function DashboardPageContent() {
           </CardContent>
         </div>
       </Card>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
+            <TrendingUp className="w-4 h-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalIdeas}</div>
+            <p className="text-xs text-muted-foreground">ideas submitted all time</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Average Score</CardTitle>
+            <Award className="w-4 h-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{averageScore.toFixed(2)}</div>
+            <p className="text-xs text-muted-foreground">across all validated ideas</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Approval Rate</CardTitle>
+            <Clock className="w-4 h-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{approvalRate.toFixed(1)}%</div>
+             <p className="text-xs text-muted-foreground">of ideas have been approved</p>
+          </CardContent>
+        </Card>
+      </div>
 
-      <div className="relative overflow-hidden rounded-lg">
-        <div className="absolute -top-1/4 -left-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-br from-[#FF00CC] to-[#333399] opacity-30 blur-3xl filter" />
-        <div className="absolute -bottom-1/4 -right-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-[#F472B6] to-[#06B6D4] opacity-20 blur-3xl filter" />
-        <Card className="relative z-10">
+      <Card>
             <CardHeader>
                 <div className="flex justify-between items-center">
                     <CardTitle>My Recent Ideas</CardTitle>
-                     {ideas.length > 3 && (
+                     {ideas.length > 5 && (
                         <Button variant="link" asChild>
                             <Link href={`/dashboard/ideas?role=${ROLES.INNOVATOR}`}>View All</Link>
                         </Button>
@@ -202,11 +236,7 @@ function DashboardPageContent() {
                     {recentIdeas.map((idea) => {
                       const status = getStatus(idea);
                       return (
-                      <TableRow 
-                        key={idea.id} 
-                        onClick={() => handleRowClick(idea.id)}
-                        className="cursor-pointer"
-                      >
+                      <TableRow key={idea.id} >
                         <TableCell className="font-medium">{idea.title}</TableCell>
                         <TableCell>{idea.dateSubmitted}</TableCell>
                         <TableCell>
@@ -223,16 +253,16 @@ function DashboardPageContent() {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem onSelect={(e) => { e.stopPropagation(); router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}}>
+                                <DropdownMenuItem onSelect={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
                                   View Report
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onSelect={(e) => { e.stopPropagation(); handleResubmit(idea)}}>
+                                <DropdownMenuItem onSelect={() => handleResubmit(idea)}>
                                   Resubmit
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onSelect={(e) => { e.stopPropagation(); handleDownload(idea.id)}}>
+                                <DropdownMenuItem onSelect={() => handleDownload(idea.id)}>
                                   Download
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onSelect={(e) => { e.stopPropagation(); handleTrackHistory(idea)}}>
+                                <DropdownMenuItem onSelect={() => handleTrackHistory(idea)}>
                                   Track History
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
@@ -248,7 +278,6 @@ function DashboardPageContent() {
             )}
           </CardContent>
         </Card>
-      </div>
     </div>
     
      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>

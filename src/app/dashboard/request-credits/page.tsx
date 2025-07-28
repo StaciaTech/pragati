@@ -27,21 +27,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Badge } from '@/components/ui/badge';
-import { Sparkles } from 'lucide-react';
-
-const creditBundles = [
-  { amount: 5, name: 'Starter Pack', description: 'Perfect for submitting a few ideas.' },
-  { amount: 15, name: 'Power User Pack', description: 'Best value for frequent innovators.' },
-  { amount: 50, name: 'Institution Pack', description: 'For classroom-wide projects.' },
-];
 
 
 export default function RequestCreditsPage() {
   const { toast } = useToast();
   const user = MOCK_INNOVATOR_USER;
   const [requests, setRequests] = React.useState(MOCK_CREDIT_REQUESTS);
-  const amountRef = React.useRef<HTMLInputElement>(null);
 
   const pendingRequest = requests.find(
     (req) => req.requesterId === user.id && req.status === 'Pending' && req.requesterType === 'Innovator'
@@ -106,12 +97,6 @@ export default function RequestCreditsPage() {
       description: 'Your credit request has been successfully cancelled.',
     });
   };
-
-  const handleBundleClick = (amount: number) => {
-    if (amountRef.current) {
-        amountRef.current.value = String(amount);
-    }
-  }
 
   return (
     <div className="space-y-6">
@@ -184,7 +169,6 @@ export default function RequestCreditsPage() {
             <div className="space-y-2">
               <Label htmlFor="amount">Amount of Credits Needed</Label>
               <Input
-                ref={amountRef}
                 id="amount"
                 name="amount"
                 type="number"
@@ -193,25 +177,6 @@ export default function RequestCreditsPage() {
                 required
                 disabled={!!pendingRequest}
               />
-            </div>
-             <div className="space-y-4">
-                <Label>Recommended Bundles (Upselling)</Label>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {creditBundles.map(bundle => (
-                        <Card 
-                          key={bundle.name} 
-                          className="p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-muted/50"
-                          onClick={() => handleBundleClick(bundle.amount)}
-                        >
-                            <Badge variant="secondary" className="mb-2 bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">
-                                <Sparkles className="mr-1 h-3 w-3" />
-                                {bundle.name}
-                            </Badge>
-                            <p className="text-2xl font-bold">{bundle.amount}</p>
-                            <p className="text-xs text-muted-foreground">{bundle.description}</p>
-                        </Card>
-                    ))}
-                </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="purpose">Purpose of Request</Label>
