@@ -1,10 +1,10 @@
 
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { TrendingUp, Award, Clock, MoreHorizontal } from 'lucide-react';
+import { TrendingUp, Award, Clock, MoreHorizontal, Loader2 } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -52,7 +52,6 @@ import { MOCK_INNOVATOR_USER, MOCK_IDEAS, STATUS_COLORS } from '@/lib/mock-data'
 import type { ValidationReport } from '@/ai/schemas';
 import { useToast } from '@/hooks/use-toast';
 
-
 type Idea = (typeof MOCK_IDEAS)[0];
 
 const mockHistory = [
@@ -68,78 +67,54 @@ function DashboardPageContent() {
   const { toast } = useToast();
   const role = (searchParams.get('role') as Role) || ROLES.INNOVATOR;
   
+  const [ideas, setIdeas] = useState<Idea[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
   const [selectedIdeaForHistory, setSelectedIdeaForHistory] = useState<Idea | null>(null);
   const [selectedAction, setSelectedAction] = useState<{ action?: () => void, title?: string, description?: string }>({});
 
+  useEffect(() => {
+    // Simulate fetching data for the logged-in innovator
+    const userIdeas = MOCK_IDEAS.filter(idea => idea.innovatorEmail === MOCK_INNOVATOR_USER.email);
+    setIdeas(userIdeas);
+    setIsLoading(false);
+  }, []);
 
-  if (role !== ROLES.INNOVATOR) {
-    // Fallback for other roles if they land here, though navigation should prevent this.
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Dashboard</CardTitle>
-          <CardDescription>Welcome to your dashboard.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p>Your role-specific dashboard is available via the sidebar navigation.</p>
-        </CardContent>
-      </Card>
-    )
-  }
-
-  const user = MOCK_INNOVATOR_USER;
-  const ideas = MOCK_IDEAS.filter(idea => idea.innovatorEmail === user.email);
   const recentIdeas = ideas.slice(0, 5);
-
   const totalIdeas = ideas.length;
   const validatedIdeas = ideas.filter(idea => idea.report?.overallScore);
   const averageScore = validatedIdeas.length > 0 ? (validatedIdeas.reduce((acc, item) => acc + item.report!.overallScore, 0) / validatedIdeas.length) : 0;
   const approvedCount = ideas.filter(idea => (idea.report?.validationOutcome || idea.status) === 'Approved').length;
   const approvalRate = totalIdeas > 0 ? (approvedCount / totalIdeas * 100) : 0;
   
-  const getOverallScore = (idea: (typeof ideas)[0]) => {
-     if (idea.report) {
-      return idea.report.overallScore.toFixed(1);
-    }
-    return 'N/A';
-  };
-  
-  const getStatus = (idea: (typeof ideas)[0]) => {
-    return idea.report?.validationOutcome || idea.status;
-  }
-
-  const handleRowClick = (ideaId: string) => {
-    router.push(`/dashboard/ideas/${ideaId}?role=${ROLES.INNOVATOR}`);
-  };
-
-  const handleActionConfirm = () => {
+  const handleActionConfirm = useCallback(() => {
     if (selectedAction.action) {
       selectedAction.action();
     }
     setDialogOpen(false);
-  };
-  
-  const openConfirmationDialog = (action: () => void, title: string, description: string) => {
+  }, [selectedAction]);
+
+  const openConfirmationDialog = useCallback((action: () => void, title: string, description: string) => {
     setSelectedAction({ action, title, description });
     setDialogOpen(true);
-  };
+  }, []);
 
-  const handleDownload = (ideaId: string) => {
+  const handleDownload = useCallback((ideaId: string) => {
     openConfirmationDialog(
       () => toast({ title: "Feature In Development", description: `Downloading for idea ${ideaId} is not yet implemented.` }),
       "Confirm Download",
       "Are you sure you want to download the report for this idea?"
     );
-  };
+  }, [openConfirmationDialog, toast]);
 
-  const handleTrackHistory = (idea: Idea) => {
+  const handleTrackHistory = useCallback((idea: Idea) => {
     setSelectedIdeaForHistory(idea);
     setHistoryDialogOpen(true);
-  };
+  }, []);
   
-  const handleResubmit = (idea: Idea) => {
+  const handleResubmit = useCallback((idea: Idea) => {
     const ideaData = {
       title: idea.title,
       description: idea.description,
@@ -148,6 +123,41 @@ function DashboardPageContent() {
     };
     const query = new URLSearchParams({ idea: JSON.stringify(ideaData) }).toString();
     router.push(`/dashboard/submit?${query}`);
+  }, [router]);
+
+  if (role !== ROLES.INNOVATOR) {
+    // Fallback for other roles if they land here
+    const roleDashboardPath = `/dashboard/${role.toLowerCase().replace(/\s+/g, '')}`;
+    useEffect(() => {
+        router.push(roleDashboardPath);
+    }, [router, roleDashboardPath]);
+    
+    return (
+        <div className="flex justify-center items-center h-full">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+    );
+  }
+
+  const user = MOCK_INNOVATOR_USER;
+  
+  const getOverallScore = (idea: Idea) => {
+     if (idea.report) {
+      return idea.report.overallScore.toFixed(1);
+    }
+    return 'N/A';
+  };
+  
+  const getStatus = (idea: Idea) => {
+    return idea.report?.validationOutcome || idea.status;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
   return (
@@ -236,18 +246,18 @@ function DashboardPageContent() {
                     {recentIdeas.map((idea) => {
                       const status = getStatus(idea);
                       return (
-                      <TableRow key={idea.id} className="cursor-pointer" onClick={() => handleRowClick(idea.id)}>
+                      <TableRow key={idea.id} className="cursor-pointer" onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
                         <TableCell className="font-medium">{idea.title}</TableCell>
                         <TableCell>{idea.dateSubmitted}</TableCell>
                         <TableCell>
                           <Badge className={STATUS_COLORS[status]}>{status}</Badge>
                         </TableCell>
                         <TableCell className="font-semibold">{getOverallScore(idea)}</TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                           {idea.report ? (
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
+                                <Button variant="ghost" size="icon">
                                   <MoreHorizontal className="h-4 w-4" />
                                   <span className="sr-only">More actions</span>
                                 </Button>
@@ -256,13 +266,13 @@ function DashboardPageContent() {
                                 <DropdownMenuItem onSelect={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
                                   View Report
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onSelect={(e) => {e.stopPropagation(); handleResubmit(idea)}}>
+                                <DropdownMenuItem onSelect={() => handleResubmit(idea)}>
                                   Resubmit
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onSelect={(e) => {e.stopPropagation(); handleDownload(idea.id)}}>
+                                <DropdownMenuItem onSelect={() => handleDownload(idea.id)}>
                                   Download
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onSelect={(e) => {e.stopPropagation(); handleTrackHistory(idea)}}>
+                                <DropdownMenuItem onSelect={() => handleTrackHistory(idea)}>
                                   Track History
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
@@ -336,8 +346,10 @@ function DashboardPageContent() {
 
 export default function DashboardPage() {
     return (
-        <Suspense fallback={<div>Loading dashboard...</div>}>
+        <Suspense fallback={<div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>}>
             <DashboardPageContent />
         </Suspense>
     );
 }
+
+    
