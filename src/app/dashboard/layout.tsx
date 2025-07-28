@@ -46,6 +46,16 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     return null;
   }
 
+  const getCreditRequestLink = () => {
+    if (role === ROLES.INNOVATOR) {
+      return `/dashboard/request-credits?role=${role}`;
+    }
+    if (role === ROLES.COORDINATOR) {
+      return `/dashboard/coordinator/logs?role=${role}`;
+    }
+    return '#';
+  };
+
   const credits = getCredits();
   
   return (
@@ -172,10 +182,10 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             </div>
             <div className="flex items-center gap-4">
                {(role === ROLES.INNOVATOR || role === ROLES.COORDINATOR) && credits !== null && (
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                      <CreditCard className="size-5 text-primary" />
-                      <span>{credits} Credits</span>
-                  </div>
+                 <Link href={getCreditRequestLink()} className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors">
+                    <CreditCard className="size-5 text-primary" />
+                    <span>{credits} Credits</span>
+                 </Link>
               )}
               <Notifications role={role} />
               <ThemeToggle />
