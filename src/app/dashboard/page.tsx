@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { TrendingUp, Award, Clock, MoreHorizontal, Loader2, PlusCircle, Lightbulb, CreditCard, BarChart3 } from 'lucide-react';
+import { TrendingUp, Award, Clock, MoreHorizontal, Loader2, PlusCircle, Lightbulb, CreditCard, BarChart3, Star } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -85,6 +85,13 @@ const mockHistory = [
     { version: "V0.8", date: "2024-01-05", status: "Rejected", score: 45 },
 ];
 
+const quotes = [
+    { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+    { text: "The best way to predict the future is to create it.", author: "Peter Drucker" },
+    { text: "Innovation distinguishes between a leader and a follower.", author: "Steve Jobs" },
+    { text: "Don't be afraid to give up the good to go for the great.", author: "John D. Rockefeller" },
+];
+
 
 function getDashboardPath(role: Role) {
     switch (role) {
@@ -104,6 +111,8 @@ function DashboardPageContent() {
   
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [greeting, setGreeting] = useState("Welcome back");
+  const [quote, setQuote] = useState(quotes[0]);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
@@ -116,6 +125,16 @@ function DashboardPageContent() {
     const userIdeas = MOCK_IDEAS.filter(idea => idea.innovatorEmail === MOCK_INNOVATOR_USER.email);
     setIdeas(userIdeas);
     setIsLoading(false);
+
+    // Set time-based greeting
+    const hour = new Date().getHours();
+    if (hour < 12) setGreeting("Good morning");
+    else if (hour < 18) setGreeting("Good afternoon");
+    else setGreeting("Good evening");
+
+    // Set a random quote
+    setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
+
   }, []);
 
   const totalIdeas = ideas.length;
@@ -222,46 +241,15 @@ function DashboardPageContent() {
         <div className="absolute -bottom-1/4 -right-1/2 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-[#F472B6] to-[#06B6D4] opacity-20 blur-3xl filter" />
         <div className="relative z-10">
           <CardHeader>
-            <CardTitle className="text-3xl text-white">Welcome back, {user.name}!</CardTitle>
-            <CardDescription className="text-primary-foreground/80">Ready to change the world? Let's get your next great idea validated.</CardDescription>
+            <CardTitle className="text-3xl text-white">{greeting}, {user.name}!</CardTitle>
+            <CardDescription className="text-primary-foreground/80 italic">
+                "{quote.text}" - {quote.author}
+            </CardDescription>
           </CardHeader>
         </div>
       </Card>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
-            <TrendingUp className="w-4 h-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalIdeas}</div>
-            <p className="text-xs text-muted-foreground">ideas submitted all time</p>
-          </CardContent>
-        </Card>
-        <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Average Score</CardTitle>
-            <Award className="w-4 h-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{averageScore.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">across all validated ideas</p>
-          </CardContent>
-        </Card>
-        <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Approval Rate</CardTitle>
-            <Clock className="w-4 h-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{approvalRate.toFixed(1)}%</div>
-             <p className="text-xs text-muted-foreground">of ideas have been approved</p>
-          </CardContent>
-        </Card>
-      </div>
 
-       <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
+      <Card>
           <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
@@ -277,9 +265,42 @@ function DashboardPageContent() {
               </Button>
           </CardContent>
       </Card>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan cursor-pointer hover:shadow-lg transition-shadow" onClick={() => router.push(`/dashboard/analytics?role=${ROLES.INNOVATOR}`)}>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
+            <TrendingUp className="w-4 h-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalIdeas}</div>
+            <p className="text-xs text-muted-foreground">ideas submitted all time</p>
+          </CardContent>
+        </Card>
+        <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan cursor-pointer hover:shadow-lg transition-shadow" onClick={() => router.push(`/dashboard/analytics?role=${ROLES.INNOVATOR}`)}>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Average Score</CardTitle>
+            <Star className="w-4 h-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{averageScore.toFixed(2)}</div>
+            <p className="text-xs text-muted-foreground">across all validated ideas</p>
+          </CardContent>
+        </Card>
+        <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan cursor-pointer hover:shadow-lg transition-shadow" onClick={() => router.push(`/dashboard/analytics?role=${ROLES.INNOVATOR}`)}>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Approval Rate</CardTitle>
+            <Clock className="w-4 h-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{approvalRate.toFixed(1)}%</div>
+             <p className="text-xs text-muted-foreground">of ideas have been approved</p>
+          </CardContent>
+        </Card>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
+        <Card className="lg:col-span-2 border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan cursor-pointer hover:shadow-lg transition-shadow" onClick={() => router.push(`/dashboard/analytics?role=${ROLES.INNOVATOR}`)}>
            <CardHeader>
               <CardTitle>Analytics Overview</CardTitle>
               <CardDescription>A summary of your submission trends and outcomes.</CardDescription>
@@ -302,19 +323,13 @@ function DashboardPageContent() {
                   </LineChart>
               </ResponsiveContainer>
               </ChartContainer>
-              <Button asChild variant="outline" className="w-full mt-4">
-              <Link href={`/dashboard/analytics?role=${ROLES.INNOVATOR}`}>
-                  <BarChart3 className="mr-2 h-4 w-4" />
-                  View Full Analytics
-              </Link>
-              </Button>
           </CardContent>
         </Card>
         
         <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
           <CardHeader>
             <CardTitle>My Recent Ideas</CardTitle>
-            <CardDescription>A quick look at your most recently submitted ideas.</CardDescription>
+            <CardDescription>A quick look at your most recent ideas.</CardDescription>
           </CardHeader>
           <CardContent>
               {ideas.length === 0 ? (
@@ -327,7 +342,7 @@ function DashboardPageContent() {
                       const status = getStatus(idea);
                       const score = getOverallScore(idea);
                       return (
-                      <Card key={idea.id} className="group transition-all hover:shadow-md">
+                      <Card key={idea.id} className="group transition-all hover:shadow-md cursor-pointer" onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
                         <CardContent className="p-4 flex items-center justify-between">
                             <div className="flex-1 space-y-1">
                                 <p className="font-semibold text-sm truncate">{idea.title}</p>
@@ -341,7 +356,7 @@ function DashboardPageContent() {
                             </div>
                             <div className="flex items-center gap-2">
                                 <Badge className={cn(STATUS_COLORS[status], "hidden sm:inline-flex")}>{status}</Badge>
-                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                         <Button variant="ghost" size="icon">
@@ -439,3 +454,5 @@ export default function DashboardPage() {
     );
 }
 
+
+    
