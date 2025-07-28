@@ -135,8 +135,8 @@ export default function AdminDashboardPage() {
                     </Pie>
                 </PieChart>
               </ResponsiveContainer>
-            </ChartContainer>
-          </CardContent>
+            </CardContent>
+          </Card>
         </Card>
       </div>
 

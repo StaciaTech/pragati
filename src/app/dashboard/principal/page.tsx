@@ -48,17 +48,19 @@ export default function PrincipalDashboardPage() {
 
     const topInnovators = MOCK_INNOVATORS
         .filter(innovator => innovator.collegeId === college.id)
-        .sort((a, b) => {
-            const scoreA = MOCK_IDEAS.filter(i => i.innovatorEmail === a.email).reduce((sum, i) => sum + (i.report?.overallScore || 0), 0);
-            const scoreB = MOCK_IDEAS.filter(i => i.innovatorEmail === b.email).reduce((sum, i) => sum + (i.report?.overallScore || 0), 0);
-            return scoreB - scoreA;
+        .map(innovator => {
+            const innovatorIdeas = MOCK_IDEAS.filter(i => i.innovatorEmail === innovator.email && i.report?.overallScore);
+            const ideasCount = innovatorIdeas.length;
+            if (ideasCount === 0) return null;
+            const avgScore = innovatorIdeas.reduce((sum, i) => sum + i.report!.overallScore, 0) / ideasCount;
+            return {
+                name: innovator.name,
+                score: avgScore,
+            };
         })
-        .slice(0, 5)
-        .map(innovator => ({
-            name: innovator.name,
-            score: MOCK_IDEAS.filter(i => i.innovatorEmail === innovator.email).reduce((sum, i) => sum + (i.report?.overallScore || 0), 0) / (MOCK_IDEAS.filter(i => i.innovatorEmail === innovator.email).length || 1),
-            avatar: `https://avatar.vercel.sh/${innovator.name}.png`
-        }));
+        .filter(Boolean)
+        .sort((a,b) => b!.score - a!.score)
+        .slice(0, 5) as { name: string, score: number }[];
 
     const clusterScores: Record<string, number[]> = {};
     ideas.forEach(idea => {
@@ -76,7 +78,7 @@ export default function PrincipalDashboardPage() {
 
     const avgClusterScores = Object.entries(clusterScores).reduce((acc, [key, scores]) => {
         const avg = scores.reduce((sum, s) => sum + s, 0) / scores.length;
-        acc[key] = (avg / 5) * 100; // Normalize to percentage for spider chart
+        acc[key] = (avg / 100) * 100; // Keep it on a 1-100 scale
         return acc;
     }, {} as Record<string, number>);
 
@@ -133,6 +135,7 @@ export default function PrincipalDashboardPage() {
                                         const radius = 25 + innerRadius + (outerRadius - innerRadius);
                                         const x = cx + radius * Math.cos(-midAngle * RADIAN);
                                         const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                                        if (value === 0) return null;
                                         return <text x={x} y={y} fill="hsl(var(--foreground))" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">{`${statusData[index].name} (${value})`}</text>;
                                     }}>
                                         {statusData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.fill} />)}
@@ -151,7 +154,7 @@ export default function PrincipalDashboardPage() {
                          <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={topInnovators} layout="vertical" margin={{ left: 10, right: 10 }}>
                                 <CartesianGrid horizontal={false} />
-                                <XAxis type="number" hide />
+                                <XAxis type="number" domain={[0,100]} hide />
                                 <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={80} />
                                 <Tooltip
                                     cursor={true}

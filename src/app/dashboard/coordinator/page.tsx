@@ -109,7 +109,7 @@ export default function CoordinatorDashboardPage() {
                              <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={topInnovators} layout="vertical" margin={{ left: 10, right: 10 }}>
                                     <CartesianGrid horizontal={false} />
-                                    <XAxis type="number" domain={[0,5]} hide />
+                                    <XAxis type="number" domain={[0,100]} hide />
                                     <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={100} />
                                     <Tooltip
                                         cursor={true}
