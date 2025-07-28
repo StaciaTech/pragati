@@ -237,7 +237,7 @@ function DashboardPageContent() {
     <>
     <div className="flex flex-col gap-6">
        <Card className="w-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg border-0 relative overflow-hidden">
-        <div className="absolute -top-1/4 -left-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-br from-[#FF00CC] to-[#333399] opacity-30 blur-3xl filter" />
+        <div className="absolute -top-1/4 -left-1/4 h-full w-full animate-wavy-bounce-1 rounded-full bg-gradient-to-br from-[#FF00CC] to-[#333399] opacity-30 blur-3xl filter" />
         <div className="absolute -bottom-1/4 -right-1/2 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-[#F472B6] to-[#06B6D4] opacity-20 blur-3xl filter" />
         <div className="relative z-10">
           <CardHeader>
@@ -253,20 +253,20 @@ function DashboardPageContent() {
           <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Button asChild>
+          <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <Button asChild className="w-full">
                   <Link href={`/dashboard/submit?role=${ROLES.INNOVATOR}`}><PlusCircle /> Submit New Idea</Link>
               </Button>
-              <Button asChild variant="outline">
+              <Button asChild variant="outline" className="w-full">
                   <Link href={`/dashboard/ideas?role=${ROLES.INNOVATOR}`}><Lightbulb /> View All Ideas</Link>
               </Button>
-              <Button asChild variant="outline">
+              <Button asChild variant="outline" className="w-full">
                   <Link href={`/dashboard/request-credits?role=${ROLES.INNOVATOR}`}><CreditCard /> Request Credits</Link>
               </Button>
           </CardContent>
       </Card>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan cursor-pointer hover:shadow-lg transition-shadow" onClick={() => router.push(`/dashboard/analytics?role=${ROLES.INNOVATOR}`)}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
@@ -299,8 +299,8 @@ function DashboardPageContent() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan cursor-pointer hover:shadow-lg transition-shadow" onClick={() => router.push(`/dashboard/analytics?role=${ROLES.INNOVATOR}`)}>
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <Card className="lg:col-span-3 border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan cursor-pointer hover:shadow-lg transition-shadow" onClick={() => router.push(`/dashboard/analytics?role=${ROLES.INNOVATOR}`)}>
            <CardHeader>
               <CardTitle>Analytics Overview</CardTitle>
               <CardDescription>A summary of your submission trends and outcomes.</CardDescription>
@@ -326,7 +326,7 @@ function DashboardPageContent() {
           </CardContent>
         </Card>
         
-        <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
+        <Card className="lg:col-span-2 border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
           <CardHeader>
             <CardTitle>My Recent Ideas</CardTitle>
             <CardDescription>A quick look at your most recent ideas.</CardDescription>
@@ -344,7 +344,7 @@ function DashboardPageContent() {
                       return (
                       <Card key={idea.id} className="group transition-all hover:shadow-md cursor-pointer" onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
                         <CardContent className="p-4 flex items-center justify-between">
-                            <div className="flex-1 space-y-1">
+                            <div className="flex-1 space-y-1 overflow-hidden">
                                 <p className="font-semibold text-sm truncate">{idea.title}</p>
                                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                                     <span>{idea.dateSubmitted}</span>
@@ -453,6 +453,3 @@ export default function DashboardPage() {
         </Suspense>
     );
 }
-
-
-    
