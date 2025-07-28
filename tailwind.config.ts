@@ -114,6 +114,10 @@ const config = {
           '0%': { transform: 'translateX(16px)', opacity: '0' },
           '100%': { transform: 'translateX(0)', opacity: '1' },
         },
+        'breathing': {
+            '0%, 100%': { transform: 'scale(1)', opacity: '0.8' },
+            '50%': { transform: 'scale(1.05)', opacity: '1' },
+        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -124,6 +128,7 @@ const config = {
         'background-pan': 'background-pan 3s linear infinite alternate',
         'slide-out-to-left-16': 'slide-out-to-left-16 0.3s ease-out',
         'slide-in-from-right-16': 'slide-in-from-right-16 0.3s ease-out',
+        'breathing': 'breathing 4s ease-in-out infinite alternate',
       },
     },
   },
