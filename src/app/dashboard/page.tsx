@@ -2,7 +2,7 @@
 
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -21,16 +21,60 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ROLES, type Role } from '@/lib/constants';
 import { MOCK_INNOVATOR_USER, MOCK_IDEAS, STATUS_COLORS } from '@/lib/mock-data';
 import type { ValidationReport } from '@/ai/schemas';
+import { MoreHorizontal } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+
+
+type Idea = (typeof MOCK_IDEAS)[0];
+
+const mockHistory = [
+    { version: "V1.0", date: "2024-01-15", status: "Approved", score: 88 },
+    { version: "V0.9", date: "2024-01-10", status: "Moderate", score: 72 },
+    { version: "V0.8", date: "2024-01-05", status: "Rejected", score: 45 },
+];
+
 
 function DashboardPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { toast } = useToast();
   const role = (searchParams.get('role') as Role) || ROLES.INNOVATOR;
+  
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
+  const [selectedIdeaForHistory, setSelectedIdeaForHistory] = useState<Idea | null>(null);
+  const [selectedAction, setSelectedAction] = useState<{ action?: () => void, title?: string, description?: string }>({});
+
 
   if (role !== ROLES.INNOVATOR) {
     // Fallback for other roles if they land here, though navigation should prevent this.
@@ -66,7 +110,44 @@ function DashboardPageContent() {
     router.push(`/dashboard/ideas/${ideaId}?role=${ROLES.INNOVATOR}`);
   };
 
+  const handleActionConfirm = () => {
+    if (selectedAction.action) {
+      selectedAction.action();
+    }
+    setDialogOpen(false);
+  };
+  
+  const openConfirmationDialog = (action: () => void, title: string, description: string) => {
+    setSelectedAction({ action, title, description });
+    setDialogOpen(true);
+  };
+
+  const handleDownload = (ideaId: string) => {
+    openConfirmationDialog(
+      () => toast({ title: "Feature In Development", description: `Downloading for idea ${ideaId} is not yet implemented.` }),
+      "Confirm Download",
+      "Are you sure you want to download the report for this idea?"
+    );
+  };
+
+  const handleTrackHistory = (idea: Idea) => {
+    setSelectedIdeaForHistory(idea);
+    setHistoryDialogOpen(true);
+  };
+  
+  const handleResubmit = (idea: Idea) => {
+    const ideaData = {
+      title: idea.title,
+      description: idea.description,
+      domain: idea.domain,
+      weights: idea.clusterWeights,
+    };
+    const query = new URLSearchParams({ idea: JSON.stringify(ideaData) }).toString();
+    router.push(`/dashboard/submit?${query}`);
+  }
+
   return (
+    <>
     <div className="flex flex-col gap-6">
        <Card className="w-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg border-0 relative overflow-hidden">
         <div className="absolute -top-1/4 -left-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-br from-[#FF00CC] to-[#333399] opacity-30 blur-3xl filter" />
@@ -134,9 +215,28 @@ function DashboardPageContent() {
                         <TableCell className="font-semibold">{getOverallScore(idea)}</TableCell>
                         <TableCell className="text-right">
                           {idea.report ? (
-                            <Button variant="link" asChild className="p-0 h-auto" onClick={(e) => e.stopPropagation()}>
-                                <Link href={`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`}>View Report</Link>
-                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
+                                  <MoreHorizontal className="h-4 w-4" />
+                                  <span className="sr-only">More actions</span>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onSelect={(e) => { e.stopPropagation(); router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}}>
+                                  View Report
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onSelect={(e) => { e.stopPropagation(); handleResubmit(idea)}}>
+                                  Resubmit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onSelect={(e) => { e.stopPropagation(); handleDownload(idea.id)}}>
+                                  Download
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onSelect={(e) => { e.stopPropagation(); handleTrackHistory(idea)}}>
+                                  Track History
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           ) : (
                             <span className="text-muted-foreground italic text-xs">Validating...</span>
                           )}
@@ -150,6 +250,58 @@ function DashboardPageContent() {
         </Card>
       </div>
     </div>
+    
+     <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{selectedAction.title}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {selectedAction.description}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleActionConfirm}>Yes, continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <Dialog open={historyDialogOpen} onOpenChange={setHistoryDialogOpen}>
+          <DialogContent>
+              <DialogHeader>
+                  <DialogTitle>History for: {selectedIdeaForHistory?.title}</DialogTitle>
+                  <DialogDescription>
+                      Showing the version history and outcomes for this idea.
+                  </DialogDescription>
+              </DialogHeader>
+              <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Version</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Score</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {mockHistory.map((item, index) => (
+                        <TableRow key={index}>
+                            <TableCell>{item.version}</TableCell>
+                            <TableCell>{item.date}</TableCell>
+                            <TableCell><Badge className={STATUS_COLORS[item.status]}>{item.status}</Badge></TableCell>
+                            <TableCell>{item.score.toFixed(1)}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+              <DialogFooter>
+                  <DialogClose asChild>
+                      <Button variant="outline">Close</Button>
+                  </DialogClose>
+              </DialogFooter>
+          </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
