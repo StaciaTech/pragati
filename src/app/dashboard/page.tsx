@@ -55,6 +55,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, Pie, PieChart, ResponsiveContainer, Tooltip, Cell, Sector, XAxis, YAxis, Line, LineChart } from 'recharts';
 import type { PieSectorDataItem } from 'recharts/types/polar/Pie';
+import { cn } from '@/lib/utils';
 
 
 type Idea = (typeof MOCK_IDEAS)[0];
@@ -197,6 +198,13 @@ function DashboardPageContent() {
   const getStatus = (idea: Idea) => {
     return idea.report?.validationOutcome || idea.status;
   }
+  
+  const getScoreColor = (score: number | string) => {
+    if (typeof score !== 'number') return 'text-muted-foreground';
+    if (score >= 85) return 'text-green-500';
+    if (score >= 50) return 'text-yellow-500';
+    return 'text-red-500';
+  };
 
   if (isLoading) {
     return (
@@ -314,55 +322,54 @@ function DashboardPageContent() {
                   <p className="text-muted-foreground">You haven't submitted any ideas yet.</p>
                 </div>
               ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Score</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {ideas.slice(0, 3).map((idea) => {
-                        const status = getStatus(idea);
-                        return (
-                        <TableRow key={idea.id}>
-                          <TableCell className="font-medium">{idea.title}</TableCell>
-                          <TableCell>{idea.dateSubmitted}</TableCell>
-                          <TableCell>
-                            <Badge className={STATUS_COLORS[status]}>{status}</Badge>
-                          </TableCell>
-                           <TableCell>{getOverallScore(idea)}</TableCell>
-                           <TableCell className="text-right">
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                    <span className="sr-only">More actions</span>
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem onSelect={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
-                                    View Report
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onSelect={() => handleResubmit(idea)}>
-                                    Resubmit
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onSelect={() => handleDownload(idea.id)}>
-                                    Download
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onSelect={() => handleTrackHistory(idea)}>
-                                    Track History
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </TableCell>
-                        </TableRow>
-                      )})}
-                    </TableBody>
-                  </Table>
+                  <div className="space-y-4">
+                    {ideas.slice(0, 3).map((idea) => {
+                      const status = getStatus(idea);
+                      const score = getOverallScore(idea);
+                      return (
+                      <Card key={idea.id} className="group transition-all hover:shadow-md">
+                        <CardContent className="p-4 flex items-center justify-between">
+                            <div className="flex-1 space-y-1">
+                                <p className="font-semibold text-sm truncate">{idea.title}</p>
+                                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                    <span>{idea.dateSubmitted}</span>
+                                    <span className="flex items-center gap-1">
+                                        <Award className="w-3 h-3" />
+                                        <span className={cn('font-medium', getScoreColor(Number(score)))}>{score}</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Badge className={cn(STATUS_COLORS[status], "hidden sm:inline-flex")}>{status}</Badge>
+                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" size="icon">
+                                            <MoreHorizontal className="h-4 w-4" />
+                                            <span className="sr-only">More actions</span>
+                                        </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                        <DropdownMenuItem onSelect={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
+                                            View Report
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onSelect={() => handleResubmit(idea)}>
+                                            Resubmit
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onSelect={() => handleDownload(idea.id)}>
+                                            Download
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onSelect={() => handleTrackHistory(idea)}>
+                                            Track History
+                                        </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
+                            </div>
+                        </CardContent>
+                      </Card>
+                    )})}
+                  </div>
               )}
           </CardContent>
         </Card>
