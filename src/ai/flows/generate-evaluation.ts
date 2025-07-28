@@ -14,7 +14,6 @@ import {
   GenerateEvaluationInput,
   GenerateEvaluationInputSchema,
   GenerateEvaluationOutput,
-  GenerateEvaluationOutputSchema,
 } from '@/ai/schemas';
 import { z } from 'zod';
 
@@ -24,8 +23,9 @@ function createOutputSchema(input: GenerateEvaluationInput) {
       const subParamShape = Object.keys(paramDef.subParameters).reduce(
         (subAcc, subParamName) => {
           subAcc[subParamName] = z.object({
-            assignedScore: z.number().int().min(1).max(5).describe('Score from 1-5'),
-            explanation: z.string().describe('Concise explanation for the score (1-3 sentences)'),
+            assignedScore: z.number().int().min(1).max(100).describe('Score from 1-100'),
+            whatWentWell: z.string().describe("Concise explanation of what was done well for this parameter (1-3 sentences)."),
+            whatCanBeImproved: z.string().describe("Concise explanation of what can be improved for this parameter (1-3 sentences)."),
             assumptions: z.array(z.string()).describe('List of assumptions made for this evaluation'),
           });
           return subAcc;
@@ -69,8 +69,11 @@ Cluster Definition: {{{json cluster.definition}}}
 **Instructions:**
 1.  **Focus:** Evaluate the idea *only* on the sub-parameters within the cluster provided.
 2.  **Output Format:** Your response MUST be a single, valid JSON object that conforms to the dynamically generated output schema for the cluster '{{cluster.name}}'. Do not add any text or formatting before or after the JSON object.
-3.  **Scoring:** For each sub-parameter, assign a score from 1 to 5 (integer). Do not use 'N/A'. If a parameter is not applicable, assign a score of 3.
-4.  **Justification:** For each score, provide a concise 'explanation' (1-3 sentences) and list any 'assumptions' you made as an array of strings.
+3.  **Scoring:** For each sub-parameter, assign a score from 1 to 100 (integer). Do not use 'N/A'. If a parameter is not applicable, assign a score of 60.
+4.  **Justification:** For each score, you must provide:
+    - 'whatWentWell': A concise explanation of the strengths of this aspect.
+    - 'whatCanBeImproved': A concise, actionable suggestion for what could be improved.
+    - 'assumptions': A list of any assumptions you made for this evaluation.
 `,
     },
   );

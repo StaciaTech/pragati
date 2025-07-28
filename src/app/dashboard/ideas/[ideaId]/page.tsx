@@ -17,13 +17,20 @@ import { Separator } from '@/components/ui/separator';
 import { MOCK_IDEAS, STATUS_COLORS } from '@/lib/mock-data';
 import type { ValidationReport } from '@/ai/schemas';
 import { ROLES } from '@/lib/constants';
-import { ArrowLeft, Download } from 'lucide-react';
+import { ArrowLeft, Download, ThumbsUp, Lightbulb } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useRef } from 'react';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+import { cn } from '@/lib/utils';
 
-const SectionCard = ({ title, description, children }: { title: string, description?: string, children: React.ReactNode }) => (
-    <Card>
+const SectionCard = ({ title, description, children, className }: { title: string, description?: string, children: React.ReactNode, className?: string }) => (
+    <Card className={className}>
         <CardHeader>
             <CardTitle>{title}</CardTitle>
             {description && <CardDescription>{description}</CardDescription>}
@@ -101,19 +108,23 @@ export default function IdeaReportPage() {
     );
   }
   
-  let verdictIcon = '';
-  let verdictColor = '';
   const status = report?.validationOutcome || idea.status;
   
-  if (status === 'Approved' || status === 'GOOD') {
-    verdictIcon = '✅';
-    verdictColor = 'text-green-600';
-  } else if (status === 'Moderate' || status === 'MODERATE') {
-    verdictIcon = '⚠️';
-    verdictColor = 'text-yellow-600';
-  } else if (status === 'Rejected' || status === 'NOT RECOMMENDED') {
-    verdictIcon = '❌';
-    verdictColor = 'text-red-600';
+  const getVerdictStyle = (outcome: string) => {
+    switch(outcome) {
+        case 'Approved': return { icon: '✅', color: 'text-green-600', bg: 'bg-green-100 dark:bg-green-900/30 border-green-500' };
+        case 'Moderate': return { icon: '⚠️', color: 'text-yellow-600', bg: 'bg-yellow-100 dark:bg-yellow-900/30 border-yellow-500' };
+        case 'Rejected':
+        default: return { icon: '❌', color: 'text-red-600', bg: 'bg-red-100 dark:bg-red-900/30 border-red-500' };
+    }
+  }
+
+  const { icon: verdictIcon, color: verdictColor, bg: verdictBg } = getVerdictStyle(status);
+
+  const getScoreColor = (score: number) => {
+    if (score >= 85) return 'text-green-600';
+    if (score >= 50) return 'text-yellow-600';
+    return 'text-red-600';
   }
 
 
@@ -148,11 +159,11 @@ export default function IdeaReportPage() {
                 <div className="space-y-8">
                   <SectionCard title="Executive Summary" description={report.sections.executiveSummary.concept}>
                       <div className="grid grid-cols-2 gap-4">
-                        <div className={`p-4 rounded-lg bg-muted/50`}>
+                        <div className={`p-4 rounded-lg bg-muted/50 border-l-4 ${verdictBg.split(' ')[2]}`}>
                            <p className="text-sm font-medium">Overall Score</p>
-                           <p className={`text-2xl font-bold ${verdictColor}`}>{report.overallScore.toFixed(1)}/5.0</p>
+                           <p className={`text-3xl font-bold ${verdictColor}`}>{report.overallScore.toFixed(1)}/100</p>
                         </div>
-                        <div className={`p-4 rounded-lg bg-muted/50`}>
+                        <div className={`p-4 rounded-lg bg-muted/50 border-l-4 ${verdictBg.split(' ')[2]}`}>
                            <p className="text-sm font-medium">Validation Outcome</p>
                            <p className={`text-2xl font-bold ${verdictColor}`}>{verdictIcon} {report.validationOutcome}</p>
                         </div>
@@ -162,88 +173,67 @@ export default function IdeaReportPage() {
                         <p className="text-muted-foreground">{report.recommendationText}</p>
                       </div>
                   </SectionCard>
-                  
-                  <SectionCard title={report.sections.pragatiAIServiceProcess.title} description={report.sections.pragatiAIServiceProcess.description}>
-                      {report.sections.pragatiAIServiceProcess.sections.map((sec, i) => (
-                          <div key={i}>
-                              <h4 className="font-semibold">{sec.heading}</h4>
-                              <p className="text-sm text-muted-foreground">{sec.content}</p>
-                          </div>
-                      ))}
-                  </SectionCard>
-
-                  <SectionCard title={report.sections.competitiveLandscape.title} description={report.sections.competitiveLandscape.description}>
-                      {report.sections.competitiveLandscape.sections.map((sec, i) => (
-                          <div key={i} className="mb-4">
-                              <h4 className="font-semibold">{sec.heading}</h4>
-                              <p className="text-sm text-muted-foreground">{sec.content}</p>
-                          </div>
-                      ))}
-                  </SectionCard>
-
-                  <SectionCard title={report.sections.projectEvaluationFramework.title} description={report.sections.projectEvaluationFramework.description}>
-                      {report.sections.projectEvaluationFramework.sections.map((sec, i) => (
-                          <div key={i} className="mb-4">
-                            <h4 className="font-semibold">{sec.heading}</h4>
-                            {sec.content && <p className="text-sm text-muted-foreground">{sec.content}</p>}
-                            {sec.subsections && sec.subsections.map((subsec, j) => (
-                                <div key={j} className="ml-4 mt-2">
-                                    <h5 className="font-medium">{subsec.subheading}</h5>
-                                    <p className="text-sm text-muted-foreground">{subsec.content}</p>
-                                </div>
-                            ))}
-                          </div>
-                      ))}
-                  </SectionCard>
 
                   <SectionCard title={report.sections.detailedEvaluation.title} description={report.sections.detailedEvaluation.description}>
-                    {Object.entries(report.sections.detailedEvaluation.clusters).map(([clusterName, clusterData]) => (
-                      <div key={clusterName} className="mb-6">
-                        <h4 className="text-lg font-semibold text-primary">{clusterName}</h4>
-                        <Separator className="my-2" />
-                        {Object.entries(clusterData).map(([paramName, paramData]) => {
-                          if (paramName === 'purpose' || paramName === 'common_terminologies' || typeof paramData !== 'object' || paramData === null) {
-                            return null;
-                          }
-                          return (
-                            <div key={paramName} className="ml-4 mb-4">
-                              <h5 className="font-medium text-md">{paramName}</h5>
-                               {Object.entries(paramData).map(([subParamName, subParamData]) => {
-                                 if (typeof subParamData !== 'object' || subParamData === null || !('assignedScore' in subParamData)) {
-                                   return null;
-                                 }
-                                 const score = subParamData.assignedScore;
-                                 const explanation = subParamData.explanation;
-                                 const assumptions = subParamData.assumptions;
+                    <Accordion type="multiple" className="w-full space-y-4">
+                        {Object.entries(report.sections.detailedEvaluation.clusters).map(([clusterName, clusterData]) => (
+                            <AccordionItem value={clusterName} key={clusterName} className="border rounded-lg">
+                                <AccordionTrigger className="p-4 text-lg font-semibold text-primary hover:no-underline">
+                                    {clusterName}
+                                </AccordionTrigger>
+                                <AccordionContent className="p-4 pt-0">
+                                    <Accordion type="multiple" className="w-full space-y-2">
+                                    {Object.entries(clusterData).map(([paramName, paramData]) => {
+                                        if (typeof paramData !== 'object' || paramData === null) return null;
+                                        return (
+                                            <AccordionItem value={paramName} key={paramName} className="border rounded-md">
+                                                <AccordionTrigger className="px-4 py-2 font-medium hover:no-underline">
+                                                    {paramName}
+                                                </AccordionTrigger>
+                                                <AccordionContent className="px-4 pb-4">
+                                                    <div className="space-y-3">
+                                                    {Object.entries(paramData).map(([subParamName, subParamData]) => {
+                                                        if (typeof subParamData !== 'object' || subParamData === null || !('assignedScore' in subParamData)) return null;
+                                                        
+                                                        const score = subParamData.assignedScore;
+                                                        const whatWentWell = subParamData.whatWentWell;
+                                                        const whatCanBeImproved = subParamData.whatCanBeImproved;
 
-                                 return (
-                                    <Card key={subParamName} className="my-2 p-4 bg-background">
-                                      <div className="flex justify-between items-start">
-                                        <div>
-                                          <p className="font-semibold">{subParamName}</p>
-                                          <p className="text-sm text-muted-foreground mt-1"><strong>Explanation: </strong>{explanation}</p>
-                                        </div>
-                                        <div className="text-right ml-4 flex-shrink-0">
-                                            <p className="font-bold text-lg">{score}/5</p>
-                                        </div>
-                                      </div>
-
-                                    {assumptions && assumptions.length > 0 && (
-                                      <div className="mt-2">
-                                        <p className="text-xs font-semibold">Assumptions:</p>
-                                        <ul className="list-disc list-inside text-xs text-muted-foreground">
-                                            {assumptions.map((assumption, i) => <li key={i}>{assumption}</li>)}
-                                        </ul>
-                                      </div>
-                                    )}
-                                    </Card>
-                                );
-                               })}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    ))}
+                                                        return (
+                                                            <div key={subParamName} className="p-3 bg-muted/50 rounded-lg">
+                                                                <div className="flex justify-between items-center mb-2">
+                                                                    <h6 className="font-semibold">{subParamName}</h6>
+                                                                    <p className={`font-bold text-lg ${getScoreColor(score)}`}>{score}/100</p>
+                                                                </div>
+                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                                                    <div className="text-green-700 dark:text-green-400">
+                                                                        <div className="flex items-center gap-2 font-semibold mb-1">
+                                                                            <ThumbsUp className="h-4 w-4" />
+                                                                            <span>What Went Well</span>
+                                                                        </div>
+                                                                        <p className="pl-6 text-muted-foreground">{whatWentWell}</p>
+                                                                    </div>
+                                                                    <div className="text-orange-700 dark:text-orange-400">
+                                                                        <div className="flex items-center gap-2 font-semibold mb-1">
+                                                                            <Lightbulb className="h-4 w-4" />
+                                                                            <span>What Can Be Improved</span>
+                                                                        </div>
+                                                                        <p className="pl-6 text-muted-foreground">{whatCanBeImproved}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                    </div>
+                                                </AccordionContent>
+                                            </AccordionItem>
+                                        )
+                                    })}
+                                    </Accordion>
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
                   </SectionCard>
 
                    <SectionCard title={report.sections.conclusion.title}>
@@ -257,15 +247,6 @@ export default function IdeaReportPage() {
                             ))}
                         </ul>
                    </SectionCard>
-
-                   <SectionCard title={report.sections.appendix.title}>
-                        <ul className="list-disc list-inside space-y-2">
-                            {report.sections.appendix.items.map((item, i) => (
-                                <li key={i} className="text-sm text-muted-foreground">{item}</li>
-                            ))}
-                        </ul>
-                   </SectionCard>
-
                 </div>
               ) : (
                  <div className="text-center py-20">

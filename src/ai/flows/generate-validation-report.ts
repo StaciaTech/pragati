@@ -19,7 +19,6 @@ import {
   GenerateValidationReportInputSchema,
   ValidationReport,
   ValidationReportSchema,
-  DetailedEvaluationClustersSchema,
   DetailedEvaluationClusters,
 } from '@/ai/schemas';
 import { generateEvaluation } from './generate-evaluation';
@@ -103,14 +102,14 @@ const generateValidationReportFlow = ai.defineFlow(
     
     // Step 3: Determine outcome based on the calculated score
     const validationOutcome = 
-        overallScore >= 4.0 ? "Approved" : 
-        overallScore >= 2.5 ? "Moderate" : 
+        overallScore >= 85 ? "Approved" : 
+        overallScore >= 50 ? "Moderate" : 
         "Rejected";
         
     const recommendationText = 
-        validationOutcome === "Approved" ? "Idea has strong potential. Focus on execution and scaling." :
-        validationOutcome === "Moderate" ? "Idea has potential but requires modification. Review the detailed report." :
-        "Idea is not viable at this stage. Consider a fundamental re-evaluation.";
+        validationOutcome === "Approved" ? "Idea has strong potential. Good to go! Focus on execution and scaling." :
+        validationOutcome === "Moderate" ? "Idea has potential but requires modification and re-evaluation. Review the detailed report." :
+        "Idea is not recommended at this stage. Consider a fundamental re-evaluation.";
 
 
     // Step 4: Construct the full report object
@@ -153,7 +152,7 @@ const generateValidationReportFlow = ai.defineFlow(
             },
             conclusion: {
                 title: "Conclusion",
-                content: `Based on the evaluation, the idea '${input.ideaName}' shows ${validationOutcome.toLowerCase()} potential. The overall score is ${overallScore.toFixed(2)}/5.0.`,
+                content: `Based on the evaluation, the idea '${input.ideaName}' shows ${validationOutcome.toLowerCase()} potential. The overall score is ${overallScore.toFixed(2)}/100.`,
             },
             recommendations: {
                 title: "Recommendations",
