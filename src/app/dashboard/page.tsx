@@ -253,24 +253,7 @@ function DashboardPageContent() {
         </Card>
       </div>
 
-       <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
-        <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Button asChild>
-                <Link href={`/dashboard/submit?role=${ROLES.INNOVATOR}`}><PlusCircle /> Submit New Idea</Link>
-            </Button>
-             <Button asChild variant="outline">
-                <Link href={`/dashboard/ideas?role=${ROLES.INNOVATOR}`}><Lightbulb /> View All Ideas</Link>
-            </Button>
-             <Button asChild variant="outline">
-                <Link href={`/dashboard/request-credits?role=${ROLES.INNOVATOR}`}><CreditCard /> Request Credits</Link>
-            </Button>
-        </CardContent>
-       </Card>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2 border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
           <CardHeader>
             <CardTitle>My Recent Ideas</CardTitle>
@@ -338,37 +321,56 @@ function DashboardPageContent() {
               )}
           </CardContent>
         </Card>
-        <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
-          <CardHeader>
-            <CardTitle>Analytics Overview</CardTitle>
-            <CardDescription>A summary of your submission trends and outcomes.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-[200px] w-full">
-              <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={submissionTrendData}>
-                  <CartesianGrid vertical={false} />
-                  <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} style={{fontSize: '10px'}} />
-                  <YAxis allowDecimals={false} />
-                  <Tooltip
-                    cursor={true}
-                    content={<ChartTooltipContent 
-                        contentStyle={{background: "hsl(var(--background))", border: "1px solid hsl(var(--border))"}}
-                        labelClassName="font-bold"
-                    />}
-                  />
-                  <Line type="monotone" dataKey="ideas" stroke="hsl(var(--chart-1))" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-            <Button asChild variant="outline" className="w-full mt-4">
-              <Link href={`/dashboard/analytics?role=${ROLES.INNOVATOR}`}>
-                <BarChart3 className="mr-2 h-4 w-4" />
-                View Full Analytics
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
+        
+        <div className="space-y-6">
+            <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
+                <CardHeader>
+                    <CardTitle>Analytics Overview</CardTitle>
+                    <CardDescription>A summary of your submission trends.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ChartContainer config={chartConfig} className="h-[200px] w-full">
+                    <ResponsiveContainer width="100%" height={200}>
+                        <LineChart data={submissionTrendData}>
+                        <CartesianGrid vertical={false} />
+                        <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} style={{fontSize: '10px'}} />
+                        <YAxis allowDecimals={false} />
+                        <Tooltip
+                            cursor={true}
+                            content={<ChartTooltipContent 
+                                contentStyle={{background: "hsl(var(--background))", border: "1px solid hsl(var(--border))"}}
+                                labelClassName="font-bold"
+                            />}
+                        />
+                        <Line type="monotone" dataKey="ideas" stroke="hsl(var(--chart-1))" strokeWidth={2} />
+                        </LineChart>
+                    </ResponsiveContainer>
+                    </ChartContainer>
+                    <Button asChild variant="outline" className="w-full mt-4">
+                    <Link href={`/dashboard/analytics?role=${ROLES.INNOVATOR}`}>
+                        <BarChart3 className="mr-2 h-4 w-4" />
+                        View Full Analytics
+                    </Link>
+                    </Button>
+                </CardContent>
+            </Card>
+             <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
+                <CardHeader>
+                    <CardTitle>Quick Actions</CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-2">
+                    <Button asChild>
+                        <Link href={`/dashboard/submit?role=${ROLES.INNOVATOR}`}><PlusCircle /> Submit New Idea</Link>
+                    </Button>
+                    <Button asChild variant="outline">
+                        <Link href={`/dashboard/ideas?role=${ROLES.INNOVATOR}`}><Lightbulb /> View All Ideas</Link>
+                    </Button>
+                    <Button asChild variant="outline">
+                        <Link href={`/dashboard/request-credits?role=${ROLES.INNOVATOR}`}><CreditCard /> Request Credits</Link>
+                    </Button>
+                </CardContent>
+            </Card>
+        </div>
       </div>
     </div>
     
