@@ -302,8 +302,8 @@ function Step1({ form }: { form: any }) {
                 <span className="relative z-10 font-bold text-xl">{Math.round(totalWeight)}%</span>
             </div>
           </div>
-          <div className="w-full bg-background rounded-lg p-4">
-              <SpiderChart data={form.getValues()} size={400} />
+          <div className="w-full h-[450px] bg-background rounded-lg p-4 flex items-center justify-center">
+              <SpiderChart data={form.getValues()} size={450} />
           </div>
         </div>
         <div className="flex justify-end">
@@ -471,8 +471,8 @@ function Step3({ form, isSubmitting }: { form: any, isSubmitting: boolean }) {
                                 <p key={key}><span className="font-medium text-muted-foreground">{key}:</span> {Math.round(value as number)}%</p>
                             ))}
                         </div>
-                        <div className="mt-4 flex justify-center">
-                            <SpiderChart data={weights} size={300} />
+                        <div className="mt-4 h-[350px] flex justify-center">
+                            <SpiderChart data={weights} size={350} />
                         </div>
                     </CardContent>
                 </Card>

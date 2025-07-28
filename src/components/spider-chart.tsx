@@ -26,7 +26,7 @@ const clusterColors = [
 ];
 
 export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record<string, number>, maxScore?: number, size?: number }) {
-  const padding = 60;
+  const padding = 50; // Reduced padding
   const chartSize = size - padding * 2;
   const centerX = size / 2;
   const centerY = size / 2;
@@ -134,26 +134,32 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
         const shortLabel = labelMap[fullLabel] || fullLabel;
         const point = getPoint(angle, value);
         
-        const labelRadius = radius + 25;
+        const labelRadius = radius + 20; // Reduced distance for labels
         const textPointX = centerX + labelRadius * Math.cos(angle);
         const textPointY = centerY + labelRadius * Math.sin(angle);
 
         let textAnchor = "middle";
-        if (Math.abs(angle - Math.PI) < 0.1 || Math.abs(angle) < 0.1) { // Left or Right
-            textAnchor = angle < 0 ? "start" : "end";
+        let xOffset = 0;
+        if (Math.abs(angle) < 0.1) { // Right
+          textAnchor = "start";
+          xOffset = 5;
+        } else if (Math.abs(angle - Math.PI) < 0.1) { // Left
+          textAnchor = "end";
+          xOffset = -5;
         }
 
+
         let yOffset = 0;
-        if (Math.abs(angle - (-Math.PI / 2)) < 0.1) { // Top
-            yOffset = -10;
-        } else if (Math.abs(angle - (Math.PI / 2)) < 0.1) { // Bottom
-            yOffset = 10;
+        if (Math.abs(angle + Math.PI / 2) < 0.1) { // Top
+            yOffset = -5;
+        } else if (Math.abs(angle - Math.PI / 2) < 0.1) { // Bottom
+            yOffset = 5;
         }
         
         return (
           <g key={`label-group-${i}`}>
             <text
-              x={textPointX}
+              x={textPointX + xOffset}
               y={textPointY + yOffset - 8}
               textAnchor={textAnchor}
               dominantBaseline="middle"
@@ -163,7 +169,7 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
               {Math.round(value)}%
             </text>
             <text
-              x={textPointX}
+              x={textPointX + xOffset}
               y={textPointY + yOffset + 12}
               textAnchor={textAnchor}
               dominantBaseline="middle"
@@ -173,11 +179,13 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
             </text>
             <Tooltip>
                 <TooltipTrigger asChild>
-                    <polygon
-                        points={`${point.x},${point.y - 5} ${point.x + 5},${point.y} ${point.x},${point.y + 5} ${point.x - 5},${point.y}`}
+                    <circle
+                        cx={point.x}
+                        cy={point.y}
+                        r={5} // Larger data points
                         fill={clusterColors[i]}
                         stroke="hsl(var(--card))"
-                        strokeWidth={1.5}
+                        strokeWidth={2}
                         className="transition-transform duration-200 ease-in-out hover:scale-150 cursor-pointer"
                     />
                 </TooltipTrigger>
