@@ -202,9 +202,24 @@ function Step1({ form }: { form: any }) {
                 />
               ))}
             </div>
-             <div className={`text-sm font-medium p-3 border rounded-lg flex justify-between items-center ${ totalWeight === 100 ? 'bg-gradient-to-r from-green-100 to-green-200 dark:from-green-800/50 dark:to-green-900/50 text-green-900 dark:text-green-100 border-green-300 dark:border-green-700' : 'bg-gradient-to-r from-red-100 to-red-200 dark:from-red-800/50 dark:to-red-900/50 text-red-900 dark:text-red-100 border-red-300 dark:border-red-700'}`}>
-                <span>Total Weight:</span>
-                <span className="font-bold text-xl">{totalWeight}%</span>
+             <div className={cn("relative text-sm font-medium p-3 border rounded-lg flex justify-between items-center overflow-hidden",
+                totalWeight === 100 
+                ? 'bg-green-100 dark:bg-green-900/30 text-green-900 dark:text-green-100 border-green-300 dark:border-green-700' 
+                : 'bg-red-100 dark:bg-red-900/30 text-red-900 dark:text-red-100 border-red-300 dark:border-red-700'
+             )}>
+                {totalWeight === 100 ? (
+                  <>
+                    <div className="absolute -top-1/4 -left-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-br from-teal-400 to-green-600 opacity-20 blur-2xl filter" />
+                    <div className="absolute -bottom-1/4 -right-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-lime-400 to-green-500 opacity-10 blur-2xl filter" />
+                  </>
+                ) : (
+                  <>
+                    <div className="absolute -top-1/4 -left-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-br from-red-500 to-orange-600 opacity-20 blur-2xl filter" />
+                    <div className="absolute -bottom-1/4 -right-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-yellow-500 to-red-500 opacity-10 blur-2xl filter" />
+                  </>
+                )}
+                <span className="relative z-10">Total Weight:</span>
+                <span className="relative z-10 font-bold text-xl">{totalWeight}%</span>
             </div>
           </div>
           <div className="w-full bg-background rounded-lg p-4">
