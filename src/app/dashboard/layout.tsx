@@ -25,6 +25,8 @@ import { Notifications } from '@/components/notifications';
 import { Suspense } from 'react';
 import { HydrationSafeContent } from '@/components/hydration-safe-content';
 import { UniversalSearch } from '@/components/universal-search';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
@@ -182,10 +184,21 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
                {(role === ROLES.INNOVATOR || role === ROLES.COORDINATOR) && credits !== null && (
-                 <Link href={getCreditRequestLink()} className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors">
-                    <CreditCard className="size-5 text-primary" />
-                    <span className="hidden sm:inline">{credits} Credits</span>
-                 </Link>
+                 <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                             <Button variant="outline" className="animate-pulse" asChild>
+                                <Link href={getCreditRequestLink()}>
+                                    <CreditCard className="size-5 text-primary" />
+                                    <span className="ml-2 hidden sm:inline">{credits} Credits</span>
+                                </Link>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{role === ROLES.INNOVATOR ? "Request More Credits" : "View Available Credits"}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                 </TooltipProvider>
               )}
               <Notifications role={role} />
               <ThemeToggle />
