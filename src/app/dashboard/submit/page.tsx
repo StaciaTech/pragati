@@ -149,7 +149,7 @@ function Step1({ form }: { form: any }) {
       }
   };
 
-  const handleManualWeightChange = (changedCluster: string, newValue: number) => {
+ const handleManualWeightChange = (changedCluster: string, newValue: number) => {
     if (preset !== 'Manual') return;
 
     newValue = Math.max(0, Math.min(100, Math.round(newValue)));
@@ -157,32 +157,31 @@ function Step1({ form }: { form: any }) {
     const otherClusters = clusters.filter(c => c !== changedCluster);
     const oldTotal = clusters.reduce((sum, c) => sum + form.getValues(c), 0);
     const oldValueForChanged = form.getValues(changedCluster);
-    let delta = newValue - oldValueForChanged;
     
+    // Set the new value for the changed cluster
     form.setValue(changedCluster, newValue, { shouldDirty: true });
 
-    let remainingDelta = 100 - (oldTotal - oldValueForChanged + newValue);
-    
-    const adjustableClusters = otherClusters.filter(c => form.getValues(c) > 0 || remainingDelta > 0);
+    // Calculate how much we need to adjust the others
+    let remainingToDistribute = 100 - (oldTotal - oldValueForChanged + newValue);
 
-    // Single pass redistribution
+    // Smart single-pass redistribution
+    let adjustableClusters = otherClusters.filter(c => form.getValues(c) + remainingToDistribute >= 0);
     let totalAdjustableValue = adjustableClusters.reduce((sum, c) => sum + form.getValues(c), 0);
-
+    
     if (totalAdjustableValue > 0) {
         let distributedDelta = 0;
         adjustableClusters.forEach(cluster => {
             const clusterValue = form.getValues(cluster);
             const proportion = clusterValue / totalAdjustableValue;
-            const adjustment = Math.round(remainingDelta * proportion);
+            const adjustment = Math.round(remainingToDistribute * proportion);
             const newClusterValue = Math.max(0, Math.min(100, clusterValue + adjustment));
             form.setValue(cluster, newClusterValue);
-            distributedDelta += newClusterValue - clusterValue;
+            distributedDelta += (newClusterValue - clusterValue);
         });
-
-        remainingDelta -= distributedDelta;
+        remainingToDistribute -= distributedDelta;
     }
     
-    // Final pass to correct rounding errors
+    // Final check for rounding errors
     let finalTotal = clusters.reduce((sum, c) => sum + form.getValues(c), 0);
     let finalDelta = 100 - finalTotal;
 
@@ -196,9 +195,9 @@ function Step1({ form }: { form: any }) {
             form.setValue(clusterToAdjust, Math.max(0, Math.min(100, form.getValues(clusterToAdjust) + finalDelta)));
         }
     }
-
+    
     clusters.forEach(c => form.trigger(c));
-  };
+};
 
 
   const handleNext = () => {
@@ -302,8 +301,8 @@ function Step1({ form }: { form: any }) {
                 <span className="relative z-10 font-bold text-xl">{Math.round(totalWeight)}%</span>
             </div>
           </div>
-          <div className="w-full h-[450px] bg-background rounded-lg p-4 flex items-center justify-center">
-              <SpiderChart data={form.getValues()} size={450} />
+          <div className="w-full h-[500px] bg-background rounded-lg p-4 flex items-center justify-center">
+              <SpiderChart data={form.getValues()} size={500} />
           </div>
         </div>
         <div className="flex justify-end">

@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 const labelMap: { [key: string]: string } = {
@@ -26,7 +26,7 @@ const clusterColors = [
 ];
 
 export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record<string, number>, maxScore?: number, size?: number }) {
-  const padding = 50; // Reduced padding
+  const padding = 60; // Adjusted for better label spacing
   const chartSize = size - padding * 2;
   const centerX = size / 2;
   const centerY = size / 2;
@@ -54,6 +54,7 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
   const gridLevels = 4; // For 25, 50, 75, 100
 
   return (
+    <TooltipProvider>
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block mx-auto">
       <defs>
         <radialGradient id="spider-gradient">
@@ -108,7 +109,7 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
                   y={labelPoint.y}
                   textAnchor="start"
                   dominantBaseline="middle"
-                  fontSize="10"
+                  fontSize="12"
                   className="fill-muted-foreground"
                 >
                   {value}
@@ -124,7 +125,7 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
         points={points}
         fill="url(#spider-gradient)"
         stroke="hsl(var(--primary))"
-        strokeWidth="2"
+        strokeWidth="2.5"
       />
 
       {/* Labels and Data Points */}
@@ -134,46 +135,38 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
         const shortLabel = labelMap[fullLabel] || fullLabel;
         const point = getPoint(angle, value);
         
-        const labelRadius = radius + 20; // Reduced distance for labels
+        const labelRadius = radius + 25;
         const textPointX = centerX + labelRadius * Math.cos(angle);
         const textPointY = centerY + labelRadius * Math.sin(angle);
 
         let textAnchor = "middle";
-        let xOffset = 0;
-        if (Math.abs(angle) < 0.1) { // Right
-          textAnchor = "start";
-          xOffset = 5;
-        } else if (Math.abs(angle - Math.PI) < 0.1) { // Left
-          textAnchor = "end";
-          xOffset = -5;
-        }
+        let dominantBaseline = "middle";
 
-
-        let yOffset = 0;
-        if (Math.abs(angle + Math.PI / 2) < 0.1) { // Top
-            yOffset = -5;
-        } else if (Math.abs(angle - Math.PI / 2) < 0.1) { // Bottom
-            yOffset = 5;
-        }
+        if (textPointX < centerX - 1) textAnchor = "end";
+        if (textPointX > centerX + 1) textAnchor = "start";
         
+        if (textPointY < centerY) dominantBaseline = "alphabetic";
+        if (textPointY > centerY) dominantBaseline = "hanging";
+
+
         return (
           <g key={`label-group-${i}`}>
             <text
-              x={textPointX + xOffset}
-              y={textPointY + yOffset - 8}
+              x={textPointX}
+              y={textPointY - 10}
               textAnchor={textAnchor}
-              dominantBaseline="middle"
+              dominantBaseline={dominantBaseline}
               className="font-bold text-lg"
               fill={clusterColors[i]}
             >
               {Math.round(value)}%
             </text>
             <text
-              x={textPointX + xOffset}
-              y={textPointY + yOffset + 12}
+              x={textPointX}
+              y={textPointY + 10}
               textAnchor={textAnchor}
-              dominantBaseline="middle"
-              className="text-xs fill-muted-foreground"
+              dominantBaseline={dominantBaseline}
+              className="text-sm fill-muted-foreground"
             >
               {shortLabel}
             </text>
@@ -182,7 +175,7 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
                     <circle
                         cx={point.x}
                         cy={point.y}
-                        r={5} // Larger data points
+                        r={6}
                         fill={clusterColors[i]}
                         stroke="hsl(var(--card))"
                         strokeWidth={2}
@@ -197,5 +190,6 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
         );
       })}
     </svg>
+    </TooltipProvider>
   );
 };
