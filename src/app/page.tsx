@@ -36,8 +36,8 @@ export default function LoginPage() {
       </div>
       <div className="relative hidden h-full flex-col bg-primary/10 p-10 text-white dark:border-r lg:flex overflow-hidden">
         <div className="absolute inset-0 bg-primary dot-bg" />
-        <div className="absolute -top-1/4 -left-1/4 h-1/2 w-1/2 animate-wavy-bounce-1 rounded-full bg-gradient-to-br from-primary via-indigo-500 to-purple-600 opacity-60 blur-3xl filter" />
-        <div className="absolute -bottom-1/4 -right-1/4 h-1/2 w-1/2 animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-primary via-purple-600 to-indigo-500 opacity-50 blur-3xl filter" />
+        <div className="absolute -top-1/4 -left-1/4 h-1/2 w-1/2 animate-wavy-bounce-1 rounded-full bg-gradient-to-br from-[#06B6D4] to-[#F472B6] opacity-60 blur-3xl filter" />
+        <div className="absolute -bottom-1/4 -right-1/4 h-1/2 w-1/2 animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-[#F472B6] to-[#06B6D4] opacity-50 blur-3xl filter" />
         <div className="relative z-10 m-auto flex flex-col items-center text-center">
            <h2 className="text-4xl font-bold">
             Catalyze Innovation
@@ -50,3 +50,4 @@ export default function LoginPage() {
     </main>
   );
 }
+
