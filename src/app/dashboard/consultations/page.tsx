@@ -101,6 +101,7 @@ export default function ConsultationsPage() {
   const [consultations, setConsultations] = React.useState(MOCK_CONSULTATIONS);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [isRequestModalOpen, setIsRequestModalOpen] = React.useState(false);
+  const [isRescheduleModalOpen, setIsRescheduleModalOpen] = React.useState(false);
   const [selectedConsultation, setSelectedConsultation] = React.useState<Consultation | null>(null);
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(undefined);
   const { toast } = useToast();
@@ -114,7 +115,9 @@ export default function ConsultationsPage() {
 
   const handleAction = (action: 'reschedule' | 'cancel', consultation: Consultation) => {
     if (action === 'reschedule') {
-        toast({ title: 'Feature in Development', description: 'Rescheduling is not yet implemented.' });
+        setSelectedConsultation(consultation);
+        setIsModalOpen(false); // Close details modal first
+        setIsRescheduleModalOpen(true);
     } else if (action === 'cancel') {
         toast({ title: 'Feature in Development', description: 'Cancellation is not yet implemented.' });
     }
@@ -127,6 +130,16 @@ export default function ConsultationsPage() {
         description: "Your consultation request has been sent to the TTC Coordinator.",
     });
     setIsRequestModalOpen(false);
+  };
+  
+  const handleRescheduleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    toast({
+        title: "Reschedule Request Submitted",
+        description: `Your request to reschedule the meeting for "${selectedConsultation?.title}" has been sent.`,
+    });
+    setIsRescheduleModalOpen(false);
+    setSelectedConsultation(null);
   };
 
   const totalConsultations = consultations.length;
@@ -324,6 +337,55 @@ export default function ConsultationsPage() {
             </form>
         </DialogContent>
       </Dialog>
+      
+      <Dialog open={isRescheduleModalOpen} onOpenChange={setIsRescheduleModalOpen}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Request to Reschedule</DialogTitle>
+                <DialogDescription>
+                    Propose a new date and time for your consultation on "{selectedConsultation?.title}".
+                </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleRescheduleSubmit}>
+                <div className="grid gap-4 py-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="reschedule-date">New Preferred Date</Label>
+                         <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                variant={"outline"}
+                                className={cn(
+                                    "w-full justify-start text-left font-normal",
+                                    !selectedDate && "text-muted-foreground"
+                                )}
+                                >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar
+                                    mode="single"
+                                    selected={selectedDate}
+                                    onSelect={setSelectedDate}
+                                    initialFocus
+                                />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="comment">Reason for Rescheduling (Optional)</Label>
+                        <Textarea id="comment" name="comment" placeholder="Add a comment to explain the reason for rescheduling..." />
+                    </div>
+                </div>
+                <DialogFooter>
+                    <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+                    <Button type="submit">Send Reschedule Request</Button>
+                </DialogFooter>
+            </form>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
+
