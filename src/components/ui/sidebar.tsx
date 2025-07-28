@@ -205,7 +205,7 @@ const Sidebar = React.forwardRef<
         onMouseEnter={collapsible === 'icon' ? () => setOpen(true) : undefined}
         onMouseLeave={collapsible === 'icon' ? () => setOpen(false) : undefined}
         className={cn(
-            "group/sidebar peer hidden md:block text-sidebar-foreground",
+            "group/sidebar peer hidden md:block text-sidebar-foreground h-screen sticky top-0",
             collapsible === 'icon' && "transition-all duration-300 ease-in-out",
             collapsible === 'icon' && state === 'collapsed' && "w-[--sidebar-width-icon]",
             collapsible === 'icon' && state === 'expanded' && "w-[--sidebar-width] shadow-lg",
