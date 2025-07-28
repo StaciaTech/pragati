@@ -3,7 +3,6 @@
 
 import * as React from 'react';
 import dynamic from 'next/dynamic';
-import Lottie from 'lottie-react';
 import { Logo } from '@/components/icons';
 import { ThemeToggle } from '@/components/theme-toggle';
 
@@ -14,14 +13,6 @@ const LoginForm = dynamic(() => import('@/components/login-form').then(mod => mo
 
 
 export default function LoginPage() {
-  const [animationData, setAnimationData] = React.useState(null);
-
-  React.useEffect(() => {
-    fetch('https://lottie.host/e2d44934-22b6-4a4b-9721-255269781378/Hhxk83DViI.json')
-      .then(res => res.json())
-      .then(data => setAnimationData(data));
-  }, []);
-
 
   return (
     <main className="flex min-h-screen w-full items-center justify-center bg-background lg:grid lg:grid-cols-2">
@@ -43,9 +34,10 @@ export default function LoginPage() {
              <p className="text-xs text-muted-foreground text-center">© 2024 PragatiAI by Stacia Corp</p>
           </div>
       </div>
-      <div className="relative hidden h-full flex-col bg-primary/10 p-10 text-white dark:border-r lg:flex">
-        <div className="absolute inset-0 bg-primary" />
-        {animationData && <Lottie animationData={animationData} loop={true} autoplay={true} className="absolute inset-0 w-full h-full" />}
+      <div className="relative hidden h-full flex-col bg-primary/10 p-10 text-white dark:border-r lg:flex overflow-hidden">
+        <div className="absolute inset-0 bg-primary dot-bg" />
+        <div className="absolute -top-1/4 -left-1/4 h-1/2 w-1/2 animate-wavy-bounce-1 rounded-full bg-gradient-to-br from-primary via-blue-500 to-teal-400 opacity-60 blur-3xl filter" />
+        <div className="absolute -bottom-1/4 -right-1/4 h-1/2 w-1/2 animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-primary via-purple-500 to-pink-400 opacity-50 blur-3xl filter" />
         <div className="relative z-10 m-auto flex flex-col items-center text-center">
            <h2 className="text-4xl font-bold">
             Catalyze Innovation
