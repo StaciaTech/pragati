@@ -31,21 +31,71 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MOCK_CONSULTATIONS, STATUS_COLORS, MOCK_IDEAS, MOCK_TTCS } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
-import { CalendarIcon, MessageSquare, CheckCircle, Clock, PlusCircle } from 'lucide-react';
+import { CalendarIcon, MessageSquare, CheckCircle, Clock, PlusCircle, MoreHorizontal } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 
 type Consultation = (typeof MOCK_CONSULTATIONS)[0];
+
+const ConsultationTable = ({ consultations, onRowClick }: { consultations: Consultation[], onRowClick: (c: Consultation) => void }) => (
+    <Table>
+        <TableHeader>
+            <TableRow>
+            <TableHead>Idea</TableHead>
+            <TableHead>Date & Time</TableHead>
+            <TableHead>Mentor</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+        </TableHeader>
+        <TableBody>
+            {consultations.map((consultation) => (
+            <TableRow key={consultation.id} className="cursor-pointer" onClick={() => onRowClick(consultation)}>
+                <TableCell className="font-medium">
+                {consultation.title}
+                </TableCell>
+                <TableCell>{consultation.date} at {consultation.time}</TableCell>
+                <TableCell>{consultation.mentor}</TableCell>
+                <TableCell>
+                <Badge className={STATUS_COLORS[consultation.status]}>{consultation.status}</Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem onSelect={() => onRowClick(consultation)}>View Details</DropdownMenuItem>
+                            {consultation.status === 'Scheduled' && <DropdownMenuItem>Reschedule</DropdownMenuItem>}
+                            {consultation.status === 'Scheduled' && <DropdownMenuItem className="text-red-500">Cancel</DropdownMenuItem>}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </TableCell>
+            </TableRow>
+            ))}
+        </TableBody>
+    </Table>
+);
+
 
 export default function ConsultationsPage() {
   const [consultations, setConsultations] = React.useState(MOCK_CONSULTATIONS);
@@ -74,6 +124,8 @@ export default function ConsultationsPage() {
   const totalConsultations = consultations.length;
   const completedConsultations = consultations.filter(c => c.status === 'Completed').length;
   const scheduledConsultations = consultations.filter(c => c.status === 'Scheduled').length;
+  const upcomingConsultations = consultations.filter(c => c.status === 'Scheduled' || c.status === 'Pending');
+  const pastConsultations = consultations.filter(c => c.status === 'Completed' || c.status === 'Cancelled');
 
 
   return (
@@ -121,47 +173,40 @@ export default function ConsultationsPage() {
         </div>
 
         <Card>
-            <CardHeader>
-            <CardTitle>My Consultations</CardTitle>
-            <CardDescription>A list of your scheduled and past consultations.</CardDescription>
-            </CardHeader>
-            <CardContent>
-            {consultations.length === 0 ? (
-                <div className="text-center py-10">
-                    <p className="text-muted-foreground">You have no scheduled consultations.</p>
-                     <Button className="mt-4" onClick={() => setIsRequestModalOpen(true)}>Request Your First Consultation</Button>
-                </div>
-            ) : (
-                <Table>
-                <TableHeader>
-                    <TableRow>
-                    <TableHead>Idea</TableHead>
-                    <TableHead>Date & Time</TableHead>
-                    <TableHead>Mentor</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {consultations.map((consultation) => (
-                    <TableRow key={consultation.id} className="cursor-pointer" onClick={() => handleViewDetails(consultation)}>
-                        <TableCell className="font-medium">
-                        {consultation.title}
-                        </TableCell>
-                        <TableCell>{consultation.date} at {consultation.time}</TableCell>
-                        <TableCell>{consultation.mentor}</TableCell>
-                        <TableCell>
-                        <Badge className={STATUS_COLORS[consultation.status]}>{consultation.status}</Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                            <Button variant="link" size="sm" onClick={(e) => { e.stopPropagation(); handleViewDetails(consultation); }}>View Details</Button>
-                        </TableCell>
-                    </TableRow>
-                    ))}
-                </TableBody>
-                </Table>
-            )}
-            </CardContent>
+            <Tabs defaultValue="upcoming">
+                <CardHeader>
+                     <div className="flex items-center justify-between">
+                         <div>
+                            <CardTitle>My Consultations</CardTitle>
+                            <CardDescription>A list of your scheduled and past consultations.</CardDescription>
+                         </div>
+                        <TabsList>
+                            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+                            <TabsTrigger value="past">Past</TabsTrigger>
+                        </TabsList>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <TabsContent value="upcoming">
+                        {upcomingConsultations.length > 0 ? (
+                           <ConsultationTable consultations={upcomingConsultations} onRowClick={handleViewDetails} />
+                        ) : (
+                             <div className="text-center py-10">
+                                <p className="text-muted-foreground">You have no upcoming consultations.</p>
+                            </div>
+                        )}
+                    </TabsContent>
+                     <TabsContent value="past">
+                         {pastConsultations.length > 0 ? (
+                           <ConsultationTable consultations={pastConsultations} onRowClick={handleViewDetails} />
+                         ) : (
+                             <div className="text-center py-10">
+                                <p className="text-muted-foreground">You have no past consultations.</p>
+                            </div>
+                         )}
+                    </TabsContent>
+                </CardContent>
+            </Tabs>
         </Card>
       </div>
       
@@ -277,3 +322,5 @@ export default function ConsultationsPage() {
     </>
   );
 }
+
+    
