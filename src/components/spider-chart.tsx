@@ -2,6 +2,8 @@
 'use client';
 
 import * as React from 'react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 
 const labelMap: { [key: string]: string } = {
   "Core Idea & Innovation": "CI & I",
@@ -13,15 +15,25 @@ const labelMap: { [key: string]: string } = {
   "Risk & Future Outlook": "R & FO",
 };
 
+const clusterColors = [
+  'hsl(var(--chart-1))',
+  'hsl(var(--chart-2))',
+  'hsl(var(--chart-3))',
+  'hsl(var(--chart-4))',
+  'hsl(var(--chart-5))',
+  'hsl(var(--chart-1) / 0.7)',
+  'hsl(var(--chart-2) / 0.7)',
+];
+
 export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record<string, number>, maxScore?: number, size?: number }) {
-  const padding = 60; 
+  const padding = 60;
   const chartSize = size - padding * 2;
   const centerX = size / 2;
   const centerY = size / 2;
   const radius = chartSize / 2;
 
-  const validDataKeys = Object.keys(data).filter(key => typeof data[key] === 'number');
-
+  const validDataKeys = Object.keys(data).filter(key => typeof data[key] === 'number' && Object.keys(labelMap).includes(key));
+  
   if (validDataKeys.length === 0) return null;
 
   const angles = validDataKeys.map((_, i) => (i * 2 * Math.PI) / validDataKeys.length - Math.PI / 2);
@@ -43,6 +55,13 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block mx-auto">
+      <defs>
+        <radialGradient id="spider-gradient">
+          <stop offset="0%" stopColor="hsl(var(--primary) / 0.4)" />
+          <stop offset="100%" stopColor="hsl(var(--primary) / 0.1)" />
+        </radialGradient>
+      </defs>
+
       {/* Grid Lines */}
       {Array.from({ length: gridLevels }).map((_, levelIndex) => {
         const gridRadius = radius * ((levelIndex + 1) / gridLevels);
@@ -56,9 +75,8 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
             key={`grid-${levelIndex}`}
             points={gridPoints}
             fill="none"
-            stroke="hsl(var(--muted-foreground))"
+            stroke="hsl(var(--muted-foreground) / 0.3)"
             strokeWidth="1"
-            strokeDasharray="2 4"
           />
         );
       })}
@@ -75,13 +93,13 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
               y1={centerY}
               x2={point.x}
               y2={point.y}
-              stroke="hsl(var(--muted-foreground))"
+              stroke={clusterColors[i]}
               strokeWidth="1"
+              strokeDasharray="2 4"
             />
             {isFirstSpoke && Array.from({ length: gridLevels }).map((_, levelIndex) => {
+              if (levelIndex < gridLevels -1) return null; // Only show outermost label
               const value = (maxScore / gridLevels) * (levelIndex + 1);
-              if (value % 25 !== 0 && value !== 100) return null;
-
               const labelPoint = getPoint(angle, value);
               return (
                 <text
@@ -100,21 +118,29 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
           </g>
         );
       })}
+      
+      {/* Data Polygon */}
+      <polygon
+        points={points}
+        fill="url(#spider-gradient)"
+        stroke="hsl(var(--primary))"
+        strokeWidth="2"
+      />
 
-      {/* Labels */}
+      {/* Labels and Data Points */}
       {angles.map((angle, i) => {
         const value = data[validDataKeys[i]];
-        const labelText = labelMap[validDataKeys[i]] || validDataKeys[i];
+        const fullLabel = validDataKeys[i];
+        const shortLabel = labelMap[fullLabel] || fullLabel;
+        const point = getPoint(angle, value);
         
-        const labelRadius = radius + 25; 
+        const labelRadius = radius + 25;
         const textPointX = centerX + labelRadius * Math.cos(angle);
         const textPointY = centerY + labelRadius * Math.sin(angle);
 
         let textAnchor = "middle";
-        if (angle > -Math.PI / 2 && angle < Math.PI / 2) {
-            textAnchor = "start";
-        } else if (angle > Math.PI / 2 || angle < -Math.PI / 2) {
-            textAnchor = "end";
+        if (Math.abs(angle - Math.PI) < 0.1 || Math.abs(angle) < 0.1) { // Left or Right
+            textAnchor = angle < 0 ? "start" : "end";
         }
 
         let yOffset = 0;
@@ -123,7 +149,7 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
         } else if (Math.abs(angle - (Math.PI / 2)) < 0.1) { // Bottom
             yOffset = 10;
         }
-
+        
         return (
           <g key={`label-group-${i}`}>
             <text
@@ -131,9 +157,10 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
               y={textPointY + yOffset - 8}
               textAnchor={textAnchor}
               dominantBaseline="middle"
-              className="font-bold text-lg fill-foreground"
+              className="font-bold text-lg"
+              fill={clusterColors[i]}
             >
-              {value}%
+              {Math.round(value)}%
             </text>
             <text
               x={textPointX}
@@ -142,34 +169,23 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
               dominantBaseline="middle"
               className="text-xs fill-muted-foreground"
             >
-              {labelText}
+              {shortLabel}
             </text>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <polygon
+                        points={`${point.x},${point.y - 5} ${point.x + 5},${point.y} ${point.x},${point.y + 5} ${point.x - 5},${point.y}`}
+                        fill={clusterColors[i]}
+                        stroke="hsl(var(--card))"
+                        strokeWidth={1.5}
+                        className="transition-transform duration-200 ease-in-out hover:scale-150 cursor-pointer"
+                    />
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p className="font-bold" style={{color: clusterColors[i]}}>{fullLabel}: {Math.round(value)}%</p>
+                </TooltipContent>
+            </Tooltip>
           </g>
-        );
-      })}
-
-      {/* Data Polygon */}
-      <polygon
-        points={points}
-        fill="none"
-        stroke="hsl(var(--primary))"
-        strokeWidth="2"
-      />
-
-      {/* Data Points */}
-      {angles.map((angle, i) => {
-        const value = data[validDataKeys[i]];
-        const point = getPoint(angle, value);
-        const size = 4;
-        return (
-          <polygon
-            key={`point-${i}`}
-            points={`${point.x},${point.y - size} ${point.x + size},${point.y} ${point.x},${point.y + size} ${point.x - size},${point.y}`}
-            fill="hsl(var(--primary))"
-            stroke="hsl(var(--card))"
-            strokeWidth={1.5}
-            className="transition-transform duration-200 ease-in-out hover:scale-150"
-          />
         );
       })}
     </svg>
