@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal, Loader2 } from 'lucide-react';
+import { MoreHorizontal, Loader2, PieChart as PieChartIcon, Target, CheckCircle, Percent } from 'lucide-react';
 import { STATUS_COLORS } from '@/lib/mock-data';
 import { ROLES } from '@/lib/constants';
 import type { ValidationReport } from '@/ai/schemas';
@@ -52,6 +52,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
 
 type Idea = {
   id: string;
@@ -82,9 +87,15 @@ const mockHistory = [
 ];
 
 export default function IdeasPage() {
-  const [ideas, setIdeas] = React.useState<Idea[]>([]);
+  const [allIdeas, setAllIdeas] = React.useState<Idea[]>([]);
+  const [filteredIdeas, setFilteredIdeas] = React.useState<Idea[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [statusFilter, setStatusFilter] = React.useState('all');
+  const [domainFilter, setDomainFilter] = React.useState('all');
+  
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [historyDialogOpen, setHistoryDialogOpen] = React.useState(false);
   const [selectedIdeaForHistory, setSelectedIdeaForHistory] = React.useState<Idea | null>(null);
@@ -101,7 +112,8 @@ export default function IdeasPage() {
           throw new Error('Failed to fetch ideas');
         }
         const data = await response.json();
-        setIdeas(data);
+        setAllIdeas(data);
+        setFilteredIdeas(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An unknown error occurred');
       } finally {
@@ -111,6 +123,20 @@ export default function IdeasPage() {
 
     fetchIdeas();
   }, []);
+  
+  React.useEffect(() => {
+    let ideas = allIdeas;
+    if (searchTerm) {
+        ideas = ideas.filter(idea => idea.title.toLowerCase().includes(searchTerm.toLowerCase()));
+    }
+    if (statusFilter !== 'all') {
+        ideas = ideas.filter(idea => (idea.report?.validationOutcome || idea.status) === statusFilter);
+    }
+     if (domainFilter !== 'all') {
+        ideas = ideas.filter(idea => idea.domain === domainFilter);
+    }
+    setFilteredIdeas(ideas);
+  }, [searchTerm, statusFilter, domainFilter, allIdeas]);
   
   const handleActionConfirm = () => {
     if (selectedAction.action) {
@@ -164,6 +190,27 @@ export default function IdeasPage() {
     return idea.report?.validationOutcome || idea.status;
   }
 
+  const uniqueDomains = [...new Set(allIdeas.map(idea => idea.domain))];
+  const uniqueStatuses = [...new Set(allIdeas.map(idea => getStatus(idea)))];
+
+  const totalIdeas = allIdeas.length;
+  const approvedIdeas = allIdeas.filter(i => getStatus(i) === 'Approved').length;
+  const approvalRate = totalIdeas > 0 ? (approvedIdeas / totalIdeas) * 100 : 0;
+  const validatedIdeas = allIdeas.filter(i => i.report?.overallScore);
+  const averageScore = validatedIdeas.length > 0 ? (validatedIdeas.reduce((acc, item) => acc + item.report!.overallScore, 0) / validatedIdeas.length) : 0;
+
+  const statusCounts = allIdeas.reduce((acc, idea) => {
+    const status = getStatus(idea);
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const statusData = [
+    { name: 'Approved', value: statusCounts.Approved || 0, fill: 'hsl(var(--color-approved))' },
+    { name: 'Moderate', value: statusCounts.Moderate || 0, fill: 'hsl(var(--color-moderate))' },
+    { name: 'Rejected', value: statusCounts.Rejected || 0, fill: 'hsl(var(--color-rejected))' },
+  ];
+
   const renderContent = () => {
     if (isLoading) {
       return (
@@ -181,7 +228,7 @@ export default function IdeasPage() {
       );
     }
 
-    if (ideas.length === 0) {
+    if (allIdeas.length === 0) {
       return (
         <div className="text-center py-10">
           <p className="text-muted-foreground">You haven't submitted any ideas yet.</p>
@@ -205,7 +252,7 @@ export default function IdeasPage() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {ideas.map((idea) => {
+          {filteredIdeas.map((idea) => {
             const status = getStatus(idea);
             return (
               <TableRow key={idea.id}>
@@ -250,15 +297,78 @@ export default function IdeasPage() {
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle>My Ideas</CardTitle>
-          <CardDescription>A list of all your submitted ideas.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {renderContent()}
-        </CardContent>
-      </Card>
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold">My Ideas Dashboard</h1>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Total Ideas</CardTitle><PieChartIcon className="w-4 h-4 text-muted-foreground" /></CardHeader>
+                <CardContent><div className="text-2xl font-bold">{totalIdeas}</div></CardContent>
+            </Card>
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Approval Rate</CardTitle><Percent className="w-4 h-4 text-muted-foreground" /></CardHeader>
+                <CardContent><div className="text-2xl font-bold">{approvalRate.toFixed(1)}%</div></CardContent>
+            </Card>
+             <Card>
+                <CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Average Score</CardTitle><Target className="w-4 h-4 text-muted-foreground" /></CardHeader>
+                <CardContent><div className="text-2xl font-bold">{averageScore.toFixed(1)}</div></CardContent>
+            </Card>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Card className="lg:col-span-2">
+                <CardHeader>
+                <CardTitle>All Submitted Ideas</CardTitle>
+                <CardDescription>Search, filter, and manage all your ideas.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <Input 
+                            placeholder="Search by title..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                         <Select value={statusFilter} onValueChange={setStatusFilter}>
+                            <SelectTrigger><SelectValue placeholder="Filter by status..." /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Statuses</SelectItem>
+                                {uniqueStatuses.map(status => <SelectItem key={status} value={status}>{status}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                         <Select value={domainFilter} onValueChange={setDomainFilter}>
+                            <SelectTrigger><SelectValue placeholder="Filter by domain..." /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Domains</SelectItem>
+                                {uniqueDomains.map(domain => <SelectItem key={domain} value={domain}>{domain}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    {renderContent()}
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Idea Status Distribution</CardTitle>
+                </CardHeader>
+                <CardContent>
+                     <ChartContainer config={{}} className="min-h-[250px] w-full">
+                        <ResponsiveContainer width="100%" height={300}>
+                            <PieChart>
+                                <ChartTooltip
+                                    cursor={true}
+                                    content={<ChartTooltipContent hideLabel />}
+                                />
+                                <Pie data={statusData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} label>
+                                    {statusData.map((entry) => <Cell key={entry.name} fill={entry.fill} />)}
+                                </Pie>
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </ChartContainer>
+                </CardContent>
+            </Card>
+        </div>
+      </div>
       
       <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <AlertDialogContent>
