@@ -83,35 +83,34 @@ export default function PrincipalDashboardPage() {
     
     return (
         <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <Card>
+            <Card className="w-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg border-0 relative overflow-hidden">
+                <div className="absolute -top-1/4 -left-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-br from-[#FF00CC] to-[#333399] opacity-30 blur-3xl filter" />
+                <div className="absolute -bottom-1/4 -right-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-[#F472B6] to-[#06B6D4] opacity-20 blur-3xl filter" />
+                <div className="relative z-10">
                     <CardHeader>
-                        <CardTitle>Current Plan</CardTitle>
-                        <CardDescription>Your active subscription</CardDescription>
+                        <CardTitle className="text-3xl text-white">Welcome, Principal!</CardTitle>
+                        <CardDescription className="text-primary-foreground/80">
+                            Here is the innovation overview for {college.name}.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-3xl font-bold">{MOCK_COLLEGES[0].currentPlanId.replace('PLAN00', 'Plan ').replace('-M', ' Monthly').replace('-Y', ' Yearly')}</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-center">
+                             <div className="bg-primary-foreground/20 p-4 rounded-lg">
+                                <p className="text-sm">Current Plan</p>
+                                <p className="text-xl font-bold">{MOCK_COLLEGES[0].currentPlanId.replace('PLAN00', 'Plan ').replace('-M', ' Monthly').replace('-Y', ' Yearly')}</p>
+                            </div>
+                             <div className="bg-primary-foreground/20 p-4 rounded-lg">
+                                <p className="text-sm">Credits (Used / Total)</p>
+                                <p className="text-xl font-bold">{totalCredits - college.creditsAvailable} / {college.creditsAvailable}</p>
+                            </div>
+                             <div className="bg-primary-foreground/20 p-4 rounded-lg">
+                                <p className="text-sm">TTC Slots (Used / Total)</p>
+                                <p className="text-xl font-bold">{ttcs.length} / {college.ttcLimit}</p>
+                            </div>
+                        </div>
                     </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Credits</CardTitle>
-                         <CardDescription>Used / Remaining</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-3xl font-bold">{totalCredits - college.creditsAvailable} / {college.creditsAvailable}</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>TTC Slots</CardTitle>
-                        <CardDescription>Used / Total</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-3xl font-bold">{ttcs.length} / {college.ttcLimit}</p>
-                    </CardContent>
-                </Card>
-            </div>
+                </div>
+            </Card>
              <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
                 <Card className="lg:col-span-2">
                     <CardHeader>
