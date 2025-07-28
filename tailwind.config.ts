@@ -105,7 +105,15 @@ const config = {
         'background-pan': {
           '0%': { 'background-position': 'left center' },
           '100%': { 'background-position': 'right center' },
-        }
+        },
+         'slide-out-to-left-16': {
+          '0%': { transform: 'translateX(0)', opacity: '1' },
+          '100%': { transform: 'translateX(-16px)', opacity: '0' },
+        },
+        'slide-in-from-right-16': {
+          '0%': { transform: 'translateX(16px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -114,6 +122,8 @@ const config = {
         'wavy-bounce-1': 'wavy-bounce-1 8s ease-in-out infinite alternate',
         'wavy-bounce-2': 'wavy-bounce-2 10s ease-in-out infinite alternate',
         'background-pan': 'background-pan 3s linear infinite alternate',
+        'slide-out-to-left-16': 'slide-out-to-left-16 0.3s ease-out',
+        'slide-in-from-right-16': 'slide-in-from-right-16 0.3s ease-out',
       },
     },
   },

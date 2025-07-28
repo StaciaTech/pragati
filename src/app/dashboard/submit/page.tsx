@@ -5,7 +5,7 @@ import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, type FieldError } from 'react-hook-form';
 import { z } from 'zod';
-import { FileUp, BrainCircuit } from 'lucide-react';
+import { FileUp, BrainCircuit, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
@@ -292,36 +292,43 @@ function Step1({ form }: { form: any }) {
   );
 }
 
+const formFields: (keyof SubmitIdeaForm)[] = ['title', 'description', 'pptFile', 'domain'];
+
 function Step2({ form }: { form: any }) {
     const { setActiveStep } = useStepper();
+    const [currentQuestion, setCurrentQuestion] = React.useState(0);
     const domain = form.watch('domain');
-    const [shakeErrors, setShakeErrors] = React.useState<Partial<Record<keyof SubmitIdeaForm, boolean>>>({});
-    const pptFileRef = React.useRef<HTMLInputElement>(null);
 
     const handleNext = async () => {
-        const fieldsToValidate: (keyof SubmitIdeaForm)[] = ['title', 'description', 'domain', 'pptFile'];
-        if (form.getValues('domain') === 'Other') {
-            fieldsToValidate.push('otherDomain');
-        }
+        const fieldToValidate = formFields[currentQuestion];
+        let isValid = await form.trigger(fieldToValidate);
         
-        const isValid = await form.trigger(fieldsToValidate);
+        if(fieldToValidate === 'domain' && form.getValues('domain') === 'Other') {
+            isValid = await form.trigger('otherDomain');
+        }
 
         if (isValid) {
-            setActiveStep(2);
-            setShakeErrors({});
-        } else {
-            const errors = form.formState.errors;
-            const errorFields = fieldsToValidate.reduce((acc, field) => {
-                if (errors[field]) {
-                    acc[field] = true;
-                }
-                return acc;
-            }, {} as typeof shakeErrors);
-            setShakeErrors(errorFields);
-            setTimeout(() => setShakeErrors({}), 1000);
+            if (currentQuestion < formFields.length - 1) {
+                setCurrentQuestion(q => q + 1);
+            } else {
+                setActiveStep(2);
+            }
         }
     };
 
+    const handleBack = () => {
+        if (currentQuestion > 0) {
+            setCurrentQuestion(q => q - 1);
+        } else {
+             setActiveStep(0);
+        }
+    };
+    
+    const getAnimationClass = (index: number) => {
+        if (index === currentQuestion) return "animate-in slide-in-from-right-16 fade-in";
+        if (index < currentQuestion) return "animate-out slide-out-to-left-16 fade-out hidden";
+        return "hidden";
+    }
 
     return (
         <StepperItem index={1}>
@@ -330,71 +337,82 @@ function Step2({ form }: { form: any }) {
           <CardDescription>Provide your idea description and supporting documents.</CardDescription>
         </StepperTrigger>
         <StepperContent>
-          <div className="space-y-6 py-6">
-            <FormField control={form.control} name="title" render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Idea Title</FormLabel>
-                    <FormControl><Input placeholder="e.g., AI-Powered Crop Disease Detection" {...field} className={cn(shakeErrors.title && 'animate-shake')} /></FormControl>
-                    <FormMessage />
-                </FormItem>
-            )} />
-            <FormField control={form.control} name="description" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Short Idea Description</FormLabel>
-                  <FormControl><Textarea placeholder="Briefly describe the core concept of your idea..." {...field} className={cn(shakeErrors.description && 'animate-shake')} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-            )} />
-            <FormField control={form.control} name="pptFile" render={({ field: { onChange, value, ...rest } }) => (
-                <FormItem>
-                  <FormLabel>Upload PPT</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <FileUp className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                      <Input type="file" ref={pptFileRef} className={cn("pl-10", shakeErrors.pptFile && 'animate-shake')} accept=".ppt, .pptx" 
-                        onChange={(e) => onChange(e.target.files)}
-                       {...rest}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormDescription>Please adhere to the provided PPT format guidelines.</FormDescription>
-                  <FormMessage />
-                </FormItem>
-            )} />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               <FormField control={form.control} name="domain" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Project Domain/Category</FormLabel>
-                     <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl><SelectTrigger className={cn(shakeErrors.domain && 'animate-shake')}><SelectValue placeholder="Select a domain" /></SelectTrigger></FormControl>
-                      <SelectContent>
-                        <SelectItem value="HealthTech">HealthTech</SelectItem>
-                        <SelectItem value="EdTech">EdTech</SelectItem>
-                        <SelectItem value="FinTech">FinTech</SelectItem>
-                        <SelectItem value="Agriculture">Agriculture</SelectItem>
-                        <SelectItem value="Smart Cities">Smart Cities</SelectItem>
-                        <SelectItem value="Renewable Energy">Renewable Energy</SelectItem>
-                        <SelectItem value="SpaceTech">SpaceTech</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
+          <div className="py-6 overflow-hidden min-h-[350px]">
+            <div className={cn("space-y-6", getAnimationClass(0))}>
+                <FormField control={form.control} name="title" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel className="text-lg">What is the title of your idea?</FormLabel>
+                        <FormControl><Input placeholder="e.g., AI-Powered Crop Disease Detection" {...field} /></FormControl>
+                        <FormMessage />
+                    </FormItem>
                 )} />
-                {domain === 'Other' && (
-                    <FormField control={form.control} name="otherDomain" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Please Specify Domain</FormLabel>
-                            <FormControl><Input placeholder="e.g., Sustainable Fashion" {...field} className={cn(shakeErrors.otherDomain && 'animate-shake')} /></FormControl>
-                            <FormMessage />
-                        </FormItem>
+            </div>
+             <div className={cn("space-y-6", getAnimationClass(1))}>
+                <FormField control={form.control} name="description" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-lg">Briefly describe the core concept of your idea.</FormLabel>
+                      <FormControl><Textarea placeholder="Describe the problem you're solving and your proposed solution..." {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                )} />
+            </div>
+            <div className={cn("space-y-6", getAnimationClass(2))}>
+                <FormField control={form.control} name="pptFile" render={({ field: { onChange, value, ...rest } }) => (
+                    <FormItem>
+                      <FormLabel className="text-lg">Please upload your Pitch Deck.</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <FileUp className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                          <Input type="file" className="pl-10" accept=".ppt, .pptx" 
+                            onChange={(e) => onChange(e.target.files)}
+                           {...rest}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormDescription>Please adhere to the provided PPT format guidelines.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                )} />
+            </div>
+            <div className={cn("space-y-6", getAnimationClass(3))}>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                   <FormField control={form.control} name="domain" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-lg">What is the domain of your project?</FormLabel>
+                         <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl><SelectTrigger><SelectValue placeholder="Select a domain" /></SelectTrigger></FormControl>
+                          <SelectContent>
+                            <SelectItem value="HealthTech">HealthTech</SelectItem>
+                            <SelectItem value="EdTech">EdTech</SelectItem>
+                            <SelectItem value="FinTech">FinTech</SelectItem>
+                            <SelectItem value="Agriculture">Agriculture</SelectItem>
+                            <SelectItem value="Smart Cities">Smart Cities</SelectItem>
+                            <SelectItem value="Renewable Energy">Renewable Energy</SelectItem>
+                            <SelectItem value="SpaceTech">SpaceTech</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
                     )} />
-                )}
+                    {domain === 'Other' && (
+                        <FormField control={form.control} name="otherDomain" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="text-lg">Please specify the domain</FormLabel>
+                                <FormControl><Input placeholder="e.g., Sustainable Fashion" {...field} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                    )}
+                </div>
             </div>
           </div>
           <div className="flex justify-between">
-              <StepperPrevious variant="outline" />
-              <Button onClick={handleNext}>Review & Submit</Button>
+              <Button variant="outline" onClick={handleBack}><ArrowLeft className="mr-2"/> Back</Button>
+              <Button onClick={handleNext}>
+                {currentQuestion < formFields.length - 1 ? "Next" : "Review & Submit"}
+                <ArrowRight className="ml-2"/>
+              </Button>
           </div>
         </StepperContent>
       </StepperItem>
