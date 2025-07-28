@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { TrendingUp, Award, Clock, MoreHorizontal, Loader2, PlusCircle, Lightbulb, CreditCard, BarChart3, Star } from 'lucide-react';
+import { TrendingUp, Award, Clock, MoreHorizontal, Loader2, PlusCircle, Lightbulb, CreditCard, BarChart3, Star, MessageSquare } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -253,7 +253,7 @@ function DashboardPageContent() {
           <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <Button asChild className="w-full">
                   <Link href={`/dashboard/submit?role=${ROLES.INNOVATOR}`}><PlusCircle /> Submit New Idea</Link>
               </Button>
@@ -262,6 +262,9 @@ function DashboardPageContent() {
               </Button>
               <Button asChild variant="outline" className="w-full">
                   <Link href={`/dashboard/request-credits?role=${ROLES.INNOVATOR}`}><CreditCard /> Request Credits</Link>
+              </Button>
+               <Button asChild variant="outline" className="w-full">
+                  <Link href={`/dashboard/consultations?role=${ROLES.INNOVATOR}`}><MessageSquare /> Schedule Consultation</Link>
               </Button>
           </CardContent>
       </Card>
