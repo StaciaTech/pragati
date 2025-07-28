@@ -179,6 +179,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         <SidebarInset>
           <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-border/0 bg-background/80 px-4 backdrop-blur-sm sm:px-6">
             <SidebarTrigger className="sm:hidden" />
+             <div className="hidden md:block text-lg font-semibold">{role} Portal</div>
             <div className="flex-1" />
             <div className="flex items-center gap-2 sm:gap-4">
               <UniversalSearch role={role} />
