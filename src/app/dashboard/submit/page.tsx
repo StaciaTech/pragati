@@ -593,7 +593,7 @@ export default function SubmitIdeaPage() {
   };
 
   return (
-    <Card className="relative">
+    <Card className="relative border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
       <CardHeader>
         <div className="flex justify-between items-center">
             <div>
