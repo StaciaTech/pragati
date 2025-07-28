@@ -275,7 +275,7 @@ function DashboardPageContent() {
       </Card>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
+        <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
             <TrendingUp className="w-4 h-4 text-muted-foreground" />
