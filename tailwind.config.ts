@@ -102,6 +102,10 @@ const config = {
           '0%, 100%': { transform: 'translate(0, 0) scale(1)', opacity: '0.5' },
           '50%': { transform: 'translate(20px, -20px) scale(1.05)', opacity: '0.7' },
         },
+        'background-pan': {
+          '0%': { 'background-position': 'left center' },
+          '100%': { 'background-position': 'right center' },
+        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -109,6 +113,7 @@ const config = {
         'shake': 'shake 0.82s cubic-bezier(.36,.07,.19,.97) both',
         'wavy-bounce-1': 'wavy-bounce-1 8s ease-in-out infinite alternate',
         'wavy-bounce-2': 'wavy-bounce-2 10s ease-in-out infinite alternate',
+        'background-pan': 'background-pan 3s linear infinite alternate',
       },
     },
   },
