@@ -252,11 +252,6 @@ export default function ConsultationsPage() {
                     </div>
                  )}
             </div>
-            <DialogFooter>
-                <DialogClose asChild>
-                    <Button variant="outline">Close</Button>
-                </DialogClose>
-            </DialogFooter>
         </DialogContent>
       </Dialog>
 

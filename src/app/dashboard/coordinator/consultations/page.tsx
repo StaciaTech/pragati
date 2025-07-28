@@ -26,6 +26,17 @@ import { CalendarIcon, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTrigger,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 type Idea = (typeof MOCK_IDEAS)[0];
 
@@ -161,8 +172,18 @@ export default function CoordinatorConsultationsPage() {
                  <p><span className="font-semibold text-muted-foreground">Topics for Discussion:</span> A mock set of topics would go here.</p>
             </div>
             <DialogFooter className="grid grid-cols-1 sm:grid-cols-4 gap-2">
-                <Button className="sm:col-span-2" onClick={() => handleRsvp(selectedIdea!.id, 'Accepted')}>Accept</Button>
-                <Button variant="outline" onClick={() => handleRsvp(selectedIdea!.id, 'Tentative')}>Mark as Tentative</Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild><Button className="sm:col-span-2">Accept</Button></AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Accept Consultation?</AlertDialogTitle>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleRsvp(selectedIdea!.id, 'Accepted')}>Yes, Accept</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
                 <Button variant="destructive" onClick={() => handleRsvp(selectedIdea!.id, 'Declined')}>Decline</Button>
                 <Button className="sm:col-span-4" variant="secondary" onClick={() => openRescheduleModal(selectedIdea!)}>Suggest New Time</Button>
             </DialogFooter>
