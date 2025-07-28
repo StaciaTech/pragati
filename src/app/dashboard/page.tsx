@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { TrendingUp, Award, Clock, MoreHorizontal, Loader2 } from 'lucide-react';
+import { TrendingUp, Award, Clock, MoreHorizontal, Loader2, PlusCircle, Lightbulb, CreditCard } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -55,6 +55,9 @@ import { useToast } from '@/hooks/use-toast';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, Pie, PieChart, ResponsiveContainer, Tooltip, Cell, Sector, XAxis, YAxis } from 'recharts';
 import type { PieSectorDataItem } from 'recharts/types/polar/Pie';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import Autoplay from "embla-carousel-autoplay"
+
 
 type Idea = (typeof MOCK_IDEAS)[0];
 
@@ -155,7 +158,6 @@ function DashboardPageContent() {
     setIsLoading(false);
   }, []);
 
-  const recentIdeas = ideas.slice(0, 3);
   const totalIdeas = ideas.length;
   const validatedIdeas = ideas.filter(idea => idea.report?.overallScore);
   const averageScore = validatedIdeas.length > 0 ? (validatedIdeas.reduce((acc, item) => acc + item.report!.overallScore, 0) / validatedIdeas.length) : 0;
@@ -271,11 +273,6 @@ function DashboardPageContent() {
             <CardTitle className="text-3xl text-white">Welcome back, {user.name}!</CardTitle>
             <CardDescription className="text-primary-foreground/80">Ready to change the world? Let's get your next great idea validated.</CardDescription>
           </CardHeader>
-           <CardContent>
-              <Button asChild variant="secondary" className="bg-primary-foreground/20 hover:bg-primary-foreground/30 text-primary-foreground">
-                  <Link href={`/dashboard/submit?role=${ROLES.INNOVATOR}`}>Submit a New Idea</Link>
-              </Button>
-          </CardContent>
         </div>
       </Card>
       
@@ -312,143 +309,160 @@ function DashboardPageContent() {
         </Card>
       </div>
 
-       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Idea Status Distribution</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-              <ResponsiveContainer width="100%" height={250}>
-                 <PieChart>
-                  <Pie
-                    activeIndex={activeIndex}
-                    activeShape={ActiveShape}
-                    data={ideaStatusData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    dataKey="value"
-                    onMouseEnter={onPieEnter}
-                  >
-                     {ideaStatusData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.fill} />
-                      ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-        <Card className="lg:col-span-3">
-          <CardHeader>
-            <CardTitle>Submission Trend</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={submissionTrendData}>
-                  <CartesianGrid vertical={false} />
-                  <XAxis
-                    dataKey="name"
-                    tickLine={false}
-                    tickMargin={10}
-                    axisLine={false}
-                  />
-                   <YAxis />
-                  <Tooltip
-                    cursor={true}
-                    content={<ChartTooltipContent 
-                        contentStyle={{background: "hsl(var(--background))", border: "1px solid hsl(var(--border))"}}
-                        labelClassName="font-bold"
-                    />}
-                  />
-                  <Bar dataKey="ideas" fill="hsl(var(--chart-1))" radius={8} />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-      </div>
+       <Card>
+        <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <Button asChild>
+                <Link href={`/dashboard/submit?role=${ROLES.INNOVATOR}`}><PlusCircle /> Submit New Idea</Link>
+            </Button>
+             <Button asChild variant="outline">
+                <Link href={`/dashboard/ideas?role=${ROLES.INNOVATOR}`}><Lightbulb /> View All Ideas</Link>
+            </Button>
+             <Button asChild variant="outline">
+                <Link href={`/dashboard/request-credits?role=${ROLES.INNOVATOR}`}><CreditCard /> Request Credits</Link>
+            </Button>
+        </CardContent>
+       </Card>
 
-
-      <Card>
-            <CardHeader>
-                <div className="flex justify-between items-center">
-                    <CardTitle>My Recent Ideas</CardTitle>
-                     {ideas.length > 3 && (
-                        <Button variant="link" asChild>
-                            <Link href={`/dashboard/ideas?role=${ROLES.INNOVATOR}`}>View All</Link>
-                        </Button>
+      <Carousel 
+        opts={{ loop: true }} 
+        plugins={[ Autoplay({ delay: 5000, stopOnInteraction: true }) ]}
+        className="w-full"
+      >
+        <CarouselContent>
+          <CarouselItem>
+            <div className="p-1">
+              <Card>
+                <CardHeader>
+                    <CardTitle>Analytics Overview</CardTitle>
+                    <CardDescription>A summary of your submission trends and outcomes.</CardDescription>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                   <div className="lg:col-span-2">
+                      <CardTitle className="text-base mb-4 text-center">Idea Status Distribution</CardTitle>
+                      <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+                        <ResponsiveContainer width="100%" height={250}>
+                           <PieChart>
+                            <Pie
+                              activeIndex={activeIndex}
+                              activeShape={ActiveShape}
+                              data={ideaStatusData}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={60}
+                              outerRadius={80}
+                              dataKey="value"
+                              onMouseEnter={onPieEnter}
+                            >
+                               {ideaStatusData.map((entry, index) => (
+                                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                                ))}
+                            </Pie>
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </ChartContainer>
+                   </div>
+                    <div className="lg:col-span-3">
+                        <CardTitle className="text-base mb-4 text-center">Submission Trend</CardTitle>
+                        <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+                          <ResponsiveContainer width="100%" height={250}>
+                            <BarChart data={submissionTrendData}>
+                              <CartesianGrid vertical={false} />
+                              <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+                               <YAxis />
+                              <Tooltip
+                                cursor={true}
+                                content={<ChartTooltipContent 
+                                    contentStyle={{background: "hsl(var(--background))", border: "1px solid hsl(var(--border))"}}
+                                    labelClassName="font-bold"
+                                />}
+                              />
+                              <Bar dataKey="ideas" fill="hsl(var(--chart-1))" radius={8} />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </ChartContainer>
+                    </div>
+                </CardContent>
+              </Card>
+            </div>
+          </CarouselItem>
+          <CarouselItem>
+             <div className="p-1">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>My Recent Ideas</CardTitle>
+                        <CardDescription>A quick look at your most recently submitted ideas.</CardDescription>
+                    </CardHeader>
+                  <CardContent>
+                    {ideas.length === 0 ? (
+                      <div className="text-center py-10">
+                        <p className="text-muted-foreground">You haven't submitted any ideas yet. Go to "Submit Idea" to get started!</p>
+                      </div>
+                    ) : (
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Title</TableHead>
+                              <TableHead>Date</TableHead>
+                              <TableHead>Status</TableHead>
+                              <TableHead>Score</TableHead>
+                              <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {ideas.slice(0, 5).map((idea) => {
+                              const status = getStatus(idea);
+                              return (
+                              <TableRow key={idea.id}>
+                                <TableCell className="font-medium">{idea.title}</TableCell>
+                                <TableCell>{idea.dateSubmitted}</TableCell>
+                                <TableCell>
+                                  <Badge className={STATUS_COLORS[status]}>{status}</Badge>
+                                </TableCell>
+                                <TableCell className="font-semibold">{getOverallScore(idea)}</TableCell>
+                                <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                                  {idea.report ? (
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" size="icon">
+                                          <MoreHorizontal className="h-4 w-4" />
+                                          <span className="sr-only">More actions</span>
+                                        </Button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align="end">
+                                        <DropdownMenuItem onSelect={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
+                                          View Report
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onSelect={() => handleResubmit(idea)}>
+                                          Resubmit
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onSelect={() => handleDownload(idea.id)}>
+                                          Download
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onSelect={() => handleTrackHistory(idea)}>
+                                          Track History
+                                        </DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  ) : (
+                                    <span className="text-muted-foreground italic text-xs">Validating...</span>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            )})}
+                          </TableBody>
+                        </Table>
                     )}
-                </div>
-                <CardDescription>
-                    A quick look at your most recently submitted ideas.
-                </CardDescription>
-            </CardHeader>
-          <CardContent>
-            {ideas.length === 0 ? (
-              <div className="text-center py-10">
-                <p className="text-muted-foreground">You haven't submitted any ideas yet. Go to "Submit Idea" to get started!</p>
-              </div>
-            ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Title</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Score</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {recentIdeas.map((idea) => {
-                      const status = getStatus(idea);
-                      return (
-                      <TableRow key={idea.id}>
-                        <TableCell className="font-medium">{idea.title}</TableCell>
-                        <TableCell>{idea.dateSubmitted}</TableCell>
-                        <TableCell>
-                          <Badge className={STATUS_COLORS[status]}>{status}</Badge>
-                        </TableCell>
-                        <TableCell className="font-semibold">{getOverallScore(idea)}</TableCell>
-                        <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                          {idea.report ? (
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                  <span className="sr-only">More actions</span>
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem onSelect={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
-                                  View Report
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onSelect={() => handleResubmit(idea)}>
-                                  Resubmit
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onSelect={() => handleDownload(idea.id)}>
-                                  Download
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onSelect={() => handleTrackHistory(idea)}>
-                                  Track History
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          ) : (
-                            <span className="text-muted-foreground italic text-xs">Validating...</span>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    )})}
-                  </TableBody>
-                </Table>
-            )}
-          </CardContent>
-        </Card>
+                  </CardContent>
+                </Card>
+             </div>
+          </CarouselItem>
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
     </div>
     
      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -513,3 +527,4 @@ export default function DashboardPage() {
         </Suspense>
     );
 }
+
