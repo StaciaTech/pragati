@@ -94,12 +94,14 @@ export default function IdeaReportPage() {
   const [openAccordionItems, setOpenAccordionItems] = React.useState<string[]>([]);
   const allClusterNames = report ? Object.keys(report.sections.detailedEvaluation.clusters) : [];
 
-  const handleExpandAll = () => {
-    setOpenAccordionItems(allClusterNames);
-  };
+  const allClustersExpanded = openAccordionItems.length === allClusterNames.length;
 
-  const handleCollapseAll = () => {
-    setOpenAccordionItems([]);
+  const handleToggleExpandAll = () => {
+    if (allClustersExpanded) {
+      setOpenAccordionItems([]);
+    } else {
+      setOpenAccordionItems(allClusterNames);
+    }
   };
 
   const pastConsultations = MOCK_CONSULTATIONS.filter(
@@ -382,10 +384,9 @@ export default function IdeaReportPage() {
                            <h3 className="text-xl font-semibold">Detailed Viability Assessment</h3>
                            <p className="text-sm text-muted-foreground">{report.sections.detailedEvaluation.description}</p>
                         </div>
-                        <div className="flex gap-2">
-                            <Button variant="ghost" size="sm" onClick={handleExpandAll}>Expand All</Button>
-                            <Button variant="ghost" size="sm" onClick={handleCollapseAll}>Collapse All</Button>
-                        </div>
+                        <Button variant="ghost" size="sm" onClick={handleToggleExpandAll}>
+                          {allClustersExpanded ? 'Collapse All' : 'Expand All'}
+                        </Button>
                     </div>
                     <Accordion type="multiple" value={openAccordionItems} onValueChange={setOpenAccordionItems} className="w-full pt-4">
                         {Object.entries(report.sections.detailedEvaluation.clusters).map(([clusterName, clusterData]) => (
