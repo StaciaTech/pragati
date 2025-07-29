@@ -18,7 +18,7 @@ import { Separator } from '@/components/ui/separator';
 import { MOCK_IDEAS, STATUS_COLORS, MOCK_CONSULTATIONS } from '@/lib/mock-data';
 import type { ValidationReport } from '@/ai/schemas';
 import { ROLES } from '@/lib/constants';
-import { ArrowLeft, Download, ThumbsUp, Lightbulb, RefreshCw, MessageSquare, TrendingUp, TrendingDown, Star } from 'lucide-react';
+import { ArrowLeft, Download, ThumbsUp, Lightbulb, RefreshCw, MessageSquare, TrendingUp, TrendingDown, Star, Share2, Copy } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {
@@ -30,6 +30,8 @@ import {
 import { cn } from '@/lib/utils';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { SpiderChart } from '@/components/spider-chart';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useToast } from '@/hooks/use-toast';
 
 
 const SectionCard = ({ title, description, children, className }: { title: string, description?: string, children: React.ReactNode, className?: string }) => (
@@ -58,6 +60,7 @@ export default function IdeaReportPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { toast } = useToast();
   const ideaId = params.ideaId as string;
   const role = searchParams.get('role');
   const reportRef = React.useRef<HTMLDivElement>(null);
@@ -102,6 +105,14 @@ export default function IdeaReportPage() {
       }
       
       pdf.save(`${ideaId}-report.pdf`);
+    });
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast({
+        title: "Link Copied!",
+        description: "The report link has been copied to your clipboard.",
     });
   };
 
@@ -227,10 +238,21 @@ export default function IdeaReportPage() {
                         Request Consultation
                     </Button>
                 )}
-                <Button onClick={handleDownload}>
-                    <Download className="mr-2 h-4 w-4" />
-                    Download PDF
-                </Button>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline"><Share2 className="mr-2 h-4 w-4" /> Share</Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem onSelect={handleDownload}>
+                            <Download className="mr-2 h-4 w-4" />
+                            <span>Export as PDF</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={handleCopyLink}>
+                            <Copy className="mr-2 h-4 w-4" />
+                            <span>Copy Link</span>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
              </div>
         </div>
 
@@ -426,7 +448,11 @@ export default function IdeaReportPage() {
                   </TableHeader>
                   <TableBody>
                     {pastConsultations.map((consultation) => (
-                      <TableRow key={consultation.id}>
+                      <TableRow 
+                        key={consultation.id} 
+                        className="cursor-pointer" 
+                        onClick={() => router.push(`/dashboard/consultations?role=${role}`)}
+                      >
                         <TableCell>{consultation.date}</TableCell>
                         <TableCell>{consultation.mentor}</TableCell>
                         <TableCell>
@@ -434,7 +460,7 @@ export default function IdeaReportPage() {
                         </TableCell>
                         <TableCell>
                           {consultation.files.map((file, index) => (
-                            <Button key={index} variant="link" asChild size="sm">
+                            <Button key={index} variant="link" asChild size="sm" onClick={(e) => e.stopPropagation()}>
                               <a href="#" download>
                                 {file}
                               </a>
