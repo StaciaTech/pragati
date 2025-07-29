@@ -54,142 +54,156 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
   const gridLevels = 4; // For 25, 50, 75, 100
 
   return (
-    <TooltipProvider>
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block mx-auto">
-      <defs>
-        <radialGradient id="spider-gradient">
-          <stop offset="0%" stopColor="hsl(var(--primary) / 0.4)" />
-          <stop offset="100%" stopColor="hsl(var(--primary) / 0.1)" />
-        </radialGradient>
-      </defs>
+    <div className="relative" style={{ width: size, height: size }}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block mx-auto">
+        <defs>
+          <radialGradient id="spider-gradient">
+            <stop offset="0%" stopColor="hsl(var(--primary) / 0.4)" />
+            <stop offset="100%" stopColor="hsl(var(--primary) / 0.1)" />
+          </radialGradient>
+        </defs>
 
-      {/* Grid Lines */}
-      {Array.from({ length: gridLevels }).map((_, levelIndex) => {
-        const gridRadius = radius * ((levelIndex + 1) / gridLevels);
-        const gridPoints = angles.map(angle => {
-          const x = centerX + gridRadius * Math.cos(angle);
-          const y = centerY + gridRadius * Math.sin(angle);
-          return `${x},${y}`;
-        }).join(' ');
-        return (
-          <polygon
-            key={`grid-${levelIndex}`}
-            points={gridPoints}
-            fill="none"
-            stroke="hsl(var(--muted-foreground) / 0.3)"
-            strokeWidth="1"
-          />
-        );
-      })}
-
-      {/* Spokes and Axis Labels */}
-      {angles.map((angle, i) => {
-        const point = getPoint(angle, maxScore);
-        const isFirstSpoke = i === 0;
-        return (
-          <g key={`spoke-group-${i}`}>
-            <line
-              key={`spoke-${i}`}
-              x1={centerX}
-              y1={centerY}
-              x2={point.x}
-              y2={point.y}
-              stroke={clusterColors[i]}
+        {/* Grid Lines */}
+        {Array.from({ length: gridLevels }).map((_, levelIndex) => {
+          const gridRadius = radius * ((levelIndex + 1) / gridLevels);
+          const gridPoints = angles.map(angle => {
+            const x = centerX + gridRadius * Math.cos(angle);
+            const y = centerY + gridRadius * Math.sin(angle);
+            return `${x},${y}`;
+          }).join(' ');
+          return (
+            <polygon
+              key={`grid-${levelIndex}`}
+              points={gridPoints}
+              fill="none"
+              stroke="hsl(var(--muted-foreground) / 0.3)"
               strokeWidth="1"
-              strokeDasharray="2 4"
             />
-            {isFirstSpoke && Array.from({ length: gridLevels }).map((_, levelIndex) => {
-              if (levelIndex < gridLevels -1) return null; // Only show outermost label
-              const value = (maxScore / gridLevels) * (levelIndex + 1);
-              const labelPoint = getPoint(angle, value);
-              return (
-                <text
-                  key={`axis-label-${levelIndex}`}
-                  x={labelPoint.x + 5}
-                  y={labelPoint.y}
-                  textAnchor="start"
-                  dominantBaseline="middle"
-                  fontSize="12"
-                  className="fill-muted-foreground"
-                >
-                  {value}
-                </text>
-              );
+          );
+        })}
+
+        {/* Spokes and Axis Labels */}
+        {angles.map((angle, i) => {
+          const point = getPoint(angle, maxScore);
+          const isFirstSpoke = i === 0;
+          return (
+            <g key={`spoke-group-${i}`}>
+              <line
+                key={`spoke-${i}`}
+                x1={centerX}
+                y1={centerY}
+                x2={point.x}
+                y2={point.y}
+                stroke={clusterColors[i % clusterColors.length]}
+                strokeWidth="1"
+                strokeDasharray="2 4"
+              />
+              {isFirstSpoke && Array.from({ length: gridLevels }).map((_, levelIndex) => {
+                if (levelIndex < gridLevels -1) return null; // Only show outermost label
+                const value = (maxScore / gridLevels) * (levelIndex + 1);
+                const labelPoint = getPoint(angle, value);
+                return (
+                  <text
+                    key={`axis-label-${levelIndex}`}
+                    x={labelPoint.x + 5}
+                    y={labelPoint.y}
+                    textAnchor="start"
+                    dominantBaseline="middle"
+                    fontSize="12"
+                    className="fill-muted-foreground"
+                  >
+                    {value}
+                  </text>
+                );
+              })}
+            </g>
+          );
+        })}
+        
+        {/* Data Polygon */}
+        <polygon
+          points={points}
+          fill="url(#spider-gradient)"
+          stroke="hsl(var(--primary))"
+          strokeWidth="2.5"
+        />
+
+        {/* Labels */}
+        {angles.map((angle, i) => {
+          const value = data[validDataKeys[i]];
+          const fullLabel = validDataKeys[i];
+          const shortLabel = labelMap[fullLabel] || fullLabel;
+          
+          const labelRadius = radius + 25;
+          const textPointX = centerX + labelRadius * Math.cos(angle);
+          const textPointY = centerY + labelRadius * Math.sin(angle);
+
+          let textAnchor = "middle";
+          let dominantBaseline = "middle";
+
+          if (textPointX < centerX - 1) textAnchor = "end";
+          if (textPointX > centerX + 1) textAnchor = "start";
+          
+          if (textPointY < centerY) dominantBaseline = "alphabetic";
+          if (textPointY > centerY) dominantBaseline = "hanging";
+
+          return (
+            <g key={`label-group-${i}`}>
+              <text
+                x={textPointX}
+                y={textPointY - 10}
+                textAnchor={textAnchor}
+                dominantBaseline={dominantBaseline}
+                className="font-bold text-lg"
+                fill={clusterColors[i % clusterColors.length]}
+              >
+                {Math.round(value)}%
+              </text>
+              <text
+                x={textPointX}
+                y={textPointY + 10}
+                textAnchor={textAnchor}
+                dominantBaseline={dominantBaseline}
+                className="text-sm fill-muted-foreground"
+              >
+                {shortLabel}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+
+      <TooltipProvider>
+        <div className="absolute top-0 left-0 w-full h-full">
+            {angles.map((angle, i) => {
+                const value = data[validDataKeys[i]];
+                const fullLabel = validDataKeys[i];
+                const point = getPoint(angle, value);
+                const color = clusterColors[i % clusterColors.length];
+                
+                return (
+                    <Tooltip key={`tooltip-${i}`}>
+                        <TooltipTrigger asChild>
+                            <div
+                                className="absolute rounded-full transition-transform duration-200 ease-in-out hover:scale-150 cursor-pointer"
+                                style={{
+                                    left: `${point.x - 6}px`,
+                                    top: `${point.y - 6}px`,
+                                    width: '12px',
+                                    height: '12px',
+                                    backgroundColor: color,
+                                    border: '2px solid hsl(var(--card))',
+                                }}
+                            />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p className="font-bold" style={{color: color}}>{fullLabel}: {Math.round(value)}%</p>
+                        </TooltipContent>
+                    </Tooltip>
+                )
             })}
-          </g>
-        );
-      })}
-      
-      {/* Data Polygon */}
-      <polygon
-        points={points}
-        fill="url(#spider-gradient)"
-        stroke="hsl(var(--primary))"
-        strokeWidth="2.5"
-      />
-
-      {/* Labels and Data Points */}
-      {angles.map((angle, i) => {
-        const value = data[validDataKeys[i]];
-        const fullLabel = validDataKeys[i];
-        const shortLabel = labelMap[fullLabel] || fullLabel;
-        const point = getPoint(angle, value);
-        
-        const labelRadius = radius + 25;
-        const textPointX = centerX + labelRadius * Math.cos(angle);
-        const textPointY = centerY + labelRadius * Math.sin(angle);
-
-        let textAnchor = "middle";
-        let dominantBaseline = "middle";
-
-        if (textPointX < centerX - 1) textAnchor = "end";
-        if (textPointX > centerX + 1) textAnchor = "start";
-        
-        if (textPointY < centerY) dominantBaseline = "alphabetic";
-        if (textPointY > centerY) dominantBaseline = "hanging";
-
-
-        return (
-          <g key={`label-group-${i}`}>
-            <text
-              x={textPointX}
-              y={textPointY - 10}
-              textAnchor={textAnchor}
-              dominantBaseline={dominantBaseline}
-              className="font-bold text-lg"
-              fill={clusterColors[i]}
-            >
-              {Math.round(value)}%
-            </text>
-            <text
-              x={textPointX}
-              y={textPointY + 10}
-              textAnchor={textAnchor}
-              dominantBaseline={dominantBaseline}
-              className="text-sm fill-muted-foreground"
-            >
-              {shortLabel}
-            </text>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <circle
-                        cx={point.x}
-                        cy={point.y}
-                        r={6}
-                        fill={clusterColors[i]}
-                        stroke="hsl(var(--card))"
-                        strokeWidth={2}
-                        className="transition-transform duration-200 ease-in-out hover:scale-150 cursor-pointer"
-                    />
-                </TooltipTrigger>
-                <TooltipContent>
-                    <p className="font-bold" style={{color: clusterColors[i]}}>{fullLabel}: {Math.round(value)}%</p>
-                </TooltipContent>
-            </Tooltip>
-          </g>
-        );
-      })}
-    </svg>
-    </TooltipProvider>
+        </div>
+      </TooltipProvider>
+    </div>
   );
 };
