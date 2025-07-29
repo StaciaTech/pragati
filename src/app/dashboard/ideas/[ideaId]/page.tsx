@@ -244,13 +244,13 @@ export default function IdeaReportPage() {
                 </Link>
             </Button>
              <div className="flex gap-2">
-                {status === "Mid" && (
+                {(status === "Moderate" || status === "Rejected") && (
                     <Button onClick={handleResubmit}>
                         <RefreshCw className="mr-2 h-4 w-4" />
                         Resubmit Idea
                     </Button>
                 )}
-                 {status === "Slay" && (
+                 {status === "Approved" && (
                     <Button onClick={() => setIsRequestConsultationOpen(true)}>
                         <MessageSquare className="mr-2 h-4 w-4" />
                         Request Consultation
