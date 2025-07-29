@@ -367,10 +367,10 @@ export default function IdeaReportPage() {
                 <div className="space-y-4">
                     <h3 className="text-xl font-semibold">{report.sections.detailedEvaluation.title}</h3>
                     <p className="text-sm text-muted-foreground">{report.sections.detailedEvaluation.description}</p>
-                    <Accordion type="multiple" className="w-full space-y-4 pt-4" value={openAccordionItems} onValueChange={setOpenAccordionItems}>
+                    <Accordion type="single" collapsible className="w-full pt-4">
                         {Object.entries(report.sections.detailedEvaluation.clusters).map(([clusterName, clusterData]) => (
-                            <AccordionItem value={clusterName} key={clusterName} className="border rounded-lg shadow-sm bg-card">
-                                <AccordionTrigger className="p-4 text-lg font-semibold text-primary hover:no-underline">
+                            <AccordionItem value={clusterName} key={clusterName}>
+                                <AccordionTrigger className="text-lg font-semibold text-primary hover:no-underline">
                                     {clusterName}
                                 </AccordionTrigger>
                                 <AccordionContent className="p-4 pt-0 space-y-4">
