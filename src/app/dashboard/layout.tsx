@@ -28,6 +28,7 @@ import { UniversalSearch } from '@/components/universal-search';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Breadcrumbs } from '@/components/breadcrumbs';
+import { UserNav } from '@/components/user-nav';
 
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
@@ -222,6 +223,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
               )}
               <Notifications role={role} />
               <ThemeToggle />
+              <UserNav />
             </div>
           </header>
           <div className="h-[2px] ml-4 w-[calc(100%-2rem)] bg-gradient-to-r from-primary via-purple-500 to-indigo-500 bg-[length:200%_auto] animate-background-pan" />
