@@ -34,16 +34,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useToast } from '@/hooks/use-toast';
 
 
-const SectionCard = ({ title, description, children, className }: { title: string, description?: string, children: React.ReactNode, className?: string }) => (
-    <Card className={className}>
-        <CardHeader>
-            <CardTitle>{title}</CardTitle>
-            {description && <CardDescription>{description}</CardDescription>}
-        </CardHeader>
-        <CardContent>{children}</CardContent>
-    </Card>
-);
-
 const getBackLink = (role: string | null) => {
     switch (role) {
         case ROLES.SUPER_ADMIN:
@@ -169,8 +159,7 @@ export default function IdeaReportPage() {
   }, [report]);
 
   const handleHighlightClick = (clusterName: string, paramName: string, subParamName: string) => {
-    const newOpenItems = [clusterName, paramName];
-    setOpenAccordionItems(newOpenItems);
+    setOpenAccordionItems([clusterName, paramName]);
 
     requestAnimationFrame(() => {
       const elementId = `sub-param-${subParamName.replace(/[^a-zA-Z0-9]/g, '-')}`;
@@ -295,129 +284,133 @@ export default function IdeaReportPage() {
               )}
             </CardHeader>
              {report ? (
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                   <SectionCard title="Executive Summary & Recommendation" className="lg:col-span-2">
-                      <p className="text-sm text-muted-foreground mb-4">{report.sections.executiveSummary.concept}</p>
-                      <p className="font-semibold">Recommendation:</p>
-                      <p className="text-muted-foreground text-sm">{report.recommendationText}</p>
-                  </SectionCard>
-                  
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Cluster Performance</CardTitle>
-                      <CardDescription>Average scores across the main evaluation clusters.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="h-[350px] flex items-center justify-center">
-                       <SpiderChart data={avgClusterScores} maxScore={100} size={400} />
-                    </CardContent>
-                  </Card>
-                  
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Highlights & Lowlights</CardTitle>
-                      <CardDescription>Top and bottom performing sub-parameters.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div>
-                        <h4 className="font-semibold text-green-600 flex items-center gap-2"><TrendingUp /> Top Performers</h4>
-                        <ul className="mt-2 space-y-1 text-sm">
-                          {topPerformers.map((item, i) => (
-                            <li key={i}>
-                               <button
-                                  onClick={() => handleHighlightClick(item.clusterName, item.paramName, item.name)}
-                                  className="flex justify-between w-full hover:bg-muted p-1 rounded-md transition-colors text-left"
-                               >
-                                  <span className="text-muted-foreground">{item.name}</span>
-                                  <span className="font-bold text-green-600">{item.score}</span>
-                               </button>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <Separator />
-                      <div>
-                        <h4 className="font-semibold text-red-600 flex items-center gap-2"><TrendingDown /> Areas for Improvement</h4>
-                         <ul className="mt-2 space-y-1 text-sm">
-                          {bottomPerformers.map((item, i) => (
-                             <li key={i}>
-                               <button
-                                   onClick={() => handleHighlightClick(item.clusterName, item.paramName, item.name)}
-                                   className="flex justify-between w-full hover:bg-muted p-1 rounded-md transition-colors text-left"
-                               >
-                                  <span className="text-muted-foreground">{item.name}</span>
-                                  <span className="font-bold text-red-600">{item.score}</span>
-                                </button>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </CardContent>
-                  </Card>
+              <CardContent className="space-y-8 pt-6">
+                
+                <div className="space-y-2">
+                    <h3 className="text-xl font-semibold">Executive Summary & Recommendation</h3>
+                    <p className="text-sm text-muted-foreground">{report.sections.executiveSummary.concept}</p>
+                    <p className="font-semibold">Recommendation:</p>
+                    <p className="text-muted-foreground text-sm">{report.recommendationText}</p>
                 </div>
                 
-                <SectionCard title={report.sections.detailedEvaluation.title} description={report.sections.detailedEvaluation.description}>
-                  <Accordion type="multiple" className="w-full space-y-4" value={openAccordionItems} onValueChange={setOpenAccordionItems}>
-                      {Object.entries(report.sections.detailedEvaluation.clusters).map(([clusterName, clusterData]) => (
-                          <AccordionItem value={clusterName} key={clusterName} className="border rounded-lg">
-                              <AccordionTrigger className="p-4 text-lg font-semibold text-primary hover:no-underline">
-                                  {clusterName}
-                              </AccordionTrigger>
-                              <AccordionContent className="p-4 pt-0">
-                                  <Accordion type="multiple" className="w-full space-y-2" value={openAccordionItems} onValueChange={setOpenAccordionItems}>
-                                  {Object.entries(clusterData).map(([paramName, paramData]) => {
-                                      if (typeof paramData !== 'object' || paramData === null) return null;
-                                      return (
-                                          <AccordionItem value={paramName} key={paramName} className="border rounded-md">
-                                              <AccordionTrigger className="px-4 py-2 font-medium hover:no-underline">
-                                                  {paramName}
-                                              </AccordionTrigger>
-                                              <AccordionContent className="px-4 pb-4">
-                                                  <div className="space-y-3">
-                                                  {Object.entries(paramData).map(([subParamName, subParamData]) => {
-                                                      if (typeof subParamData !== 'object' || subParamData === null || !('assignedScore' in subParamData)) return null;
-                                                      
-                                                      const score = subParamData.assignedScore;
-                                                      const whatWentWell = subParamData.whatWentWell;
-                                                      const whatCanBeImproved = subParamData.whatCanBeImproved;
-                                                      const id = `sub-param-${subParamName.replace(/[^a-zA-Z0-9]/g, '-')}`;
+                <Separator />
 
-                                                      return (
-                                                          <div key={subParamName} id={id} className="p-3 bg-muted/50 rounded-lg scroll-mt-20">
-                                                              <div className="flex justify-between items-center mb-2">
-                                                                  <h6 className="font-semibold">{subParamName}</h6>
-                                                                  <p className={`font-bold text-lg ${getScoreColor(score)}`}>{score}/100</p>
-                                                              </div>
-                                                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                                                  <div className="text-green-700 dark:text-green-400">
-                                                                      <div className="flex items-center gap-2 font-semibold mb-1">
-                                                                          <ThumbsUp className="h-4 w-4" />
-                                                                          <span>What Went Well</span>
-                                                                      </div>
-                                                                      <p className="pl-6 text-muted-foreground">{whatWentWell}</p>
-                                                                  </div>
-                                                                  <div className="text-orange-700 dark:text-orange-400">
-                                                                      <div className="flex items-center gap-2 font-semibold mb-1">
-                                                                          <Lightbulb className="h-4 w-4" />
-                                                                          <span>What Can Be Improved</span>
-                                                                      </div>
-                                                                      <p className="pl-6 text-muted-foreground">{whatCanBeImproved}</p>
-                                                                  </div>
-                                                              </div>
-                                                          </div>
-                                                      )
-                                                  })}
-                                                  </div>
-                                              </AccordionContent>
-                                          </AccordionItem>
-                                      )
-                                  })}
-                                  </Accordion>
-                              </AccordionContent>
-                          </AccordionItem>
-                      ))}
-                  </Accordion>
-                </SectionCard>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div className="space-y-4">
+                      <h3 className="text-xl font-semibold">Cluster Performance</h3>
+                      <p className="text-sm text-muted-foreground">Average scores across the main evaluation clusters.</p>
+                      <div className="h-[350px] flex items-center justify-center">
+                         <SpiderChart data={avgClusterScores} maxScore={100} size={400} />
+                      </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                      <h3 className="text-xl font-semibold">Highlights & Lowlights</h3>
+                      <p className="text-sm text-muted-foreground">Top and bottom performing sub-parameters.</p>
+                      <div className="mt-4 space-y-4">
+                        <div>
+                          <h4 className="font-semibold text-green-600 flex items-center gap-2"><TrendingUp /> Top Performers</h4>
+                          <ul className="mt-2 space-y-1 text-sm">
+                            {topPerformers.map((item, i) => (
+                              <li key={i}>
+                                 <button
+                                    onClick={() => handleHighlightClick(item.clusterName, item.paramName, item.name)}
+                                    className="flex justify-between w-full hover:bg-muted p-1 rounded-md transition-colors text-left"
+                                 >
+                                    <span className="text-muted-foreground">{item.name}</span>
+                                    <span className="font-bold text-green-600">{item.score}</span>
+                                 </button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <Separator />
+                        <div>
+                          <h4 className="font-semibold text-red-600 flex items-center gap-2"><TrendingDown /> Areas for Improvement</h4>
+                           <ul className="mt-2 space-y-1 text-sm">
+                            {bottomPerformers.map((item, i) => (
+                               <li key={i}>
+                                 <button
+                                     onClick={() => handleHighlightClick(item.clusterName, item.paramName, item.name)}
+                                     className="flex justify-between w-full hover:bg-muted p-1 rounded-md transition-colors text-left"
+                                 >
+                                    <span className="text-muted-foreground">{item.name}</span>
+                                    <span className="font-bold text-red-600">{item.score}</span>
+                                  </button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+                
+                <Separator />
+                
+                <div className="space-y-2">
+                    <h3 className="text-xl font-semibold">{report.sections.detailedEvaluation.title}</h3>
+                    <p className="text-sm text-muted-foreground">{report.sections.detailedEvaluation.description}</p>
+                    <Accordion type="multiple" className="w-full space-y-4 pt-4" value={openAccordionItems} onValueChange={setOpenAccordionItems}>
+                        {Object.entries(report.sections.detailedEvaluation.clusters).map(([clusterName, clusterData]) => (
+                            <AccordionItem value={clusterName} key={clusterName} className="border rounded-lg">
+                                <AccordionTrigger className="p-4 text-lg font-semibold text-primary hover:no-underline">
+                                    {clusterName}
+                                </AccordionTrigger>
+                                <AccordionContent className="p-4 pt-0">
+                                    <Accordion type="multiple" className="w-full space-y-2" value={openAccordionItems} onValueChange={setOpenAccordionItems}>
+                                    {Object.entries(clusterData).map(([paramName, paramData]) => {
+                                        if (typeof paramData !== 'object' || paramData === null) return null;
+                                        return (
+                                            <AccordionItem value={paramName} key={paramName} className="border rounded-md">
+                                                <AccordionTrigger className="px-4 py-2 font-medium hover:no-underline">
+                                                    {paramName}
+                                                </AccordionTrigger>
+                                                <AccordionContent className="px-4 pb-4">
+                                                    <div className="space-y-3">
+                                                    {Object.entries(paramData).map(([subParamName, subParamData]) => {
+                                                        if (typeof subParamData !== 'object' || subParamData === null || !('assignedScore' in subParamData)) return null;
+                                                        
+                                                        const score = subParamData.assignedScore;
+                                                        const whatWentWell = subParamData.whatWentWell;
+                                                        const whatCanBeImproved = subParamData.whatCanBeImproved;
+                                                        const id = `sub-param-${subParamName.replace(/[^a-zA-Z0-9]/g, '-')}`;
+
+                                                        return (
+                                                            <div key={subParamName} id={id} className="p-3 bg-muted/50 rounded-lg scroll-mt-20">
+                                                                <div className="flex justify-between items-center mb-2">
+                                                                    <h6 className="font-semibold">{subParamName}</h6>
+                                                                    <p className={`font-bold text-lg ${getScoreColor(score)}`}>{score}/100</p>
+                                                                </div>
+                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                                                    <div className="text-green-700 dark:text-green-400">
+                                                                        <div className="flex items-center gap-2 font-semibold mb-1">
+                                                                            <ThumbsUp className="h-4 w-4" />
+                                                                            <span>What Went Well</span>
+                                                                        </div>
+                                                                        <p className="pl-6 text-muted-foreground">{whatWentWell}</p>
+                                                                    </div>
+                                                                    <div className="text-orange-700 dark:text-orange-400">
+                                                                        <div className="flex items-center gap-2 font-semibold mb-1">
+                                                                            <Lightbulb className="h-4 w-4" />
+                                                                            <span>What Can Be Improved</span>
+                                                                        </div>
+                                                                        <p className="pl-6 text-muted-foreground">{whatCanBeImproved}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                    </div>
+                                                </AccordionContent>
+                                            </AccordionItem>
+                                        )
+                                    })}
+                                    </Accordion>
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                </div>
               </CardContent>
             ) : (
                  <CardContent>
