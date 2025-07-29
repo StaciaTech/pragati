@@ -17,7 +17,7 @@ import { Separator } from '@/components/ui/separator';
 import { MOCK_IDEAS, STATUS_COLORS, MOCK_CONSULTATIONS } from '@/lib/mock-data';
 import type { ValidationReport } from '@/ai/schemas';
 import { ROLES } from '@/lib/constants';
-import { ArrowLeft, Download, ThumbsUp, Lightbulb, RefreshCw, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Download, ThumbsUp, Lightbulb, RefreshCw, MessageSquare, TrendingUp, TrendingDown, Star } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useRef } from 'react';
@@ -29,6 +29,8 @@ import {
 } from "@/components/ui/accordion"
 import { cn } from '@/lib/utils';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { SpiderChart } from '@/components/spider-chart';
+
 
 const SectionCard = ({ title, description, children, className }: { title: string, description?: string, children: React.ReactNode, className?: string }) => (
     <Card className={className}>
@@ -121,6 +123,38 @@ export default function IdeaReportPage() {
   const handleRequestConsultation = () => {
     router.push(`/dashboard/consultations?role=${ROLES.INNOVATOR}&ideaId=${ideaId}`);
   }
+  
+  const { topPerformers, bottomPerformers, avgClusterScores } = React.useMemo(() => {
+    if (!report) return { topPerformers: [], bottomPerformers: [], avgClusterScores: {} };
+
+    const allSubParams: { name: string; score: number }[] = [];
+    let clusterScores: Record<string, number[]> = {};
+
+    Object.entries(report.sections.detailedEvaluation.clusters).forEach(([clusterName, clusterData]) => {
+      clusterScores[clusterName] = [];
+      Object.values(clusterData).forEach((paramData: any) => {
+        Object.entries(paramData).forEach(([subParamName, subParamDetails]: [string, any]) => {
+          if (subParamDetails.assignedScore) {
+            allSubParams.push({ name: subParamName, score: subParamDetails.assignedScore });
+            clusterScores[clusterName].push(subParamDetails.assignedScore);
+          }
+        });
+      });
+    });
+
+    const sortedSubParams = allSubParams.sort((a, b) => b.score - a.score);
+    const avgClusterScores = Object.entries(clusterScores).reduce((acc, [key, scores]) => {
+        const avg = scores.reduce((sum, s) => sum + s, 0) / (scores.length || 1);
+        acc[key] = avg;
+        return acc;
+    }, {} as Record<string, number>);
+
+    return {
+      topPerformers: sortedSubParams.slice(0, 3),
+      bottomPerformers: sortedSubParams.slice(-3).reverse(),
+      avgClusterScores
+    };
+  }, [report]);
 
   if (!idea) {
     return (
@@ -190,10 +224,10 @@ export default function IdeaReportPage() {
 
         <div ref={reportRef} className="p-4 bg-background">
           <Card>
-            <CardHeader className="flex flex-row items-start justify-between">
+            <CardHeader className="flex flex-col md:flex-row items-start justify-between gap-6">
               <div>
-                <CardTitle className="text-2xl">Idea Report: {idea.title}</CardTitle>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2">
+                <CardTitle className="text-2xl">{idea.title}</CardTitle>
+                <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground pt-2">
                   <span>ID: {idea.id}</span>
                   <span>Version: {idea.version}</span>
                   <span>Submitted: {idea.dateSubmitted}</span>
@@ -201,7 +235,7 @@ export default function IdeaReportPage() {
                 </div>
               </div>
               {report && (
-                <div className="flex flex-col items-center gap-2 text-center">
+                <div className="flex flex-col items-center gap-2 text-center w-32">
                     <div className="relative h-24 w-24">
                         <svg className="h-full w-full" viewBox="0 0 50 50">
                             <circle cx="25" cy="25" r="20" className="stroke-muted" strokeWidth="4" fill="transparent" />
@@ -226,96 +260,127 @@ export default function IdeaReportPage() {
                 </div>
               )}
             </CardHeader>
-            <CardContent>
-              {report ? (
-                <div className="space-y-8">
-                  <SectionCard title="Executive Summary" description={report.sections.executiveSummary.concept}>
-                      <div className="mt-4">
-                        <p className="font-semibold">Recommendation:</p>
-                        <p className="text-muted-foreground">{report.recommendationText}</p>
-                      </div>
+             {report ? (
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                   <SectionCard title="Executive Summary & Recommendation" className="lg:col-span-2">
+                      <p className="text-sm text-muted-foreground mb-4">{report.sections.executiveSummary.concept}</p>
+                      <p className="font-semibold">Recommendation:</p>
+                      <p className="text-muted-foreground text-sm">{report.recommendationText}</p>
                   </SectionCard>
-
-                  <SectionCard title={report.sections.detailedEvaluation.title} description={report.sections.detailedEvaluation.description}>
-                    <Accordion type="multiple" className="w-full space-y-4">
-                        {Object.entries(report.sections.detailedEvaluation.clusters).map(([clusterName, clusterData]) => (
-                            <AccordionItem value={clusterName} key={clusterName} className="border rounded-lg">
-                                <AccordionTrigger className="p-4 text-lg font-semibold text-primary hover:no-underline">
-                                    {clusterName}
-                                </AccordionTrigger>
-                                <AccordionContent className="p-4 pt-0">
-                                    <Accordion type="multiple" className="w-full space-y-2">
-                                    {Object.entries(clusterData).map(([paramName, paramData]) => {
-                                        if (typeof paramData !== 'object' || paramData === null) return null;
-                                        return (
-                                            <AccordionItem value={paramName} key={paramName} className="border rounded-md">
-                                                <AccordionTrigger className="px-4 py-2 font-medium hover:no-underline">
-                                                    {paramName}
-                                                </AccordionTrigger>
-                                                <AccordionContent className="px-4 pb-4">
-                                                    <div className="space-y-3">
-                                                    {Object.entries(paramData).map(([subParamName, subParamData]) => {
-                                                        if (typeof subParamData !== 'object' || subParamData === null || !('assignedScore' in subParamData)) return null;
-                                                        
-                                                        const score = subParamData.assignedScore;
-                                                        const whatWentWell = subParamData.whatWentWell;
-                                                        const whatCanBeImproved = subParamData.whatCanBeImproved;
-
-                                                        return (
-                                                            <div key={subParamName} className="p-3 bg-muted/50 rounded-lg">
-                                                                <div className="flex justify-between items-center mb-2">
-                                                                    <h6 className="font-semibold">{subParamName}</h6>
-                                                                    <p className={`font-bold text-lg ${getScoreColor(score)}`}>{score}/100</p>
-                                                                </div>
-                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                                                    <div className="text-green-700 dark:text-green-400">
-                                                                        <div className="flex items-center gap-2 font-semibold mb-1">
-                                                                            <ThumbsUp className="h-4 w-4" />
-                                                                            <span>What Went Well</span>
-                                                                        </div>
-                                                                        <p className="pl-6 text-muted-foreground">{whatWentWell}</p>
-                                                                    </div>
-                                                                    <div className="text-orange-700 dark:text-orange-400">
-                                                                        <div className="flex items-center gap-2 font-semibold mb-1">
-                                                                            <Lightbulb className="h-4 w-4" />
-                                                                            <span>What Can Be Improved</span>
-                                                                        </div>
-                                                                        <p className="pl-6 text-muted-foreground">{whatCanBeImproved}</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        )
-                                                    })}
-                                                    </div>
-                                                </AccordionContent>
-                                            </AccordionItem>
-                                        )
-                                    })}
-                                    </Accordion>
-                                </AccordionContent>
-                            </AccordionItem>
-                        ))}
-                    </Accordion>
-                  </SectionCard>
-
-                   <SectionCard title={report.sections.conclusion.title}>
-                        <p className="text-sm text-muted-foreground">{report.sections.conclusion.content}</p>
-                   </SectionCard>
-
-                   <SectionCard title={report.sections.recommendations.title} description={report.sections.recommendations.description}>
-                        <ul className="list-disc list-inside space-y-2">
-                            {report.sections.recommendations.items.map((item, i) => (
-                                <li key={i} className="text-sm text-muted-foreground">{item}</li>
-                            ))}
+                  
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Cluster Performance</CardTitle>
+                      <CardDescription>Average scores across the main evaluation clusters.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="h-[350px] flex items-center justify-center">
+                       <SpiderChart data={avgClusterScores} maxScore={100} size={400} />
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Highlights & Lowlights</CardTitle>
+                      <CardDescription>Top and bottom performing sub-parameters.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <h4 className="font-semibold text-green-600 flex items-center gap-2"><TrendingUp /> Top Performers</h4>
+                        <ul className="mt-2 space-y-1 text-sm">
+                          {topPerformers.map((item, i) => (
+                            <li key={i} className="flex justify-between">
+                              <span className="text-muted-foreground">{item.name}</span>
+                              <span className="font-bold text-green-600">{item.score}</span>
+                            </li>
+                          ))}
                         </ul>
-                   </SectionCard>
+                      </div>
+                      <Separator />
+                      <div>
+                        <h4 className="font-semibold text-red-600 flex items-center gap-2"><TrendingDown /> Areas for Improvement</h4>
+                         <ul className="mt-2 space-y-1 text-sm">
+                          {bottomPerformers.map((item, i) => (
+                            <li key={i} className="flex justify-between">
+                              <span className="text-muted-foreground">{item.name}</span>
+                              <span className="font-bold text-red-600">{item.score}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
-              ) : (
-                 <div className="text-center py-20">
-                    <p className="text-muted-foreground">Report is being generated or is not available. Status: {idea.status}</p>
-                 </div>
-              )}
-            </CardContent>
+                
+                <SectionCard title={report.sections.detailedEvaluation.title} description={report.sections.detailedEvaluation.description}>
+                  <Accordion type="multiple" className="w-full space-y-4">
+                      {Object.entries(report.sections.detailedEvaluation.clusters).map(([clusterName, clusterData]) => (
+                          <AccordionItem value={clusterName} key={clusterName} className="border rounded-lg">
+                              <AccordionTrigger className="p-4 text-lg font-semibold text-primary hover:no-underline">
+                                  {clusterName}
+                              </AccordionTrigger>
+                              <AccordionContent className="p-4 pt-0">
+                                  <Accordion type="multiple" className="w-full space-y-2">
+                                  {Object.entries(clusterData).map(([paramName, paramData]) => {
+                                      if (typeof paramData !== 'object' || paramData === null) return null;
+                                      return (
+                                          <AccordionItem value={paramName} key={paramName} className="border rounded-md">
+                                              <AccordionTrigger className="px-4 py-2 font-medium hover:no-underline">
+                                                  {paramName}
+                                              </AccordionTrigger>
+                                              <AccordionContent className="px-4 pb-4">
+                                                  <div className="space-y-3">
+                                                  {Object.entries(paramData).map(([subParamName, subParamData]) => {
+                                                      if (typeof subParamData !== 'object' || subParamData === null || !('assignedScore' in subParamData)) return null;
+                                                      
+                                                      const score = subParamData.assignedScore;
+                                                      const whatWentWell = subParamData.whatWentWell;
+                                                      const whatCanBeImproved = subParamData.whatCanBeImproved;
+
+                                                      return (
+                                                          <div key={subParamName} className="p-3 bg-muted/50 rounded-lg">
+                                                              <div className="flex justify-between items-center mb-2">
+                                                                  <h6 className="font-semibold">{subParamName}</h6>
+                                                                  <p className={`font-bold text-lg ${getScoreColor(score)}`}>{score}/100</p>
+                                                              </div>
+                                                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                                                  <div className="text-green-700 dark:text-green-400">
+                                                                      <div className="flex items-center gap-2 font-semibold mb-1">
+                                                                          <ThumbsUp className="h-4 w-4" />
+                                                                          <span>What Went Well</span>
+                                                                      </div>
+                                                                      <p className="pl-6 text-muted-foreground">{whatWentWell}</p>
+                                                                  </div>
+                                                                  <div className="text-orange-700 dark:text-orange-400">
+                                                                      <div className="flex items-center gap-2 font-semibold mb-1">
+                                                                          <Lightbulb className="h-4 w-4" />
+                                                                          <span>What Can Be Improved</span>
+                                                                      </div>
+                                                                      <p className="pl-6 text-muted-foreground">{whatCanBeImproved}</p>
+                                                                  </div>
+                                                              </div>
+                                                          </div>
+                                                      )
+                                                  })}
+                                                  </div>
+                                              </AccordionContent>
+                                          </AccordionItem>
+                                      )
+                                  })}
+                                  </Accordion>
+                              </AccordionContent>
+                          </AccordionItem>
+                      ))}
+                  </Accordion>
+                </SectionCard>
+              </CardContent>
+            ) : (
+                 <CardContent>
+                    <div className="text-center py-20">
+                        <p className="text-muted-foreground">Report is being generated or is not available. Status: {idea.status}</p>
+                    </div>
+                </CardContent>
+            )}
           </Card>
           
           {pastConsultations.length > 0 && (
@@ -365,3 +430,4 @@ export default function IdeaReportPage() {
     </div>
   );
 }
+
