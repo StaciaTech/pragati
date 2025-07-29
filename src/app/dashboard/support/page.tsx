@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -45,25 +46,7 @@ export default function SupportPage() {
   return (
     <>
     <div className="space-y-6">
-       <Card className="w-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg border-0 relative overflow-hidden">
-        <div className="absolute -top-1/4 -left-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-br from-[#FF00CC] to-[#333399] opacity-30 blur-3xl filter" />
-        <div className="absolute -bottom-1/4 -right-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-[#F472B6] to-[#06B6D4] opacity-20 blur-3xl filter" />
-        <div className="relative z-10 p-6">
-          <div className="flex flex-col items-center text-center">
-            <LifeBuoy className="w-16 h-16 text-white mb-4" />
-            <h1 className="text-3xl font-bold text-white">How can we help you?</h1>
-            <p className="mt-2 text-primary-foreground/80 max-w-xl">
-              Have a question? Find answers in our FAQs, guides, or chat with our AI assistant.
-            </p>
-             <div className="relative mt-6 w-full max-w-lg">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input placeholder="Search for answers..." className="pl-12 h-12 rounded-full bg-primary-foreground/20 border-0 placeholder:text-primary-foreground/60" />
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
             <CardTitle>PPT Upload Guidelines</CardTitle>

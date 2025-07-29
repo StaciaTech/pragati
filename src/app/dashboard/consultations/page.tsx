@@ -42,7 +42,7 @@ import { Badge } from '@/components/ui/badge';
 import { MOCK_CONSULTATIONS, STATUS_COLORS, MOCK_IDEAS, MOCK_TTCS } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
-import { CalendarIcon, MessageSquare, CheckCircle, Clock, PlusCircle, MoreHorizontal } from 'lucide-react';
+import { CalendarIcon, MessageSquare, CheckCircle, Clock, PlusCircle, MoreHorizontal, Expand } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
@@ -55,45 +55,47 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 type Consultation = (typeof MOCK_CONSULTATIONS)[0];
 
 const ConsultationTable = ({ consultations, onRowClick, onActionSelect }: { consultations: Consultation[], onRowClick: (c: Consultation) => void, onActionSelect: (action: 'reschedule' | 'cancel', c: Consultation) => void }) => (
-    <Table>
-        <TableHeader>
-            <TableRow>
-            <TableHead>Idea</TableHead>
-            <TableHead>Date & Time</TableHead>
-            <TableHead>Mentor</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-        </TableHeader>
-        <TableBody>
-            {consultations.map((consultation) => (
-            <TableRow key={consultation.id} className="cursor-pointer" onClick={() => onRowClick(consultation)}>
-                <TableCell className="font-medium">
-                {consultation.title}
-                </TableCell>
-                <TableCell>{consultation.date} at {consultation.time}</TableCell>
-                <TableCell>{consultation.mentor}</TableCell>
-                <TableCell>
-                <Badge className={STATUS_COLORS[consultation.status]}>{consultation.status}</Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem onSelect={() => onRowClick(consultation)}>View Details</DropdownMenuItem>
-                            {consultation.status === 'Scheduled' && <DropdownMenuItem onSelect={() => onActionSelect('reschedule', consultation)}>Reschedule</DropdownMenuItem>}
-                            {consultation.status === 'Scheduled' && <DropdownMenuItem className="text-red-500" onSelect={() => onActionSelect('cancel', consultation)}>Cancel</DropdownMenuItem>}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </TableCell>
-            </TableRow>
-            ))}
-        </TableBody>
-    </Table>
+    <div className="overflow-x-auto">
+        <Table>
+            <TableHeader>
+                <TableRow>
+                <TableHead>Idea</TableHead>
+                <TableHead>Date & Time</TableHead>
+                <TableHead>Mentor</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {consultations.map((consultation) => (
+                <TableRow key={consultation.id} className="cursor-pointer" onClick={() => onRowClick(consultation)}>
+                    <TableCell className="font-medium">
+                    {consultation.title}
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap">{consultation.date} at {consultation.time}</TableCell>
+                    <TableCell>{consultation.mentor}</TableCell>
+                    <TableCell>
+                    <Badge className={cn(STATUS_COLORS[consultation.status])}>{consultation.status}</Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
+                                    <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem onSelect={() => onRowClick(consultation)}>View Details</DropdownMenuItem>
+                                {consultation.status === 'Scheduled' && <DropdownMenuItem onSelect={() => onActionSelect('reschedule', consultation)}>Reschedule</DropdownMenuItem>}
+                                {consultation.status === 'Scheduled' && <DropdownMenuItem className="text-red-500" onSelect={() => onActionSelect('cancel', consultation)}>Cancel</DropdownMenuItem>}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </TableCell>
+                </TableRow>
+                ))}
+            </TableBody>
+        </Table>
+    </div>
 );
 
 
@@ -103,10 +105,14 @@ export default function ConsultationsPage() {
   const [isRequestModalOpen, setIsRequestModalOpen] = React.useState(false);
   const [isRescheduleModalOpen, setIsRescheduleModalOpen] = React.useState(false);
   const [selectedConsultation, setSelectedConsultation] = React.useState<Consultation | null>(null);
-  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
   const { toast } = useToast();
   
   const myIdeas = MOCK_IDEAS.filter(idea => idea.innovatorName === 'Jane Doe');
+  
+  const consultationDates = React.useMemo(() => {
+    return MOCK_CONSULTATIONS.map(c => new Date(c.date));
+  }, []);
 
   const handleViewDetails = (consultation: Consultation) => {
     setSelectedConsultation(consultation);
@@ -142,9 +148,6 @@ export default function ConsultationsPage() {
     setSelectedConsultation(null);
   };
 
-  const totalConsultations = consultations.length;
-  const completedConsultations = consultations.filter(c => c.status === 'Completed').length;
-  const scheduledConsultations = consultations.filter(c => c.status === 'Scheduled').length;
   const upcomingConsultations = consultations.filter(c => c.status === 'Scheduled' || c.status === 'Pending');
   const pastConsultations = consultations.filter(c => c.status === 'Completed' || c.status === 'Cancelled');
 
@@ -154,7 +157,7 @@ export default function ConsultationsPage() {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
             <div>
-                <h2 className="text-2xl font-bold">Consultations</h2>
+                <h1 className="text-3xl font-bold">Consultations</h1>
                 <p className="text-muted-foreground">Manage and request consultations with mentors.</p>
             </div>
              <Button onClick={() => setIsRequestModalOpen(true)}>
@@ -162,73 +165,71 @@ export default function ConsultationsPage() {
                 Request Consultation
             </Button>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Total Consultations</CardTitle>
-                    <MessageSquare className="w-4 h-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">{totalConsultations}</div>
-                </CardContent>
-            </Card>
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Completed</CardTitle>
-                    <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">{completedConsultations}</div>
-                </CardContent>
-            </Card>
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Scheduled</CardTitle>
-                    <Clock className="w-4 h-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">{scheduledConsultations}</div>
-                </CardContent>
-            </Card>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+                 <Card>
+                    <Tabs defaultValue="upcoming">
+                        <CardHeader>
+                             <div className="flex items-center justify-between">
+                                 <div>
+                                    <CardTitle>My Consultations</CardTitle>
+                                    <CardDescription>A list of your scheduled and past consultations.</CardDescription>
+                                 </div>
+                                <TabsList>
+                                    <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+                                    <TabsTrigger value="past">Past</TabsTrigger>
+                                </TabsList>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <TabsContent value="upcoming">
+                                {upcomingConsultations.length > 0 ? (
+                                   <ConsultationTable consultations={upcomingConsultations} onRowClick={handleViewDetails} onActionSelect={handleAction} />
+                                ) : (
+                                     <div className="text-center py-10">
+                                        <p className="text-muted-foreground">You have no upcoming consultations.</p>
+                                    </div>
+                                )}
+                            </TabsContent>
+                             <TabsContent value="past">
+                                 {pastConsultations.length > 0 ? (
+                                   <ConsultationTable consultations={pastConsultations} onRowClick={handleViewDetails} onActionSelect={handleAction} />
+                                 ) : (
+                                     <div className="text-center py-10">
+                                        <p className="text-muted-foreground">You have no past consultations.</p>
+                                    </div>
+                                 )}
+                            </TabsContent>
+                        </CardContent>
+                    </Tabs>
+                </Card>
+            </div>
+            
+            <div className="lg:col-span-1 space-y-6">
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <CardTitle>Calendar</CardTitle>
+                        <Button variant="ghost" size="icon" onClick={() => toast({ title: 'Feature in Development' })}>
+                            <Expand className="h-4 w-4" />
+                        </Button>
+                    </CardHeader>
+                    <CardContent className="flex justify-center">
+                        <Calendar
+                            mode="single"
+                            selected={selectedDate}
+                            onSelect={setSelectedDate}
+                            modifiers={{ scheduled: consultationDates }}
+                            modifiersClassNames={{
+                                scheduled: 'bg-primary/20 text-primary rounded-full',
+                            }}
+                            className="p-0"
+                        />
+                    </CardContent>
+                </Card>
+            </div>
         </div>
 
-        <Card>
-            <Tabs defaultValue="upcoming">
-                <CardHeader>
-                     <div className="flex items-center justify-between">
-                         <div>
-                            <CardTitle>My Consultations</CardTitle>
-                            <CardDescription>A list of your scheduled and past consultations.</CardDescription>
-                         </div>
-                        <TabsList>
-                            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-                            <TabsTrigger value="past">Past</TabsTrigger>
-                        </TabsList>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <TabsContent value="upcoming">
-                        {upcomingConsultations.length > 0 ? (
-                           <ConsultationTable consultations={upcomingConsultations} onRowClick={handleViewDetails} onActionSelect={handleAction} />
-                        ) : (
-                             <div className="text-center py-10">
-                                <p className="text-muted-foreground">You have no upcoming consultations.</p>
-                            </div>
-                        )}
-                    </TabsContent>
-                     <TabsContent value="past">
-                         {pastConsultations.length > 0 ? (
-                           <ConsultationTable consultations={pastConsultations} onRowClick={handleViewDetails} onActionSelect={handleAction} />
-                         ) : (
-                             <div className="text-center py-10">
-                                <p className="text-muted-foreground">You have no past consultations.</p>
-                            </div>
-                         )}
-                    </TabsContent>
-                </CardContent>
-            </Tabs>
-        </Card>
       </div>
       
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -388,4 +389,3 @@ export default function ConsultationsPage() {
     </>
   );
 }
-

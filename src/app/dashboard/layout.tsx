@@ -19,14 +19,15 @@ import {
 import { Logo } from '@/components/icons';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { NAV_LINKS, ROLES, type Role } from '@/lib/constants';
-import { MOCK_INNOVATOR_USER, MOCK_TTCS, MOCK_COLLEGES } from '@/lib/mock-data';
-import { CreditCard, LogOut } from 'lucide-react';
+import { MOCK_INNOVATOR_USER, MOCK_TTCS, MOCK_COLLEGES, MOCK_CONSULTATIONS } from '@/lib/mock-data';
+import { CreditCard, LogOut, CalendarDays } from 'lucide-react';
 import { Notifications } from '@/components/notifications';
 import { Suspense } from 'react';
 import { HydrationSafeContent } from '@/components/hydration-safe-content';
 import { UniversalSearch } from '@/components/universal-search';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Breadcrumbs } from '@/components/breadcrumbs';
 
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
@@ -59,6 +60,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   };
 
   const credits = getCredits();
+  const upcomingConsultations = MOCK_CONSULTATIONS.filter(c => c.status === 'Scheduled').length;
   
   return (
     <SidebarProvider defaultOpen={false}>
@@ -183,14 +185,32 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             <div className="flex-1" />
             <div className="flex items-center gap-2 sm:gap-4">
               <UniversalSearch role={role} />
-               {(role === ROLES.INNOVATOR || role === ROLES.COORDINATOR) && credits !== null && (
+               {(role === ROLES.INNOVATOR || role === ROLES.COORDINATOR) && (
                  <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button asChild variant="ghost" size="icon" className="relative">
+                                <Link href={`/dashboard/consultations?role=${role}`}>
+                                    <CalendarDays className="h-5 w-5" />
+                                     {upcomingConsultations > 0 && (
+                                        <span className="absolute top-1 right-1 flex h-2.5 w-2.5">
+                                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                          <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                                        </span>
+                                      )}
+                                </Link>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>View Consultations</p>
+                        </TooltipContent>
+                    </Tooltip>
                     <Tooltip>
                         <TooltipTrigger asChild>
                              <Button className="text-white bg-gradient-to-r from-purple-500 to-indigo-500" asChild>
                                 <Link href={getCreditRequestLink()}>
                                     <CreditCard className="size-5" />
-                                    <span className="ml-2 hidden sm:inline">{credits} Credits</span>
+                                    {credits !== null && <span className="ml-2 hidden sm:inline">{credits} Credits</span>}
                                 </Link>
                             </Button>
                         </TooltipTrigger>
@@ -205,7 +225,10 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             </div>
           </header>
           <div className="h-[2px] ml-4 w-[calc(100%-2rem)] bg-gradient-to-r from-primary via-purple-500 to-indigo-500 bg-[length:200%_auto] animate-background-pan" />
-          <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">{children}</main>
+          <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
+            <Breadcrumbs />
+            <div className="mt-4">{children}</div>
+          </main>
         </SidebarInset>
     </SidebarProvider>
   );

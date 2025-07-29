@@ -1,4 +1,5 @@
 
+
 'use client';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -7,6 +8,7 @@ import { MOCK_TTCS, MOCK_IDEAS, MOCK_INNOVATORS, MOCK_COLLEGES, STATUS_COLORS } 
 import { Lightbulb, ListChecks, Users, MessageSquare } from "lucide-react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { cn } from "@/lib/utils";
 
 
 export default function CoordinatorDashboardPage() {
@@ -48,17 +50,6 @@ export default function CoordinatorDashboardPage() {
 
     return (
         <div className="flex flex-col gap-6">
-             <Card className="w-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg border-0 relative overflow-hidden">
-                <div className="absolute -top-1/4 -left-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-br from-[#FF00CC] to-[#333399] opacity-30 blur-3xl filter" />
-                <div className="absolute -bottom-1/4 -right-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-[#F472B6] to-[#06B6D4] opacity-20 blur-3xl filter" />
-                <div className="relative z-10">
-                    <CardHeader>
-                        <CardTitle className="text-3xl text-white">Welcome, {userTTC.name}!</CardTitle>
-                        <CardDescription className="text-primary-foreground/80">Here's an overview of your college's innovation activity.</CardDescription>
-                    </CardHeader>
-                </div>
-            </Card>
-
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -173,7 +164,7 @@ export default function CoordinatorDashboardPage() {
                                     <TableCell>{idea.title}</TableCell>
                                     <TableCell>{idea.innovatorName}</TableCell>
                                     <TableCell>{idea.consultationDate} at {idea.consultationTime}</TableCell>
-                                    <TableCell><Badge className={STATUS_COLORS[idea.consultationStatus || '']}>{idea.consultationStatus}</Badge></TableCell>
+                                    <TableCell><Badge className={cn(STATUS_COLORS[idea.consultationStatus || ''])}>{idea.consultationStatus}</Badge></TableCell>
                                 </TableRow>
                             )) : (
                                 <TableRow>
