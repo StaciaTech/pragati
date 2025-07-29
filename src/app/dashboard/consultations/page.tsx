@@ -222,7 +222,7 @@ export default function ConsultationsPage() {
                             onSelect={setSelectedDate}
                             modifiers={{ scheduled: consultationDates }}
                             modifiersClassNames={{
-                                scheduled: 'bg-primary/20 text-primary rounded-full',
+                                scheduled: 'has-dot',
                             }}
                             className="p-0"
                         />
@@ -403,7 +403,7 @@ export default function ConsultationsPage() {
                 onSelect={setSelectedDate}
                 modifiers={{ scheduled: consultationDates }}
                 modifiersClassNames={{
-                    scheduled: 'bg-primary/20 text-primary rounded-full font-bold',
+                    scheduled: 'has-dot',
                 }}
                 className="p-0"
                 numberOfMonths={1}
