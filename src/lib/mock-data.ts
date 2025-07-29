@@ -324,7 +324,7 @@ const MOCK_SAMPLE_REPORT: ValidationReport = {
       ]
     },
     detailedEvaluation: {
-      title: '4.5 Detailed Viability Assessment of AI-Powered Smart Farming',
+      title: 'Detailed Viability Assessment',
       description: 'Here is the granular breakdown of the scores for each sub-parameter.',
       clusters: {
         "Core Idea & Innovation": {
