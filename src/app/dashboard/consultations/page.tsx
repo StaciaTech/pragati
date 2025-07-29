@@ -104,6 +104,7 @@ export default function ConsultationsPage() {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [isRequestModalOpen, setIsRequestModalOpen] = React.useState(false);
   const [isRescheduleModalOpen, setIsRescheduleModalOpen] = React.useState(false);
+  const [isCalendarModalOpen, setIsCalendarModalOpen] = React.useState(false);
   const [selectedConsultation, setSelectedConsultation] = React.useState<Consultation | null>(null);
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
   const { toast } = useToast();
@@ -206,11 +207,11 @@ export default function ConsultationsPage() {
                 </Card>
             </div>
             
-            <div className="lg:col-span-1 space-y-6">
+            <div className="lg:col-span-1 space-y-6 sticky top-6">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between">
                         <CardTitle>Calendar</CardTitle>
-                        <Button variant="ghost" size="icon" onClick={() => toast({ title: 'Feature in Development' })}>
+                        <Button variant="ghost" size="icon" onClick={() => setIsCalendarModalOpen(true)}>
                             <Expand className="h-4 w-4" />
                         </Button>
                     </CardHeader>
@@ -384,6 +385,35 @@ export default function ConsultationsPage() {
                     <Button type="submit">Send Reschedule Request</Button>
                 </DialogFooter>
             </form>
+        </DialogContent>
+      </Dialog>
+
+       <Dialog open={isCalendarModalOpen} onOpenChange={setIsCalendarModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>My Calendar</DialogTitle>
+            <DialogDescription>
+              A full view of your upcoming consultations.
+            </DialogDescription>
+          </DialogHeader>
+           <div className="flex justify-center p-4">
+               <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                modifiers={{ scheduled: consultationDates }}
+                modifiersClassNames={{
+                    scheduled: 'bg-primary/20 text-primary rounded-full font-bold',
+                }}
+                className="p-0"
+                numberOfMonths={1}
+            />
+           </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Close</Button>
+            </DialogClose>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
