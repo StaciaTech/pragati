@@ -76,9 +76,20 @@ export default function IdeaReportPage() {
   const [isRequestConsultationOpen, setIsRequestConsultationOpen] = React.useState(false);
   const [isShareDialogOpen, setIsShareDialogOpen] = React.useState(false);
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
-
+  
   const idea = MOCK_IDEAS.find((i) => i.id === ideaId);
   const report = idea?.report as ValidationReport | null;
+
+  const [openAccordionItems, setOpenAccordionItems] = React.useState<string[]>([]);
+  const allClusterNames = report ? Object.keys(report.sections.detailedEvaluation.clusters) : [];
+
+  const handleExpandAll = () => {
+    setOpenAccordionItems(allClusterNames);
+  };
+
+  const handleCollapseAll = () => {
+    setOpenAccordionItems([]);
+  };
 
   const pastConsultations = MOCK_CONSULTATIONS.filter(
     (c) => c.ideaId === ideaId && c.status === 'Completed'
@@ -331,74 +342,86 @@ export default function IdeaReportPage() {
                 <Separator />
                 
                 <div className="space-y-4">
-                    <h3 className="text-xl font-semibold">{report.sections.detailedEvaluation.title}</h3>
-                    <p className="text-sm text-muted-foreground">{report.sections.detailedEvaluation.description}</p>
-                    <Accordion type="single" collapsible className="w-full pt-4">
+                    <div className="flex justify-between items-center">
+                        <div>
+                           <h3 className="text-xl font-semibold">{report.sections.detailedEvaluation.title}</h3>
+                           <p className="text-sm text-muted-foreground">{report.sections.detailedEvaluation.description}</p>
+                        </div>
+                        <div className="flex gap-2">
+                            <Button variant="ghost" size="sm" onClick={handleExpandAll}>Expand All</Button>
+                            <Button variant="ghost" size="sm" onClick={handleCollapseAll}>Collapse All</Button>
+                        </div>
+                    </div>
+                    <Accordion type="multiple" value={openAccordionItems} onValueChange={setOpenAccordionItems} className="w-full pt-4">
                         {Object.entries(report.sections.detailedEvaluation.clusters).map(([clusterName, clusterData]) => (
                             <AccordionItem value={clusterName} key={clusterName}>
                                 <AccordionTrigger className="text-lg font-semibold text-primary hover:no-underline">
                                     {clusterName}
                                 </AccordionTrigger>
                                 <AccordionContent className="p-4 pt-0 space-y-4">
+                                <Accordion type="single" collapsible className="w-full">
                                 {Object.entries(clusterData).map(([paramName, paramData]) => {
                                     if (typeof paramData !== 'object' || paramData === null) return null;
                                     return (
-                                        <div key={paramName}>
-                                            <h4 className="font-semibold mb-2">{paramName}</h4>
-                                            <div className="divide-y">
-                                            {Object.entries(paramData).map(([subParamName, subParamData]) => {
-                                                if (typeof subParamData !== 'object' || subParamData === null || !('assignedScore' in subParamData)) return null;
-                                                
-                                                const score = subParamData.assignedScore;
-                                                const whatWentWell = subParamData.whatWentWell;
-                                                const whatCanBeImproved = subParamData.whatCanBeImproved;
-                                                const id = `sub-param-${subParamName.replace(/[^a-zA-Z0-9]/g, '-')}`;
-                                                
-                                                const subCircumference = 2 * Math.PI * 18;
-                                                const subStrokeDashoffset = subCircumference - (score / 100) * subCircumference;
+                                        <AccordionItem value={paramName} key={paramName}>
+                                            <AccordionTrigger className="font-semibold mb-2">{paramName}</AccordionTrigger>
+                                            <AccordionContent>
+                                                <div className="divide-y">
+                                                {Object.entries(paramData).map(([subParamName, subParamData]) => {
+                                                    if (typeof subParamData !== 'object' || subParamData === null || !('assignedScore' in subParamData)) return null;
+                                                    
+                                                    const score = subParamData.assignedScore;
+                                                    const whatWentWell = subParamData.whatWentWell;
+                                                    const whatCanBeImproved = subParamData.whatCanBeImproved;
+                                                    const id = `sub-param-${subParamName.replace(/[^a-zA-Z0-9]/g, '-')}`;
+                                                    
+                                                    const subCircumference = 2 * Math.PI * 18;
+                                                    const subStrokeDashoffset = subCircumference - (score / 100) * subCircumference;
 
 
-                                                return (
-                                                    <div key={subParamName} id={id} className="p-3 grid grid-cols-12 gap-4 items-center scroll-mt-20">
-                                                        <div className="col-span-12 md:col-span-3">
-                                                            <h6 className="font-medium text-sm">{subParamName}</h6>
-                                                        </div>
-                                                         <div className="col-span-12 md:col-span-1 flex items-center justify-start md:justify-center">
-                                                            <div className="relative h-16 w-16">
-                                                                <svg className="h-full w-full" viewBox="0 0 40 40">
-                                                                    <circle cx="20" cy="20" r="18" className="stroke-muted" strokeWidth="3" fill="transparent" />
-                                                                    <circle
-                                                                        cx="20" cy="20" r="18"
-                                                                        className={cn("stroke-current transition-all duration-500 ease-in-out", getScoreColor(score))}
-                                                                        strokeWidth="3" fill="transparent" strokeLinecap="round"
-                                                                        strokeDasharray={subCircumference} strokeDashoffset={subStrokeDashoffset}
-                                                                        transform="rotate(-90 20 20)"
-                                                                    />
-                                                                </svg>
-                                                                <span className={cn("absolute inset-0 flex items-center justify-center text-base font-bold", getScoreColor(score))}>
-                                                                    {score}
-                                                                </span>
+                                                    return (
+                                                        <div key={subParamName} id={id} className="p-3 grid grid-cols-12 gap-4 items-center scroll-mt-20">
+                                                            <div className="col-span-12 md:col-span-3">
+                                                                <h6 className="font-medium text-sm">{subParamName}</h6>
+                                                            </div>
+                                                            <div className="col-span-12 md:col-span-1 flex items-center justify-start md:justify-center">
+                                                                <div className="relative h-16 w-16">
+                                                                    <svg className="h-full w-full" viewBox="0 0 40 40">
+                                                                        <circle cx="20" cy="20" r="18" className="stroke-muted" strokeWidth="3" fill="transparent" />
+                                                                        <circle
+                                                                            cx="20" cy="20" r="18"
+                                                                            className={cn("stroke-current transition-all duration-500 ease-in-out", getScoreColor(score))}
+                                                                            strokeWidth="3" fill="transparent" strokeLinecap="round"
+                                                                            strokeDasharray={subCircumference} strokeDashoffset={subStrokeDashoffset}
+                                                                            transform="rotate(-90 20 20)"
+                                                                        />
+                                                                    </svg>
+                                                                    <span className={cn("absolute inset-0 flex items-center justify-center text-base font-bold", getScoreColor(score))}>
+                                                                        {score}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-span-12 md:col-span-4 space-y-1">
+                                                                <div className="flex items-start gap-2 text-sm">
+                                                                    <ThumbsUp className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                                                                    <p className="text-muted-foreground">{whatWentWell}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-span-12 md:col-span-4 space-y-1">
+                                                                <div className="flex items-start gap-2 text-sm">
+                                                                    <Lightbulb className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
+                                                                    <p className="text-muted-foreground">{whatCanBeImproved}</p>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                        <div className="col-span-12 md:col-span-4 space-y-1">
-                                                            <div className="flex items-start gap-2 text-sm">
-                                                                <ThumbsUp className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
-                                                                <p className="text-muted-foreground">{whatWentWell}</p>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-span-12 md:col-span-4 space-y-1">
-                                                             <div className="flex items-start gap-2 text-sm">
-                                                                <Lightbulb className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
-                                                                <p className="text-muted-foreground">{whatCanBeImproved}</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )
-                                            })}
-                                            </div>
-                                        </div>
+                                                    )
+                                                })}
+                                                </div>
+                                            </AccordionContent>
+                                        </AccordionItem>
                                     )
                                 })}
+                                </Accordion>
                                 </AccordionContent>
                             </AccordionItem>
                         ))}
