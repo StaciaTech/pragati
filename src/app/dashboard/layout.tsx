@@ -20,7 +20,7 @@ import { Logo } from '@/components/icons';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { NAV_LINKS, ROLES, type Role } from '@/lib/constants';
 import { MOCK_INNOVATOR_USER, MOCK_TTCS, MOCK_COLLEGES, MOCK_CONSULTATIONS } from '@/lib/mock-data';
-import { CreditCard, LogOut, CalendarDays } from 'lucide-react';
+import { CreditCard, LogOut, CalendarDays, LifeBuoy } from 'lucide-react';
 import { Notifications } from '@/components/notifications';
 import { Suspense } from 'react';
 import { HydrationSafeContent } from '@/components/hydration-safe-content';
@@ -148,6 +148,32 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           </SidebarContent>
           <SidebarFooter>
              <SidebarMenu>
+             <SidebarSeparator className="mb-2" />
+               <SidebarMenuItem>
+                 <SidebarMenuButton asChild>
+                   <Link href={`/dashboard/support?role=${role}`} className="flex items-center gap-3 min-w-0">
+                     <div className="w-5 shrink-0 flex items-center justify-center 
+                                  transition-all duration-200 ease-in-out
+                                  group-data-[state=collapsed]/sidebar:scale-100
+                                  group-data-[state=expanded]/sidebar:scale-110">
+                       <LifeBuoy className="w-5 h-5" />
+                     </div>
+                     <span className="
+                      flex-1 overflow-hidden whitespace-nowrap transition-all duration-200 ease-in-out
+                      group-data-[state=collapsed]/sidebar:w-0
+                      group-data-[state=collapsed]/sidebar:ml-0
+                      group-data-[state=collapsed]/sidebar:opacity-0
+                      group-data-[state=collapsed]/sidebar:invisible
+                      group-data-[state=expanded]/sidebar:w-auto
+                      group-data-[state=expanded]/sidebar:ml-1
+                      group-data-[state=expanded]/sidebar:opacity-100
+                      group-data-[state=expanded]/sidebar:visible
+                    ">
+                       Support
+                     </span>
+                   </Link>
+                 </SidebarMenuButton>
+               </SidebarMenuItem>
              <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <Link href="/" className="flex items-center gap-3 min-w-0">

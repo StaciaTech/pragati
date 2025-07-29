@@ -51,11 +51,6 @@ export const NAV_LINKS: Record<
         icon: CreditCard,
         href: `/dashboard/request-credits?role=${ROLES.INNOVATOR}`,
     },
-    {
-      title: "Support",
-      icon: LifeBuoy,
-      href: `/dashboard/support?role=${ROLES.INNOVATOR}`,
-    },
   ],
   [ROLES.PRINCIPAL]: [
     {
