@@ -250,7 +250,11 @@ export default function IdeasPage() {
           {filteredIdeas.map((idea) => {
             const status = getStatus(idea);
             return (
-              <TableRow key={idea.id}>
+              <TableRow
+                key={idea.id}
+                className="cursor-pointer"
+                onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}
+              >
                 <TableCell className="font-medium">{idea.id}</TableCell>
                 <TableCell>{idea.title}</TableCell>
                 <TableCell>{idea.dateSubmitted}</TableCell>
@@ -261,7 +265,7 @@ export default function IdeasPage() {
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
+                      <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
                         <MoreHorizontal className="h-4 w-4" />
                         <span className="sr-only">More actions</span>
                       </Button>
