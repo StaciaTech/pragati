@@ -2,6 +2,7 @@
 
 'use client';
 
+import * as React from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -430,4 +431,3 @@ export default function IdeaReportPage() {
     </div>
   );
 }
-
