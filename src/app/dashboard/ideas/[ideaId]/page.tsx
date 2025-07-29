@@ -290,9 +290,13 @@ export default function IdeaReportPage() {
                         <h4 className="font-semibold text-green-600 flex items-center gap-2"><TrendingUp /> Top Performers</h4>
                         <ul className="mt-2 space-y-1 text-sm">
                           {topPerformers.map((item, i) => (
-                            <li key={i} className="flex justify-between">
-                              <span className="text-muted-foreground">{item.name}</span>
-                              <span className="font-bold text-green-600">{item.score}</span>
+                            <li key={i}>
+                               <a href={`#sub-param-${item.name.replace(/[^a-zA-Z0-9]/g, '-')}`}
+                                  className="flex justify-between hover:bg-muted p-1 rounded-md transition-colors"
+                               >
+                                  <span className="text-muted-foreground">{item.name}</span>
+                                  <span className="font-bold text-green-600">{item.score}</span>
+                               </a>
                             </li>
                           ))}
                         </ul>
@@ -302,9 +306,13 @@ export default function IdeaReportPage() {
                         <h4 className="font-semibold text-red-600 flex items-center gap-2"><TrendingDown /> Areas for Improvement</h4>
                          <ul className="mt-2 space-y-1 text-sm">
                           {bottomPerformers.map((item, i) => (
-                            <li key={i} className="flex justify-between">
-                              <span className="text-muted-foreground">{item.name}</span>
-                              <span className="font-bold text-red-600">{item.score}</span>
+                             <li key={i}>
+                               <a href={`#sub-param-${item.name.replace(/[^a-zA-Z0-9]/g, '-')}`}
+                                   className="flex justify-between hover:bg-muted p-1 rounded-md transition-colors"
+                               >
+                                  <span className="text-muted-foreground">{item.name}</span>
+                                  <span className="font-bold text-red-600">{item.score}</span>
+                                </a>
                             </li>
                           ))}
                         </ul>
@@ -337,9 +345,10 @@ export default function IdeaReportPage() {
                                                       const score = subParamData.assignedScore;
                                                       const whatWentWell = subParamData.whatWentWell;
                                                       const whatCanBeImproved = subParamData.whatCanBeImproved;
+                                                      const id = `sub-param-${subParamName.replace(/[^a-zA-Z0-9]/g, '-')}`;
 
                                                       return (
-                                                          <div key={subParamName} className="p-3 bg-muted/50 rounded-lg">
+                                                          <div key={subParamName} id={id} className="p-3 bg-muted/50 rounded-lg scroll-mt-20">
                                                               <div className="flex justify-between items-center mb-2">
                                                                   <h6 className="font-semibold">{subParamName}</h6>
                                                                   <p className={`font-bold text-lg ${getScoreColor(score)}`}>{score}/100</p>
