@@ -72,7 +72,7 @@ export default function IdeaReportPage() {
   const ideaId = params.ideaId as string;
   const role = searchParams.get('role');
   const reportRef = React.useRef<HTMLDivElement>(null);
-  const [openAccordionItems, setOpenAccordionItems] = React.useState<string[]>([]);
+
   const [isRequestConsultationOpen, setIsRequestConsultationOpen] = React.useState(false);
   const [isShareDialogOpen, setIsShareDialogOpen] = React.useState(false);
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
@@ -185,8 +185,8 @@ export default function IdeaReportPage() {
   }, [report]);
 
   const handleHighlightClick = (clusterName: string, paramName: string, subParamName: string) => {
-    setOpenAccordionItems(prev => [...new Set([...prev, clusterName])]);
-
+    // This functionality might need adjustment depending on final accordion implementation.
+    // For now, it will scroll to the element if the accordion is open.
     requestAnimationFrame(() => {
       const elementId = `sub-param-${subParamName.replace(/[^a-zA-Z0-9]/g, '-')}`;
       const element = document.getElementById(elementId);
@@ -265,7 +265,7 @@ export default function IdeaReportPage() {
               )}
             </CardHeader>
              {report ? (
-              <CardContent className="space-y-8 pt-6">
+              <CardContent className="space-y-8 pt-2">
                 
                 <div className="space-y-2">
                     <h3 className="text-xl font-semibold">Executive Summary & Recommendation</h3>
