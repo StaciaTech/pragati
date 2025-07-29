@@ -312,7 +312,7 @@ export default function IdeaReportPage() {
                 
                 <Separator />
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-8">
                   <div className="space-y-4">
                       <h3 className="text-xl font-semibold">Cluster Performance</h3>
                       <p className="text-sm text-muted-foreground">Average scores across the main evaluation clusters.</p>
@@ -320,6 +320,8 @@ export default function IdeaReportPage() {
                          <SpiderChart data={avgClusterScores} maxScore={100} size={400} />
                       </div>
                   </div>
+
+                  <Separator orientation="vertical" className="hidden lg:block" />
                   
                   <div className="space-y-4">
                       <h3 className="text-xl font-semibold">Highlights & Lowlights</h3>
