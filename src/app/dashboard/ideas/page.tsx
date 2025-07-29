@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MoreVertical, Loader2, PieChart as PieChartIcon, Target, CheckCircle, Percent, History, Share2, Download, Link as LinkIcon, Copy } from 'lucide-react';
+import { MoreVertical, Loader2, PieChart as PieChartIcon, Target, Percent, History, Share2, Download, Copy } from 'lucide-react';
 import { STATUS_COLORS } from '@/lib/mock-data';
 import { ROLES } from '@/lib/constants';
 import type { ValidationReport } from '@/ai/schemas';
@@ -58,6 +58,8 @@ import type { PieSectorDataItem } from 'recharts/types/polar/Pie';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Separator } from '@/components/ui/separator';
+import { FacebookIcon, LinkedInIcon, TwitterIcon, WhatsAppIcon, MailIcon } from '@/components/social-icons';
 
 
 type Idea = {
@@ -298,6 +300,7 @@ export default function IdeasPage() {
           {filteredIdeas.map((idea) => {
             const status = getStatus(idea);
             const score = idea.report ? idea.report.overallScore : null;
+            const numericScore = score;
             return (
               <TableRow
                 key={idea.id}
@@ -364,6 +367,9 @@ export default function IdeasPage() {
       </Table>
     );
   };
+
+  const shareUrl = selectedIdea ? encodeURIComponent(`${window.location.origin}/dashboard/ideas/${selectedIdea.id}?role=${ROLES.INNOVATOR}`) : '';
+  const shareText = selectedIdea ? encodeURIComponent(`Check out my idea report for "${selectedIdea.title}" on PragatiAI!`) : '';
 
   return (
     <>
@@ -507,6 +513,19 @@ export default function IdeasPage() {
             <p className="text-sm text-muted-foreground">
               Anyone with this link will be able to view the report.
             </p>
+            <Separator />
+            <div className="space-y-2">
+                <p className="text-sm font-medium text-center text-muted-foreground">Quick Share</p>
+                 <div className="flex justify-center gap-2">
+                    <TooltipProvider>
+                      <Tooltip><TooltipTrigger asChild><Button asChild variant="outline" size="icon"><a href={`https://api.whatsapp.com/send?text=${shareText} ${shareUrl}`} target="_blank" rel="noopener noreferrer"><WhatsAppIcon className="h-5 w-5" /></a></Button></TooltipTrigger><TooltipContent>WhatsApp</TooltipContent></Tooltip>
+                      <Tooltip><TooltipTrigger asChild><Button asChild variant="outline" size="icon"><a href={`https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`} target="_blank" rel="noopener noreferrer"><TwitterIcon className="h-5 w-5" /></a></Button></TooltipTrigger><TooltipContent>X / Twitter</TooltipContent></Tooltip>
+                      <Tooltip><TooltipTrigger asChild><Button asChild variant="outline" size="icon"><a href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`} target="_blank" rel="noopener noreferrer"><FacebookIcon className="h-5 w-5" /></a></Button></TooltipTrigger><TooltipContent>Facebook</TooltipContent></Tooltip>
+                      <Tooltip><TooltipTrigger asChild><Button asChild variant="outline" size="icon"><a href={`https://www.linkedin.com/shareArticle?mini=true&url=${shareUrl}&title=${encodeURIComponent(selectedIdea?.title || '')}&summary=${shareText}`} target="_blank" rel="noopener noreferrer"><LinkedInIcon className="h-5 w-5" /></a></Button></TooltipTrigger><TooltipContent>LinkedIn</TooltipContent></Tooltip>
+                      <Tooltip><TooltipTrigger asChild><Button asChild variant="outline" size="icon"><a href={`mailto:?subject=${encodeURIComponent(selectedIdea?.title || '')}&body=${shareText} ${shareUrl}`}><MailIcon className="h-5 w-5" /></a></Button></TooltipTrigger><TooltipContent>Email</TooltipContent></Tooltip>
+                    </TooltipProvider>
+                 </div>
+            </div>
           </div>
           <DialogFooter className="sm:justify-between flex-col sm:flex-row gap-2">
             <Button
