@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import * as React from 'react';
@@ -18,7 +17,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Input } from '@/components/ui/input';
-import { LifeBuoy, Search } from 'lucide-react';
+import { LifeBuoy, Search, Mail, Phone } from 'lucide-react';
 import { ChatbotWidget } from '@/components/chatbot-widget';
 
 
@@ -95,21 +94,36 @@ export default function SupportPage() {
             </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Contact Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-sm text-muted-foreground">
-                <div>
-                  <p className="font-semibold text-foreground">Stacia Corp</p>
-                  <p>Ground Floor, C-53, Guindy Industrial Estate,</p>
-                  <p>Guindy, Chennai - 32, Tamil Nadu</p>
-                  <p>support@staciacorp.com</p>
-                </div>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader className="flex flex-row items-center gap-4">
+              <Mail className="h-8 w-8 text-primary" />
+              <div>
+                <CardTitle>Email Support</CardTitle>
+                <CardDescription>Get help with any questions or issues.</CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Button asChild className="w-full">
+                <a href="mailto:support@staciacorp.com">Send an Email</a>
+              </Button>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center gap-4">
+              <Phone className="h-8 w-8 text-primary" />
+              <div>
+                <CardTitle>Phone Support</CardTitle>
+                <CardDescription>Speak directly with our support team.</CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent>
+               <Button asChild className="w-full">
+                <a href="tel:+910000000000">Call Us</a>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
     </div>
     <ChatbotWidget />
     </>
