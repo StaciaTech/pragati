@@ -298,6 +298,7 @@ export default function IdeasPage() {
         <TableBody>
           {filteredIdeas.map((idea) => {
             const status = getStatus(idea);
+            const score = idea.report ? idea.report.overallScore : null;
             return (
               <TableRow
                 key={idea.id}
@@ -310,7 +311,7 @@ export default function IdeasPage() {
                 <TableCell>
                   <Badge className={STATUS_COLORS[status]}>{status}</Badge>
                 </TableCell>
-                <TableCell>{getOverallScore(idea)}</TableCell>
+                <TableCell>{score ? score.toFixed(1) : 'N/A'}</TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -323,9 +324,11 @@ export default function IdeasPage() {
                       <DropdownMenuItem onSelect={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
                         View Report
                       </DropdownMenuItem>
-                      <DropdownMenuItem onSelect={() => handleResubmit(idea)}>
-                        Resubmit
-                      </DropdownMenuItem>
+                      {score !== null && score < 85 && (
+                        <DropdownMenuItem onSelect={() => handleResubmit(idea)}>
+                          Resubmit
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuItem onSelect={() => handleDownload(idea.id)}>
                         Download
                       </DropdownMenuItem>
@@ -401,7 +404,7 @@ export default function IdeasPage() {
               </CardHeader>
               <CardContent>
                 <ChartContainer config={{}} className="min-h-[250px] w-full">
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height={250}>
                     <PieChart>
                       <Pie
                         activeIndex={activeIndex}
