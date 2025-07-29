@@ -189,6 +189,19 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                  <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
+                             <Button className="text-white bg-gradient-to-r from-purple-500 to-indigo-500" asChild>
+                                <Link href={getCreditRequestLink()}>
+                                    <CreditCard className="size-5" />
+                                    {credits !== null && <span className="ml-2 hidden sm:inline">{credits} Credits</span>}
+                                </Link>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{role === ROLES.INNOVATOR ? "Request More Credits" : "View Available Credits"}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
                             <Button asChild variant="ghost" size="icon" className="relative">
                                 <Link href={`/dashboard/consultations?role=${role}`}>
                                     <CalendarDays className="h-5 w-5" />
@@ -203,19 +216,6 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                         </TooltipTrigger>
                         <TooltipContent>
                             <p>View Consultations</p>
-                        </TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                             <Button className="text-white bg-gradient-to-r from-purple-500 to-indigo-500" asChild>
-                                <Link href={getCreditRequestLink()}>
-                                    <CreditCard className="size-5" />
-                                    {credits !== null && <span className="ml-2 hidden sm:inline">{credits} Credits</span>}
-                                </Link>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{role === ROLES.INNOVATOR ? "Request More Credits" : "View Available Credits"}</p>
                         </TooltipContent>
                     </Tooltip>
                  </TooltipProvider>
