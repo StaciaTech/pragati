@@ -49,6 +49,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { FacebookIcon, LinkedInIcon, TwitterIcon, WhatsAppIcon, MailIcon } from '@/components/social-icons';
+import { ScoreDisplay } from '@/components/score-display';
 
 
 const getBackLink = (role: string | null) => {
@@ -208,27 +209,12 @@ export default function IdeaReportPage() {
   const status = report?.validationOutcome || idea.status;
   const score = report?.overallScore ?? null;
   
-  const getVerdictStyle = (outcome: string) => {
-    switch(outcome) {
-        case 'Slay': return { icon: '✅', color: 'text-green-600', bg: 'bg-green-100 dark:bg-green-900/30 border-green-500' };
-        case 'Mid': return { icon: '⚠️', color: 'text-orange-600', bg: 'bg-orange-100 dark:bg-orange-900/30 border-orange-500' };
-        case 'Flop':
-        default: return { icon: '❌', color: 'text-red-600', bg: 'bg-red-100 dark:bg-red-900/30 border-red-500' };
-    }
-  }
-
-  const { icon: verdictIcon, color: verdictColor, bg: verdictBg } = getVerdictStyle(status);
-
   const getScoreColor = (score: number | null) => {
     if (score === null) return 'text-muted-foreground';
     if (score >= 85) return 'text-green-600';
     if (score >= 50) return 'text-orange-600';
     return 'text-red-600';
-  }
-
-  const scoreColor = getScoreColor(score);
-  const circumference = 2 * Math.PI * 20;
-  const strokeDashoffset = score !== null ? circumference - (score / 100) * circumference : circumference;
+  };
   
   const shareUrl = idea ? encodeURIComponent(`${window.location.origin}/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`) : '';
   const shareText = idea ? encodeURIComponent(`Check out my idea report for "${idea.title}" on PragatiAI!`) : '';
@@ -275,29 +261,7 @@ export default function IdeaReportPage() {
                 </div>
               </div>
               {report && (
-                <div className="flex flex-col items-center gap-2 text-center w-32">
-                    <div className="relative h-24 w-24">
-                        <svg className="h-full w-full" viewBox="0 0 50 50">
-                            <circle cx="25" cy="25" r="20" className="stroke-muted" strokeWidth="4" fill="transparent" />
-                            <circle
-                            cx="25"
-                            cy="25"
-                            r="20"
-                            className={cn("stroke-current transition-all duration-500 ease-in-out", scoreColor)}
-                            strokeWidth="4"
-                            fill="transparent"
-                            strokeLinecap="round"
-                            strokeDasharray={circumference}
-                            strokeDashoffset={strokeDashoffset}
-                            transform="rotate(-90 25 25)"
-                            />
-                        </svg>
-                        <span className={cn("absolute inset-0 flex items-center justify-center text-xl font-bold", scoreColor)}>
-                            {score !== null ? score.toFixed(0) : 'N/A'}
-                        </span>
-                    </div>
-                    <span className={cn("font-semibold", scoreColor)}>{report.validationOutcome}</span>
-                </div>
+                <ScoreDisplay score={score} status={status} />
               )}
             </CardHeader>
              {report ? (
