@@ -122,9 +122,9 @@ export default function IdeaReportPage() {
   const { icon: verdictIcon, color: verdictColor, bg: verdictBg } = getVerdictStyle(status);
 
   const getScoreColor = (score: number) => {
-    if (score >= 85) return 'text-green-500';
-    if (score >= 50) return 'text-orange-500';
-    return 'text-red-500';
+    if (score >= 85) return 'text-green-600';
+    if (score >= 50) return 'text-orange-600';
+    return 'text-red-600';
   }
 
 

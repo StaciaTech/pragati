@@ -221,9 +221,9 @@ function DashboardPageContent() {
   const getScoreColor = (score: number | string) => {
     const numericScore = Number(score);
     if (isNaN(numericScore)) return 'text-muted-foreground';
-    if (numericScore >= 85) return 'text-green-500';
-    if (numericScore >= 50) return 'text-orange-500';
-    return 'text-red-500';
+    if (numericScore >= 85) return 'text-green-600';
+    if (numericScore >= 50) return 'text-orange-600';
+    return 'text-red-600';
   };
 
   if (isLoading) {
@@ -250,26 +250,6 @@ function DashboardPageContent() {
         </div>
       </Card>
 
-      <Card>
-          <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Button asChild className="w-full">
-                  <Link href={`/dashboard/submit?role=${ROLES.INNOVATOR}`}><PlusCircle /> Submit New Idea</Link>
-              </Button>
-              <Button asChild variant="outline" className="w-full">
-                  <Link href={`/dashboard/ideas?role=${ROLES.INNOVATOR}`}><Lightbulb /> View All Ideas</Link>
-              </Button>
-              <Button asChild variant="outline" className="w-full">
-                  <Link href={`/dashboard/request-credits?role=${ROLES.INNOVATOR}`}><CreditCard /> Request Credits</Link>
-              </Button>
-               <Button asChild variant="outline" className="w-full">
-                  <Link href={`/dashboard/consultations?role=${ROLES.INNOVATOR}`}><MessageSquare /> Schedule Consultation</Link>
-              </Button>
-          </CardContent>
-      </Card>
-      
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan cursor-pointer hover:shadow-lg transition-shadow" onClick={() => router.push(`/dashboard/analytics?role=${ROLES.INNOVATOR}`)}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -302,6 +282,26 @@ function DashboardPageContent() {
           </CardContent>
         </Card>
       </div>
+      
+      <Card>
+        <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Button asChild className="w-full">
+                <Link href={`/dashboard/submit?role=${ROLES.INNOVATOR}`}><PlusCircle /> Submit New Idea</Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full">
+                <Link href={`/dashboard/ideas?role=${ROLES.INNOVATOR}`}><Lightbulb /> View All Ideas</Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full">
+                <Link href={`/dashboard/request-credits?role=${ROLES.INNOVATOR}`}><CreditCard /> Request Credits</Link>
+            </Button>
+              <Button asChild variant="outline" className="w-full">
+                <Link href={`/dashboard/consultations?role=${ROLES.INNOVATOR}`}><MessageSquare /> Schedule Consultation</Link>
+            </Button>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         <Card className="lg:col-span-3 border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan cursor-pointer hover:shadow-lg transition-shadow" onClick={() => router.push(`/dashboard/analytics?role=${ROLES.INNOVATOR}`)}>
@@ -330,68 +330,70 @@ function DashboardPageContent() {
           </CardContent>
         </Card>
         
-        <Card className="lg:col-span-2 border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
-          <CardHeader>
-            <CardTitle>My Recent Ideas</CardTitle>
-            <CardDescription>A quick look at your most recent ideas.</CardDescription>
-          </CardHeader>
-          <CardContent>
-              {ideas.length === 0 ? (
-                <div className="text-center py-10">
-                  <p className="text-muted-foreground">You haven't submitted any ideas yet.</p>
-                </div>
-              ) : (
-                  <div className="space-y-4">
-                    {ideas.slice(0, 3).map((idea) => {
-                      const status = getStatus(idea);
-                      const score = getOverallScore(idea);
-                      return (
-                      <Card key={idea.id} className="group transition-all hover:shadow-md cursor-pointer" onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
-                        <CardContent className="p-4 flex items-center justify-between">
-                            <div className="flex-1 space-y-1 overflow-hidden">
-                                <p className="font-semibold text-sm truncate">{idea.title}</p>
-                                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                                    <span>{idea.dateSubmitted}</span>
-                                    <span className="flex items-center gap-1">
-                                        <Award className="w-3 h-3" />
-                                        <span className={cn('font-medium', getScoreColor(score))}>{score}</span>
-                                    </span>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Badge className={cn(STATUS_COLORS[status], "hidden sm:inline-flex")}>{status}</Badge>
-                                <div className="opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" size="icon">
-                                            <MoreHorizontal className="h-4 w-4" />
-                                            <span className="sr-only">More actions</span>
-                                        </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                        <DropdownMenuItem onSelect={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
-                                            View Report
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem onSelect={() => handleResubmit(idea)}>
-                                            Resubmit
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem onSelect={() => handleDownload(idea.id)}>
-                                            Download
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem onSelect={() => handleTrackHistory(idea)}>
-                                            Track History
-                                        </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </div>
-                            </div>
-                        </CardContent>
-                      </Card>
-                    )})}
+        <div className="lg:col-span-2 space-y-6">
+          <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
+            <CardHeader>
+              <CardTitle>My Recent Ideas</CardTitle>
+              <CardDescription>A quick look at your most recent ideas.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                {ideas.length === 0 ? (
+                  <div className="text-center py-10">
+                    <p className="text-muted-foreground">You haven't submitted any ideas yet.</p>
                   </div>
-              )}
-          </CardContent>
-        </Card>
+                ) : (
+                    <div className="space-y-4">
+                      {ideas.slice(0, 3).map((idea) => {
+                        const status = getStatus(idea);
+                        const score = getOverallScore(idea);
+                        return (
+                        <Card key={idea.id} className="group transition-all hover:shadow-md cursor-pointer" onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
+                          <CardContent className="p-4 flex items-center justify-between">
+                              <div className="flex-1 space-y-1 overflow-hidden">
+                                  <p className="font-semibold text-sm truncate">{idea.title}</p>
+                                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                      <span>{idea.dateSubmitted}</span>
+                                      <span className="flex items-center gap-1">
+                                          <Award className="w-3 h-3" />
+                                          <span className={cn('font-medium', getScoreColor(score))}>{score}</span>
+                                      </span>
+                                  </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                  <Badge className={cn(STATUS_COLORS[status], "hidden sm:inline-flex")}>{status}</Badge>
+                                  <div className="opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
+                                      <DropdownMenu>
+                                          <DropdownMenuTrigger asChild>
+                                          <Button variant="ghost" size="icon">
+                                              <MoreHorizontal className="h-4 w-4" />
+                                              <span className="sr-only">More actions</span>
+                                          </Button>
+                                          </DropdownMenuTrigger>
+                                          <DropdownMenuContent align="end">
+                                          <DropdownMenuItem onSelect={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
+                                              View Report
+                                          </DropdownMenuItem>
+                                          <DropdownMenuItem onSelect={() => handleResubmit(idea)}>
+                                              Resubmit
+                                          </DropdownMenuItem>
+                                          <DropdownMenuItem onSelect={() => handleDownload(idea.id)}>
+                                              Download
+                                          </DropdownMenuItem>
+                                          <DropdownMenuItem onSelect={() => handleTrackHistory(idea)}>
+                                              Track History
+                                          </DropdownMenuItem>
+                                          </DropdownMenuContent>
+                                      </DropdownMenu>
+                                  </div>
+                              </div>
+                          </CardContent>
+                        </Card>
+                      )})}
+                    </div>
+                )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
     
