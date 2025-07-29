@@ -629,7 +629,7 @@ export default function SubmitIdeaPage() {
                 <TriangleAlert className="h-4 w-4 !text-orange-600" />
                 <AlertTitle>Second Wind!</AlertTitle>
                 <AlertDescription>
-                    You're back to refine your masterpiece. Polish it up and let's give it another go! Resubmitting costs 1 credit.
+                  You're back to refine your masterpiece. Polish it up and let's give it another go! Polishing this gem will use one of your shiny credits!
                 </AlertDescription>
             </Alert>
         )}
