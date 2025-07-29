@@ -119,7 +119,7 @@ export default function SupportPage() {
             </CardHeader>
             <CardContent>
                <Button asChild className="w-full">
-                <a href="tel:+910000000000">Call Us</a>
+                <a href="tel:+919363034150">Call Us</a>
               </Button>
             </CardContent>
           </Card>
