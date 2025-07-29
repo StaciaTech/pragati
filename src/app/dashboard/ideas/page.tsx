@@ -53,7 +53,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Sector } from 'recharts';
+import type { PieSectorDataItem } from 'recharts/types/polar/Pie';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -86,6 +87,40 @@ const mockHistory = [
     { version: "V0.8", date: "2024-01-05", status: "Rejected", score: 42 },
 ];
 
+const ActiveShape = (props: any) => {
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload, value } = props as PieSectorDataItem & { cx: number, cy: number, innerRadius: number, outerRadius: number, startAngle: number, endAngle: number, fill: string, value: number, payload: any };
+
+  return (
+    <g>
+      <text x={cx} y={cy} dy={-4} textAnchor="middle" fill={fill} className="text-2xl font-bold">
+        {value}
+      </text>
+       <text x={cx} y={cy} dy={16} textAnchor="middle" fill="hsl(var(--muted-foreground))" className="text-sm">
+        {payload.name}
+      </text>
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={innerRadius}
+        outerRadius={outerRadius}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        fill={fill}
+      />
+      <Sector
+        cx={cx}
+        cy={cy}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        innerRadius={outerRadius + 6}
+        outerRadius={outerRadius + 10}
+        fill={fill}
+      />
+    </g>
+  );
+};
+
+
 export default function IdeasPage() {
   const [allIdeas, setAllIdeas] = React.useState<Idea[]>([]);
   const [filteredIdeas, setFilteredIdeas] = React.useState<Idea[]>([]);
@@ -102,6 +137,14 @@ export default function IdeasPage() {
   const [selectedAction, setSelectedAction] = React.useState<{ action?: () => void, title?: string, description?: string }>({});
   const { toast } = useToast();
   const router = useRouter();
+
+  const [activeIndex, setActiveIndex] = React.useState(0);
+  const onPieEnter = React.useCallback(
+    (_: any, index: number) => {
+      setActiveIndex(index);
+    },
+    [setActiveIndex]
+  );
 
 
   React.useEffect(() => {
@@ -347,24 +390,32 @@ export default function IdeasPage() {
             </Card>
 
             <Card>
-                <CardHeader>
-                    <CardTitle>Idea Status Distribution</CardTitle>
-                </CardHeader>
-                <CardContent>
-                     <ChartContainer config={{}} className="min-h-[250px] w-full">
-                        <ResponsiveContainer width="100%" height={300}>
-                            <PieChart>
-                                <ChartTooltip
-                                    cursor={true}
-                                    content={<ChartTooltipContent hideLabel />}
-                                />
-                                <Pie data={statusData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} label>
-                                    {statusData.map((entry) => <Cell key={entry.name} fill={entry.fill} />)}
-                                </Pie>
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </ChartContainer>
-                </CardContent>
+              <CardHeader>
+                <CardTitle>Idea Status Distribution</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ChartContainer config={{}} className="min-h-[250px] w-full">
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        activeIndex={activeIndex}
+                        activeShape={ActiveShape}
+                        data={statusData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        dataKey="value"
+                        onMouseEnter={onPieEnter}
+                      >
+                        {statusData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </CardContent>
             </Card>
         </div>
       </div>
