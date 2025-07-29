@@ -346,6 +346,7 @@ function DashboardPageContent() {
                       {ideas.slice(0, 3).map((idea) => {
                         const status = getStatus(idea);
                         const score = getOverallScore(idea);
+                        const numericScore = idea.report?.overallScore ?? null;
                         return (
                         <Card key={idea.id} className="group transition-all hover:shadow-md cursor-pointer" onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
                           <CardContent className="p-4 flex items-center justify-between">
@@ -370,18 +371,25 @@ function DashboardPageContent() {
                                           </Button>
                                           </DropdownMenuTrigger>
                                           <DropdownMenuContent align="end">
-                                          <DropdownMenuItem onSelect={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
-                                              View Report
-                                          </DropdownMenuItem>
-                                          <DropdownMenuItem onSelect={() => handleResubmit(idea)}>
-                                              Resubmit
-                                          </DropdownMenuItem>
-                                          <DropdownMenuItem onSelect={() => handleDownload(idea.id)}>
-                                              Download
-                                          </DropdownMenuItem>
-                                          <DropdownMenuItem onSelect={() => handleTrackHistory(idea)}>
-                                              Track History
-                                          </DropdownMenuItem>
+                                            <DropdownMenuItem onSelect={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
+                                                View Report
+                                            </DropdownMenuItem>
+                                            {numericScore !== null && numericScore < 85 && (
+                                                <DropdownMenuItem onSelect={() => handleResubmit(idea)}>
+                                                    Resubmit
+                                                </DropdownMenuItem>
+                                            )}
+                                            {numericScore !== null && numericScore >= 85 && (
+                                                <DropdownMenuItem onSelect={() => router.push(`/dashboard/consultations?role=${ROLES.INNOVATOR}&ideaId=${idea.id}`)}>
+                                                    Schedule Consultation
+                                                </DropdownMenuItem>
+                                            )}
+                                            <DropdownMenuItem onSelect={() => handleDownload(idea.id)}>
+                                                Download
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onSelect={() => handleTrackHistory(idea)}>
+                                                Track History
+                                            </DropdownMenuItem>
                                           </DropdownMenuContent>
                                       </DropdownMenu>
                                   </div>
