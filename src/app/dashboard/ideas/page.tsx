@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal, Loader2, PieChart as PieChartIcon, Target, CheckCircle, Percent } from 'lucide-react';
+import { MoreVertical, Loader2, PieChart as PieChartIcon, Target, CheckCircle, Percent, History, Share2, Download, Link as LinkIcon, Copy } from 'lucide-react';
 import { STATUS_COLORS } from '@/lib/mock-data';
 import { ROLES } from '@/lib/constants';
 import type { ValidationReport } from '@/ai/schemas';
@@ -82,9 +82,9 @@ type Idea = {
 };
 
 const mockHistory = [
-    { version: "V1.0", date: "2024-01-15", status: "Approved", score: 84 },
-    { version: "V0.9", date: "2024-01-10", status: "Moderate", score: 76 },
-    { version: "V0.8", date: "2024-01-05", status: "Rejected", score: 42 },
+    { version: "V1.0", date: "2024-01-15", status: "Slay", score: 88 },
+    { version: "V0.9", date: "2024-01-10", status: "Mid", score: 72 },
+    { version: "V0.8", date: "2024-01-05", status: "Flop", score: 45 },
 ];
 
 const ActiveShape = (props: any) => {
@@ -131,10 +131,9 @@ export default function IdeasPage() {
   const [statusFilter, setStatusFilter] = React.useState('all');
   const [domainFilter, setDomainFilter] = React.useState('all');
   
-  const [dialogOpen, setDialogOpen] = React.useState(false);
   const [historyDialogOpen, setHistoryDialogOpen] = React.useState(false);
-  const [selectedIdeaForHistory, setSelectedIdeaForHistory] = React.useState<Idea | null>(null);
-  const [selectedAction, setSelectedAction] = React.useState<{ action?: () => void, title?: string, description?: string }>({});
+  const [shareDialogOpen, setShareDialogOpen] = React.useState(false);
+  const [selectedIdea, setSelectedIdea] = React.useState<Idea | null>(null);
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -182,28 +181,27 @@ export default function IdeasPage() {
     setFilteredIdeas(ideas);
   }, [searchTerm, statusFilter, domainFilter, allIdeas]);
   
-  const handleActionConfirm = () => {
-    if (selectedAction.action) {
-      selectedAction.action();
-    }
-    setDialogOpen(false);
-  };
-  
-  const openConfirmationDialog = (action: () => void, title: string, description: string) => {
-    setSelectedAction({ action, title, description });
-    setDialogOpen(true);
+  const handleShareClick = (idea: Idea) => {
+    setSelectedIdea(idea);
+    setShareDialogOpen(true);
   };
 
-  const handleDownload = (ideaId: string) => {
-    openConfirmationDialog(
-      () => toast({ title: "Feature In Development", description: `Downloading for idea ${ideaId} is not yet implemented.` }),
-      "Confirm Download",
-      "Are you sure you want to download the report for this idea?"
-    );
+  const handleCopyLink = () => {
+    if (!selectedIdea) return;
+    const link = `${window.location.origin}/dashboard/ideas/${selectedIdea.id}?role=${ROLES.INNOVATOR}`;
+    navigator.clipboard.writeText(link);
+    toast({
+      title: 'Link Copied!',
+      description: 'A shareable link to the report has been copied.',
+    });
   };
+
+  const handleDownload = () => {
+     toast({ title: "Feature In Development", description: `Downloading for idea ${selectedIdea?.id} is not yet implemented.` });
+  }
 
   const handleTrackHistory = (idea: Idea) => {
-    setSelectedIdeaForHistory(idea);
+    setSelectedIdea(idea);
     setHistoryDialogOpen(true);
   };
   
@@ -238,7 +236,7 @@ export default function IdeasPage() {
   const uniqueStatuses = [...new Set(allIdeas.map(idea => getStatus(idea)))];
 
   const totalIdeas = allIdeas.length;
-  const approvedIdeas = allIdeas.filter(i => getStatus(i) === 'Approved').length;
+  const approvedIdeas = allIdeas.filter(i => getStatus(i) === 'Slay').length;
   const approvalRate = totalIdeas > 0 ? (approvedIdeas / totalIdeas) * 100 : 0;
   const validatedIdeas = allIdeas.filter(i => i.report?.overallScore);
   const averageScore = validatedIdeas.length > 0 ? (validatedIdeas.reduce((acc, item) => acc + item.report!.overallScore, 0) / validatedIdeas.length) : 0;
@@ -250,9 +248,9 @@ export default function IdeasPage() {
   }, {} as Record<string, number>);
 
   const statusData = [
-    { name: 'Approved', value: statusCounts.Approved || 0, fill: 'hsl(var(--color-approved))' },
-    { name: 'Moderate', value: statusCounts.Moderate || 0, fill: 'hsl(var(--color-moderate))' },
-    { name: 'Rejected', value: statusCounts.Rejected || 0, fill: 'hsl(var(--color-rejected))' },
+    { name: 'Slay', value: statusCounts.Slay || 0, fill: 'hsl(var(--color-approved))' },
+    { name: 'Mid', value: statusCounts.Mid || 0, fill: 'hsl(var(--color-moderate))' },
+    { name: 'Flop', value: statusCounts.Flop || 0, fill: 'hsl(var(--color-rejected))' },
   ];
 
   const renderContent = () => {
@@ -302,46 +300,43 @@ export default function IdeasPage() {
             return (
               <TableRow
                 key={idea.id}
-                className="cursor-pointer"
-                onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}
+                className="group"
               >
-                <TableCell className="font-medium">{idea.id}</TableCell>
-                <TableCell>{idea.title}</TableCell>
-                <TableCell>{idea.dateSubmitted}</TableCell>
-                <TableCell>
+                <TableCell className="font-medium cursor-pointer" onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>{idea.id}</TableCell>
+                <TableCell className="cursor-pointer" onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>{idea.title}</TableCell>
+                <TableCell className="cursor-pointer" onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>{idea.dateSubmitted}</TableCell>
+                <TableCell className="cursor-pointer" onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
                   <Badge className={STATUS_COLORS[status]}>{status}</Badge>
                 </TableCell>
-                <TableCell>{score ? score.toFixed(1) : 'N/A'}</TableCell>
+                <TableCell className="cursor-pointer" onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>{score ? score.toFixed(1) : 'N/A'}</TableCell>
                 <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">More actions</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onSelect={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
-                        View Report
-                      </DropdownMenuItem>
-                      {score !== null && score < 85 && (
-                        <DropdownMenuItem onSelect={(e) => { e.stopPropagation(); handleResubmit(idea); }}>
-                          Resubmit
+                  <div className="flex justify-end items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button variant="outline" size="sm" onClick={() => handleShareClick(idea)}><Share2 className="mr-2" />Share</Button>
+                    <Button variant="outline" size="sm" onClick={() => handleTrackHistory(idea)}><History className="mr-2" />History</Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreVertical className="h-4 w-4" />
+                          <span className="sr-only">More actions</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onSelect={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
+                          View Full Report
                         </DropdownMenuItem>
-                      )}
-                       {score !== null && score >= 85 && (
-                        <DropdownMenuItem onSelect={(e) => { e.stopPropagation(); router.push(`/dashboard/consultations?role=${ROLES.INNOVATOR}&ideaId=${idea.id}`); }}>
-                          Schedule Consultation
-                        </DropdownMenuItem>
-                      )}
-                      <DropdownMenuItem onSelect={(e) => { e.stopPropagation(); handleDownload(idea.id); }}>
-                        Download
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onSelect={(e) => { e.stopPropagation(); handleTrackHistory(idea); }}>
-                        Track History
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                        {score !== null && score < 85 && (
+                          <DropdownMenuItem onSelect={() => handleResubmit(idea)}>
+                            Resubmit
+                          </DropdownMenuItem>
+                        )}
+                        {score !== null && score >= 85 && (
+                          <DropdownMenuItem onSelect={() => router.push(`/dashboard/consultations?role=${ROLES.INNOVATOR}&ideaId=${idea.id}`)}>
+                            Schedule Consultation
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </TableCell>
               </TableRow>
             )
@@ -433,26 +428,11 @@ export default function IdeasPage() {
             </Card>
         </div>
       </div>
-      
-      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{selectedAction.title}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {selectedAction.description}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleActionConfirm}>Yes, continue</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       <Dialog open={historyDialogOpen} onOpenChange={setHistoryDialogOpen}>
           <DialogContent>
               <DialogHeader>
-                  <DialogTitle>History for: {selectedIdeaForHistory?.title}</DialogTitle>
+                  <DialogTitle>History for: {selectedIdea?.title}</DialogTitle>
                   <DialogDescription>
                       Showing the version history and outcomes for this idea.
                   </DialogDescription>
@@ -483,6 +463,48 @@ export default function IdeasPage() {
                   </DialogClose>
               </DialogFooter>
           </DialogContent>
+      </Dialog>
+
+      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Share Report: {selectedIdea?.title}</DialogTitle>
+            <DialogDescription>
+              Share your idea report with others via link or PDF.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex items-center space-x-2">
+              <Input
+                id="link"
+                value={`${window.location.origin}/dashboard/ideas/${selectedIdea?.id}?role=${ROLES.INNOVATOR}`}
+                readOnly
+              />
+              <Button type="button" size="sm" className="px-3" onClick={handleCopyLink}>
+                <span className="sr-only">Copy</span>
+                <Copy className="h-4 w-4" />
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Anyone with this link will be able to view the report.
+            </p>
+          </div>
+          <DialogFooter className="sm:justify-between flex-col sm:flex-row gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleDownload}
+            >
+              <Download className="mr-2" />
+              Export as PDF
+            </Button>
+             <DialogClose asChild>
+              <Button type="button" variant="outline">
+                Close
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
     </>
   );

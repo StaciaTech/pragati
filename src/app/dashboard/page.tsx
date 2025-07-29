@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { TrendingUp, Award, Clock, MoreHorizontal, Loader2, PlusCircle, Lightbulb, CreditCard, BarChart3, Star, MessageSquare } from 'lucide-react';
+import { TrendingUp, Award, Clock, MoreVertical, Loader2, PlusCircle, Lightbulb, CreditCard, BarChart3, Star, MessageSquare } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -66,23 +66,23 @@ const chartConfig = {
     color: 'hsl(var(--chart-1))',
   },
   approved: {
-    label: 'Approved',
+    label: 'Slay',
     color: 'hsl(var(--color-approved))',
   },
   moderate: {
-    label: 'Moderate',
+    label: 'Mid',
     color: 'hsl(var(--color-moderate))',
   },
   rejected: {
-    label: 'Rejected',
+    label: 'Flop',
     color: 'hsl(var(--color-rejected))',
   },
 };
 
 const mockHistory = [
-    { version: "V1.0", date: "2024-01-15", status: "Approved", score: 88 },
-    { version: "V0.9", date: "2024-01-10", status: "Moderate", score: 72 },
-    { version: "V0.8", date: "2024-01-05", status: "Rejected", score: 45 },
+    { version: "V1.0", date: "2024-01-15", status: "Slay", score: 88 },
+    { version: "V0.9", date: "2024-01-10", status: "Mid", score: 72 },
+    { version: "V0.8", date: "2024-01-05", status: "Flop", score: 45 },
 ];
 
 const quotes = [
@@ -140,7 +140,7 @@ function DashboardPageContent() {
   const totalIdeas = ideas.length;
   const validatedIdeas = ideas.filter(idea => idea.report?.overallScore);
   const averageScore = validatedIdeas.length > 0 ? (validatedIdeas.reduce((acc, item) => acc + item.report!.overallScore, 0) / validatedIdeas.length) : 0;
-  const approvedCount = ideas.filter(idea => (idea.report?.validationOutcome || idea.status) === 'Approved').length;
+  const approvedCount = ideas.filter(idea => (idea.report?.validationOutcome || idea.status) === 'Slay').length;
   const approvalRate = totalIdeas > 0 ? (approvedCount / totalIdeas * 100) : 0;
   
   const submissionTrendData = React.useMemo(() => {
@@ -366,7 +366,7 @@ function DashboardPageContent() {
                                       <DropdownMenu>
                                           <DropdownMenuTrigger asChild>
                                           <Button variant="ghost" size="icon">
-                                              <MoreHorizontal className="h-4 w-4" />
+                                              <MoreVertical className="h-4 w-4" />
                                               <span className="sr-only">More actions</span>
                                           </Button>
                                           </DropdownMenuTrigger>
