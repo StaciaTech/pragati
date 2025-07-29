@@ -83,9 +83,9 @@ type Idea = {
 };
 
 const mockHistory = [
-    { version: "V1.0", date: "2024-01-15", status: "Slay", score: 88 },
-    { version: "V0.9", date: "2024-01-10", status: "Mid", score: 72 },
-    { version: "V0.8", date: "2024-01-05", status: "Flop", score: 45 },
+    { version: "V1.0", date: "2024-01-15", status: "Exemplary", score: 88 },
+    { version: "V0.9", date: "2024-01-10", status: "Developing", score: 72 },
+    { version: "V0.8", date: "2024-01-05", status: "Needs Refinement", score: 45 },
 ];
 
 const ActiveShape = (props: any) => {
@@ -237,7 +237,7 @@ export default function IdeasPage() {
   const uniqueStatuses = [...new Set(allIdeas.map(idea => getStatus(idea)))];
 
   const totalIdeas = allIdeas.length;
-  const approvedIdeas = allIdeas.filter(i => getStatus(i) === 'Slay').length;
+  const approvedIdeas = allIdeas.filter(i => getStatus(i) === 'Exemplary').length;
   const approvalRate = totalIdeas > 0 ? (approvedIdeas / totalIdeas) * 100 : 0;
   const validatedIdeas = allIdeas.filter(i => i.report?.overallScore);
   const averageScore = validatedIdeas.length > 0 ? (validatedIdeas.reduce((acc, item) => acc + item.report!.overallScore, 0) / validatedIdeas.length) : 0;
@@ -249,9 +249,9 @@ export default function IdeasPage() {
   }, {} as Record<string, number>);
 
   const statusData = [
-    { name: 'Slay', value: statusCounts.Slay || 0, fill: 'hsl(var(--color-approved))' },
-    { name: 'Mid', value: statusCounts.Mid || 0, fill: 'hsl(var(--color-moderate))' },
-    { name: 'Flop', value: statusCounts.Flop || 0, fill: 'hsl(var(--color-rejected))' },
+    { name: 'Exemplary', value: statusCounts.Exemplary || 0, fill: 'hsl(var(--color-approved))' },
+    { name: 'Developing', value: statusCounts.Developing || 0, fill: 'hsl(var(--color-moderate))' },
+    { name: 'Needs Refinement', value: statusCounts['Needs Refinement'] || 0, fill: 'hsl(var(--color-rejected))' },
   ];
 
   const renderContent = () => {
@@ -343,12 +343,12 @@ export default function IdeasPage() {
                         <DropdownMenuItem onSelect={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>
                           View Full Report
                         </DropdownMenuItem>
-                        {score !== null && score < 85 && (
+                        {status === 'Developing' && (
                           <DropdownMenuItem onSelect={() => handleResubmit(idea)}>
                             Resubmit
                           </DropdownMenuItem>
                         )}
-                        {score !== null && score >= 85 && (
+                        {status === 'Exemplary' && (
                           <DropdownMenuItem onSelect={() => router.push(`/dashboard/consultations?role=${ROLES.INNOVATOR}&ideaId=${idea.id}`)}>
                             Schedule Consultation
                           </DropdownMenuItem>
