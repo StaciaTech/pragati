@@ -15,10 +15,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { MOCK_IDEAS, STATUS_COLORS, MOCK_CONSULTATIONS } from '@/lib/mock-data';
+import { MOCK_IDEAS, STATUS_COLORS, MOCK_CONSULTATIONS, MOCK_TTCS } from '@/lib/mock-data';
 import type { ValidationReport } from '@/ai/schemas';
 import { ROLES } from '@/lib/constants';
-import { ArrowLeft, Download, ThumbsUp, Lightbulb, RefreshCw, MessageSquare, TrendingUp, TrendingDown, Star, Share2, Copy } from 'lucide-react';
+import { ArrowLeft, Download, ThumbsUp, Lightbulb, RefreshCw, MessageSquare, TrendingUp, TrendingDown, Star, Share2, Copy, CalendarIcon } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {
@@ -32,6 +32,21 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { SpiderChart } from '@/components/spider-chart';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from '@/components/ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 
 
 const getBackLink = (role: string | null) => {
@@ -55,6 +70,8 @@ export default function IdeaReportPage() {
   const role = searchParams.get('role');
   const reportRef = React.useRef<HTMLDivElement>(null);
   const [openAccordionItems, setOpenAccordionItems] = React.useState<string[]>([]);
+  const [isRequestConsultationOpen, setIsRequestConsultationOpen] = React.useState(false);
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
 
   const idea = MOCK_IDEAS.find((i) => i.id === ideaId);
   const report = idea?.report as ValidationReport | null;
@@ -122,9 +139,14 @@ export default function IdeaReportPage() {
     router.push(`/dashboard/submit?${newSearchParams.toString()}`);
   }
 
-  const handleRequestConsultation = () => {
-    router.push(`/dashboard/consultations?role=${ROLES.INNOVATOR}&ideaId=${ideaId}`);
-  }
+  const handleRequestConsultationSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    toast({
+        title: "Request Submitted",
+        description: "Your consultation request has been sent to the TTC Coordinator.",
+    });
+    setIsRequestConsultationOpen(false);
+  };
   
   const { topPerformers, bottomPerformers, avgClusterScores } = React.useMemo(() => {
     if (!report) return { topPerformers: [], bottomPerformers: [], avgClusterScores: {} };
@@ -159,7 +181,7 @@ export default function IdeaReportPage() {
   }, [report]);
 
   const handleHighlightClick = (clusterName: string, paramName: string, subParamName: string) => {
-    setOpenAccordionItems([clusterName, paramName]);
+    setOpenAccordionItems(prev => [...new Set([...prev, clusterName, paramName])]);
 
     requestAnimationFrame(() => {
       const elementId = `sub-param-${subParamName.replace(/[^a-zA-Z0-9]/g, '-')}`;
@@ -185,9 +207,9 @@ export default function IdeaReportPage() {
   
   const getVerdictStyle = (outcome: string) => {
     switch(outcome) {
-        case 'Approved': return { icon: '✅', color: 'text-green-600', bg: 'bg-green-100 dark:bg-green-900/30 border-green-500' };
-        case 'Moderate': return { icon: '⚠️', color: 'text-orange-600', bg: 'bg-orange-100 dark:bg-orange-900/30 border-orange-500' };
-        case 'Rejected':
+        case 'Slay': return { icon: '✅', color: 'text-green-600', bg: 'bg-green-100 dark:bg-green-900/30 border-green-500' };
+        case 'Mid': return { icon: '⚠️', color: 'text-orange-600', bg: 'bg-orange-100 dark:bg-orange-900/30 border-orange-500' };
+        case 'Flop':
         default: return { icon: '❌', color: 'text-red-600', bg: 'bg-red-100 dark:bg-red-900/30 border-red-500' };
     }
   }
@@ -206,6 +228,7 @@ export default function IdeaReportPage() {
   const strokeDashoffset = score !== null ? circumference - (score / 100) * circumference : circumference;
 
   return (
+    <>
     <div className="space-y-6">
         <div className="flex justify-between items-center flex-wrap gap-2">
              <Button variant="outline" asChild>
@@ -222,7 +245,7 @@ export default function IdeaReportPage() {
                     </Button>
                 )}
                  {score !== null && score >= 85 && (
-                    <Button onClick={handleRequestConsultation}>
+                    <Button onClick={() => setIsRequestConsultationOpen(true)}>
                         <MessageSquare className="mr-2 h-4 w-4" />
                         Request Consultation
                     </Button>
@@ -470,5 +493,65 @@ export default function IdeaReportPage() {
 
         </div>
     </div>
+    
+    <Dialog open={isRequestConsultationOpen} onOpenChange={setIsRequestConsultationOpen}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Request a New Consultation</DialogTitle>
+                <DialogDescription>
+                    Fill out the details below to request a meeting with a mentor for your idea: "{idea.title}".
+                </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleRequestConsultationSubmit}>
+                <div className="grid gap-4 py-4">
+                     <div className="space-y-2">
+                        <Label htmlFor="mentor">Preferred Mentor</Label>
+                         <Select required>
+                            <SelectTrigger id="mentor"><SelectValue placeholder="Select a mentor" /></SelectTrigger>
+                            <SelectContent>
+                                {MOCK_TTCS.map(ttc => (
+                                    <SelectItem key={ttc.id} value={ttc.id}>{ttc.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="date">Preferred Date</Label>
+                         <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                variant={"outline"}
+                                className={cn(
+                                    "w-full justify-start text-left font-normal",
+                                    !selectedDate && "text-muted-foreground"
+                                )}
+                                >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar
+                                    mode="single"
+                                    selected={selectedDate}
+                                    onSelect={setSelectedDate}
+                                    initialFocus
+                                />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="questions">Questions / Topics</Label>
+                        <Textarea id="questions" placeholder="What would you like to discuss? e.g., 'Market entry strategy', 'Technical feasibility concerns'." required />
+                    </div>
+                </div>
+                <DialogFooter>
+                    <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+                    <Button type="submit">Submit Request</Button>
+                </DialogFooter>
+            </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
