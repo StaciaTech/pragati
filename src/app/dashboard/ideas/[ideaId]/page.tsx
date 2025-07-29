@@ -18,7 +18,7 @@ import { Separator } from '@/components/ui/separator';
 import { MOCK_IDEAS, STATUS_COLORS, MOCK_CONSULTATIONS, MOCK_TTCS } from '@/lib/mock-data';
 import type { ValidationReport } from '@/ai/schemas';
 import { ROLES } from '@/lib/constants';
-import { ArrowLeft, Download, ThumbsUp, Lightbulb, RefreshCw, MessageSquare, TrendingUp, TrendingDown, Star, Share2, Copy, CalendarIcon } from 'lucide-react';
+import { ArrowLeft, Download, ThumbsUp, Lightbulb, RefreshCw, MessageSquare, TrendingUp, TrendingDown, Star, Share2, Copy, CalendarIcon, ChevronRight } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {
@@ -63,6 +63,17 @@ const getBackLink = (role: string | null) => {
     }
 }
 
+type ParameterSummary = {
+  avgScore: number;
+  aiOneLiner: string;
+};
+
+type ReportMetrics = {
+  topPerformers: { name: string; score: number; clusterName: string; paramName: string }[];
+  bottomPerformers: { name: string; score: number; clusterName: string; paramName: string }[];
+  avgClusterScores: Record<string, number>;
+  parameterSummaries: Record<string, Record<string, ParameterSummary>>;
+};
 
 export default function IdeaReportPage() {
   const params = useParams();
@@ -163,21 +174,46 @@ export default function IdeaReportPage() {
     setIsRequestConsultationOpen(false);
   };
   
-  const { topPerformers, bottomPerformers, avgClusterScores } = React.useMemo(() => {
-    if (!report) return { topPerformers: [], bottomPerformers: [], avgClusterScores: {} };
+  const { topPerformers, bottomPerformers, avgClusterScores, parameterSummaries } = React.useMemo<ReportMetrics>(() => {
+    if (!report) return { topPerformers: [], bottomPerformers: [], avgClusterScores: {}, parameterSummaries: {} };
 
     const allSubParams: { name: string; score: number; clusterName: string; paramName: string }[] = [];
-    let clusterScores: Record<string, number[]> = {};
+    const clusterScores: Record<string, number[]> = {};
+    const parameterSummaries: Record<string, Record<string, ParameterSummary>> = {};
 
     Object.entries(report.sections.detailedEvaluation.clusters).forEach(([clusterName, clusterData]) => {
       clusterScores[clusterName] = [];
+      parameterSummaries[clusterName] = {};
       Object.entries(clusterData).forEach(([paramName, paramData]) => {
-        Object.entries(paramData).forEach(([subParamName, subParamDetails]: [string, any]) => {
+        const subParams = Object.entries(paramData);
+        if (subParams.length === 0) return;
+
+        let totalScore = 0;
+        let bestWell = { score: -1, text: '' };
+        let worstImproved = { score: 101, text: '' };
+
+        subParams.forEach(([subParamName, subParamDetails]: [string, any]) => {
           if (subParamDetails.assignedScore) {
-            allSubParams.push({ name: subParamName, score: subParamDetails.assignedScore, clusterName, paramName });
-            clusterScores[clusterName].push(subParamDetails.assignedScore);
+            const score = subParamDetails.assignedScore;
+            totalScore += score;
+            allSubParams.push({ name: subParamName, score, clusterName, paramName });
+            clusterScores[clusterName].push(score);
+
+            if (score > bestWell.score) {
+              bestWell = { score, text: subParamDetails.whatWentWell };
+            }
+            if (score < worstImproved.score) {
+              worstImproved = { score, text: subParamDetails.whatCanBeImproved };
+            }
           }
         });
+        
+        const avgScore = totalScore / subParams.length;
+        parameterSummaries[clusterName][paramName] = {
+            avgScore,
+            aiOneLiner: `Strongest aspect: ${bestWell.text.split('.')[0]}. Key improvement: ${worstImproved.text.split('.')[0]}.`
+        };
+
       });
     });
     
@@ -191,13 +227,12 @@ export default function IdeaReportPage() {
     return {
       topPerformers: sortedSubParams.slice(0, 3),
       bottomPerformers: sortedSubParams.slice(-3).reverse(),
-      avgClusterScores
+      avgClusterScores,
+      parameterSummaries
     };
   }, [report]);
 
   const handleHighlightClick = (clusterName: string, paramName: string, subParamName: string) => {
-    // This functionality might need adjustment depending on final accordion implementation.
-    // For now, it will scroll to the element if the accordion is open.
     requestAnimationFrame(() => {
       const elementId = `sub-param-${subParamName.replace(/[^a-zA-Z0-9]/g, '-')}`;
       const element = document.getElementById(elementId);
@@ -344,7 +379,7 @@ export default function IdeaReportPage() {
                 <div className="space-y-4">
                     <div className="flex justify-between items-center">
                         <div>
-                           <h3 className="text-xl font-semibold">{report.sections.detailedEvaluation.title}</h3>
+                           <h3 className="text-xl font-semibold">Detailed Viability Assessment</h3>
                            <p className="text-sm text-muted-foreground">{report.sections.detailedEvaluation.description}</p>
                         </div>
                         <div className="flex gap-2">
@@ -362,9 +397,23 @@ export default function IdeaReportPage() {
                                 <Accordion type="single" collapsible className="w-full">
                                 {Object.entries(clusterData).map(([paramName, paramData]) => {
                                     if (typeof paramData !== 'object' || paramData === null) return null;
+                                    const summary = parameterSummaries[clusterName]?.[paramName];
                                     return (
                                         <AccordionItem value={paramName} key={paramName}>
-                                            <AccordionTrigger className="font-semibold mb-2">{paramName}</AccordionTrigger>
+                                            <AccordionTrigger className="font-semibold mb-2 hover:no-underline">
+                                                <div className="flex justify-between items-center w-full pr-2">
+                                                    <span className="text-left">{paramName}</span>
+                                                    <div className="flex items-center gap-4 text-right">
+                                                        {summary && (
+                                                            <>
+                                                                <span className="text-xs text-muted-foreground hidden lg:inline truncate max-w-xs" title={summary.aiOneLiner}>{summary.aiOneLiner}</span>
+                                                                <Badge className={cn(getScoreColor(summary.avgScore), 'bg-opacity-10 border-opacity-20')} variant="outline">{summary.avgScore.toFixed(0)}</Badge>
+                                                            </>
+                                                        )}
+                                                        <ChevronRight className="h-4 w-4 shrink-0 transition-transform duration-200" />
+                                                    </div>
+                                                </div>
+                                            </AccordionTrigger>
                                             <AccordionContent>
                                                 <div className="divide-y">
                                                 {Object.entries(paramData).map(([subParamName, subParamData]) => {
