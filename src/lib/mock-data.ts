@@ -223,15 +223,15 @@ export const SCORING_RUBRIC = {
 export const VALIDATION_OUTCOMES = {
   "Approved": {
     "range": "85-100",
-    "recommendation": "Idea has strong potential. Good to go! Focus on execution and scaling."
+    "recommendation": "Rocket Fuel! This idea is cleared for launch. Let's make it happen!"
   },
   "Moderate": {
     "range": "50-84",
-    "recommendation": "Idea has potential but requires modification and re-evaluation. Review the detailed report."
+    "recommendation": "Diamond in the Rough! There's solid potential here. Polish it up with the feedback and resubmit."
   },
   "Rejected": {
     "range": "0-49",
-    "recommendation": "Idea is not recommended at this stage. Consider a fundamental re-evaluation."
+    "recommendation": "Back to the Lab! A great learning opportunity. Rethink the core concept and come back stronger."
   }
 };
 
@@ -252,7 +252,7 @@ const MOCK_SAMPLE_REPORT: ValidationReport = {
   ideaConcept: 'An intelligent system using AI to optimize crop yield and detect diseases early.',
   overallScore: 76,
   validationOutcome: 'Moderate',
-  recommendationText: 'Requires AI-Guided Modification & Re-upload: Idea has potential but with notable weaknesses or missing information. Please review the detailed report and make necessary revisions.',
+  recommendationText: 'Diamond in the Rough! There\'s solid potential here. Polish it up with the feedback and resubmit.',
   submissionDate: '2024-07-21',
   pptUrl: 'https://placehold.co/400x200/A0C4FF/1E2A38?text=Mock+PPT',
   sections: {
@@ -261,7 +261,7 @@ const MOCK_SAMPLE_REPORT: ValidationReport = {
       concept: 'An intelligent system using AI to optimize crop yield and detect diseases early.',
       overallScore: 76,
       validationOutcome: 'Moderate',
-      recommendation: 'Requires AI-Guided Modification & Re-upload: Idea has potential but with notable weaknesses or missing information. Please review the detailed report and make necessary revisions.',
+      recommendation: 'Diamond in the Rough! There\'s solid potential here. Polish it up with the feedback and resubmit.',
       reportGeneratedOn: '2024-07-21',
     },
     pragatiAIServiceProcess: {
@@ -481,7 +481,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Approved',
     dateSubmitted: '2024-01-15',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, overallScore: 84},
+    report: {...MOCK_SAMPLE_REPORT, ideaName: 'AI-Powered Smart Farming', overallScore: 88, validationOutcome: 'Approved', recommendationText: "Rocket Fuel! This idea is cleared for launch. Let's make it happen!"},
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Scheduled',
@@ -521,7 +521,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Rejected',
     dateSubmitted: '2024-03-10',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, ideaName: 'HealthTech Wearable for Seniors', overallScore: 42, validationOutcome: 'Rejected'},
+    report: {...MOCK_SAMPLE_REPORT, ideaName: 'HealthTech Wearable for Seniors', overallScore: 42, validationOutcome: 'Rejected', recommendationText: "Back to the Lab! A great learning opportunity. Rethink the core concept and come back stronger."},
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Not Requested',
@@ -541,7 +541,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Approved',
     dateSubmitted: '2024-04-05',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, ideaName: 'Smart City Traffic Management', overallScore: 90, validationOutcome: 'Approved'},
+    report: {...MOCK_SAMPLE_REPORT, ideaName: 'Smart City Traffic Management', overallScore: 90, validationOutcome: 'Approved', recommendationText: "Rocket Fuel! This idea is cleared for launch. Let's make it happen!"},
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Completed',

@@ -107,9 +107,9 @@ const generateValidationReportFlow = ai.defineFlow(
         "Rejected";
         
     const recommendationText = 
-        validationOutcome === "Approved" ? "Idea has strong potential. Good to go! Focus on execution and scaling." :
-        validationOutcome === "Moderate" ? "Idea has potential but requires modification and re-evaluation. Review the detailed report." :
-        "Idea is not recommended at this stage. Consider a fundamental re-evaluation.";
+        validationOutcome === "Approved" ? "Rocket Fuel! This idea is cleared for launch. Let's make it happen!" :
+        validationOutcome === "Moderate" ? "Diamond in the Rough! There's solid potential here. Polish it up with the feedback and resubmit." :
+        "Back to the Lab! A great learning opportunity. Rethink the core concept and come back stronger.";
 
 
     // Step 4: Construct the full report object

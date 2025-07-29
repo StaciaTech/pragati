@@ -226,7 +226,7 @@ export default function IdeaReportPage() {
                 </Link>
             </Button>
              <div className="flex gap-2">
-                {score !== null && score < 85 && (
+                {score !== null && score >= 50 && score < 85 && (
                     <Button onClick={handleResubmit}>
                         <RefreshCw className="mr-2 h-4 w-4" />
                         Resubmit Idea
