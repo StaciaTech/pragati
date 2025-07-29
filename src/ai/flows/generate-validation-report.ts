@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -102,13 +103,13 @@ const generateValidationReportFlow = ai.defineFlow(
     
     // Step 3: Determine outcome based on the calculated score
     const validationOutcome = 
-        overallScore >= 85 ? "Approved" : 
-        overallScore >= 50 ? "Moderate" : 
-        "Rejected";
+        overallScore >= 85 ? "Slay" : 
+        overallScore >= 50 ? "Mid" : 
+        "Flop";
         
     const recommendationText = 
-        validationOutcome === "Approved" ? "Rocket Fuel! This idea is cleared for launch. Let's make it happen!" :
-        validationOutcome === "Moderate" ? "Diamond in the Rough! There's solid potential here. Polish it up with the feedback and resubmit." :
+        validationOutcome === "Slay" ? "Rocket Fuel! This idea is cleared for launch. Let's make it happen!" :
+        validationOutcome === "Mid" ? "Diamond in the Rough! There's solid potential here. Polish it up with the feedback and resubmit." :
         "Back to the Lab! A great learning opportunity. Rethink the core concept and come back stronger.";
 
 
