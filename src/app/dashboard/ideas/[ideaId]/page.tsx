@@ -30,7 +30,6 @@ import {
 import { cn } from '@/lib/utils';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { SpiderChart } from '@/components/spider-chart';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import {
   Dialog,
@@ -47,6 +46,9 @@ import { format } from 'date-fns';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+import { FacebookIcon, LinkedInIcon, TwitterIcon, WhatsAppIcon, MailIcon } from '@/components/social-icons';
 
 
 const getBackLink = (role: string | null) => {
@@ -71,6 +73,7 @@ export default function IdeaReportPage() {
   const reportRef = React.useRef<HTMLDivElement>(null);
   const [openAccordionItems, setOpenAccordionItems] = React.useState<string[]>([]);
   const [isRequestConsultationOpen, setIsRequestConsultationOpen] = React.useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = React.useState(false);
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
 
   const idea = MOCK_IDEAS.find((i) => i.id === ideaId);
@@ -226,6 +229,9 @@ export default function IdeaReportPage() {
   const scoreColor = getScoreColor(score);
   const circumference = 2 * Math.PI * 20;
   const strokeDashoffset = score !== null ? circumference - (score / 100) * circumference : circumference;
+  
+  const shareUrl = idea ? encodeURIComponent(`${window.location.origin}/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`) : '';
+  const shareText = idea ? encodeURIComponent(`Check out my idea report for "${idea.title}" on PragatiAI!`) : '';
 
   return (
     <>
@@ -238,33 +244,21 @@ export default function IdeaReportPage() {
                 </Link>
             </Button>
              <div className="flex gap-2">
-                {score !== null && score >= 50 && score < 85 && (
+                {status === "Mid" && (
                     <Button onClick={handleResubmit}>
                         <RefreshCw className="mr-2 h-4 w-4" />
                         Resubmit Idea
                     </Button>
                 )}
-                 {score !== null && score >= 85 && (
+                 {status === "Slay" && (
                     <Button onClick={() => setIsRequestConsultationOpen(true)}>
                         <MessageSquare className="mr-2 h-4 w-4" />
                         Request Consultation
                     </Button>
                 )}
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline"><Share2 className="mr-2 h-4 w-4" /> Share</Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuItem onSelect={handleDownload}>
-                            <Download className="mr-2 h-4 w-4" />
-                            <span>Export as PDF</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={handleCopyLink}>
-                            <Copy className="mr-2 h-4 w-4" />
-                            <span>Copy Link</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <Button variant="outline" onClick={() => setIsShareDialogOpen(true)}>
+                  <Share2 className="mr-2 h-4 w-4" /> Share
+                </Button>
              </div>
         </div>
 
@@ -493,6 +487,61 @@ export default function IdeaReportPage() {
 
         </div>
     </div>
+
+    <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Share Report: {idea?.title}</DialogTitle>
+            <DialogDescription>
+              Share your idea report with others via link or PDF.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex items-center space-x-2">
+              <Input
+                id="link"
+                value={`${window.location.origin}/dashboard/ideas/${idea?.id}?role=${ROLES.INNOVATOR}`}
+                readOnly
+              />
+              <Button type="button" size="sm" className="px-3" onClick={handleCopyLink}>
+                <span className="sr-only">Copy</span>
+                <Copy className="h-4 w-4" />
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Anyone with this link will be able to view the report.
+            </p>
+            <Separator />
+            <div className="space-y-2">
+                <p className="text-sm font-medium text-center text-muted-foreground">Quick Share</p>
+                 <div className="flex justify-center gap-2">
+                    <TooltipProvider>
+                      <Tooltip><TooltipTrigger asChild><Button asChild variant="outline" size="icon"><a href={`https://api.whatsapp.com/send?text=${shareText} ${shareUrl}`} target="_blank" rel="noopener noreferrer"><WhatsAppIcon className="h-5 w-5" /></a></Button></TooltipTrigger><TooltipContent>WhatsApp</TooltipContent></Tooltip>
+                      <Tooltip><TooltipTrigger asChild><Button asChild variant="outline" size="icon"><a href={`https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`} target="_blank" rel="noopener noreferrer"><TwitterIcon className="h-5 w-5" /></a></Button></TooltipTrigger><TooltipContent>X / Twitter</TooltipContent></Tooltip>
+                      <Tooltip><TooltipTrigger asChild><Button asChild variant="outline" size="icon"><a href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`} target="_blank" rel="noopener noreferrer"><FacebookIcon className="h-5 w-5" /></a></Button></TooltipTrigger><TooltipContent>Facebook</TooltipContent></Tooltip>
+                      <Tooltip><TooltipTrigger asChild><Button asChild variant="outline" size="icon"><a href={`https://www.linkedin.com/shareArticle?mini=true&url=${shareUrl}&title=${encodeURIComponent(idea?.title || '')}&summary=${shareText}`} target="_blank" rel="noopener noreferrer"><LinkedInIcon className="h-5 w-5" /></a></Button></TooltipTrigger><TooltipContent>LinkedIn</TooltipContent></Tooltip>
+                      <Tooltip><TooltipTrigger asChild><Button asChild variant="outline" size="icon"><a href={`mailto:?subject=${encodeURIComponent(idea?.title || '')}&body=${shareText} ${shareUrl}`}><MailIcon className="h-5 w-5" /></a></Button></TooltipTrigger><TooltipContent>Email</TooltipContent></Tooltip>
+                    </TooltipProvider>
+                 </div>
+            </div>
+          </div>
+          <DialogFooter className="sm:justify-between flex-col sm:flex-row gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleDownload}
+            >
+              <Download className="mr-2" />
+              Export as PDF
+            </Button>
+             <DialogClose asChild>
+              <Button type="button" variant="outline">
+                Close
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     
     <Dialog open={isRequestConsultationOpen} onOpenChange={setIsRequestConsultationOpen}>
         <DialogContent>
