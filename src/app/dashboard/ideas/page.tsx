@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -137,6 +137,7 @@ export default function IdeasPage() {
   const [selectedAction, setSelectedAction] = React.useState<{ action?: () => void, title?: string, description?: string }>({});
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [activeIndex, setActiveIndex] = React.useState(0);
   const onPieEnter = React.useCallback(
@@ -213,8 +214,13 @@ export default function IdeasPage() {
       domain: idea.domain,
       weights: idea.clusterWeights,
     };
-    const query = new URLSearchParams({ idea: JSON.stringify(ideaData) }).toString();
-    router.push(`/dashboard/submit?${query}`);
+    const newSearchParams = new URLSearchParams();
+    newSearchParams.set('idea', JSON.stringify(ideaData));
+    const role = searchParams.get('role');
+    if (role) {
+      newSearchParams.set('role', role);
+    }
+    router.push(`/dashboard/submit?${newSearchParams.toString()}`);
   }
 
   const getOverallScore = (idea: Idea) => {
