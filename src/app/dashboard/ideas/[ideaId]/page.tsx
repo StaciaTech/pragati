@@ -21,7 +21,6 @@ import { ROLES } from '@/lib/constants';
 import { ArrowLeft, Download, ThumbsUp, Lightbulb, RefreshCw, MessageSquare, TrendingUp, TrendingDown, Star } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { useRef } from 'react';
 import {
   Accordion,
   AccordionContent,
@@ -61,7 +60,8 @@ export default function IdeaReportPage() {
   const router = useRouter();
   const ideaId = params.ideaId as string;
   const role = searchParams.get('role');
-  const reportRef = useRef<HTMLDivElement>(null);
+  const reportRef = React.useRef<HTMLDivElement>(null);
+  const [openAccordionItems, setOpenAccordionItems] = React.useState<string[]>([]);
 
   const idea = MOCK_IDEAS.find((i) => i.id === ideaId);
   const report = idea?.report as ValidationReport | null;
@@ -128,21 +128,21 @@ export default function IdeaReportPage() {
   const { topPerformers, bottomPerformers, avgClusterScores } = React.useMemo(() => {
     if (!report) return { topPerformers: [], bottomPerformers: [], avgClusterScores: {} };
 
-    const allSubParams: { name: string; score: number }[] = [];
+    const allSubParams: { name: string; score: number; clusterName: string; paramName: string }[] = [];
     let clusterScores: Record<string, number[]> = {};
 
     Object.entries(report.sections.detailedEvaluation.clusters).forEach(([clusterName, clusterData]) => {
       clusterScores[clusterName] = [];
-      Object.values(clusterData).forEach((paramData: any) => {
+      Object.entries(clusterData).forEach(([paramName, paramData]) => {
         Object.entries(paramData).forEach(([subParamName, subParamDetails]: [string, any]) => {
           if (subParamDetails.assignedScore) {
-            allSubParams.push({ name: subParamName, score: subParamDetails.assignedScore });
+            allSubParams.push({ name: subParamName, score: subParamDetails.assignedScore, clusterName, paramName });
             clusterScores[clusterName].push(subParamDetails.assignedScore);
           }
         });
       });
     });
-
+    
     const sortedSubParams = allSubParams.sort((a, b) => b.score - a.score);
     const avgClusterScores = Object.entries(clusterScores).reduce((acc, [key, scores]) => {
         const avg = scores.reduce((sum, s) => sum + s, 0) / (scores.length || 1);
@@ -156,6 +156,17 @@ export default function IdeaReportPage() {
       avgClusterScores
     };
   }, [report]);
+
+  const handleHighlightClick = (clusterName: string, paramName: string, subParamName: string) => {
+    const newOpenItems = [clusterName, paramName];
+    setOpenAccordionItems(newOpenItems);
+
+    requestAnimationFrame(() => {
+      const elementId = `sub-param-${subParamName.replace(/[^a-zA-Z0-9]/g, '-')}`;
+      const element = document.getElementById(elementId);
+      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  };
 
   if (!idea) {
     return (
@@ -291,12 +302,13 @@ export default function IdeaReportPage() {
                         <ul className="mt-2 space-y-1 text-sm">
                           {topPerformers.map((item, i) => (
                             <li key={i}>
-                               <a href={`#sub-param-${item.name.replace(/[^a-zA-Z0-9]/g, '-')}`}
-                                  className="flex justify-between hover:bg-muted p-1 rounded-md transition-colors"
+                               <button
+                                  onClick={() => handleHighlightClick(item.clusterName, item.paramName, item.name)}
+                                  className="flex justify-between w-full hover:bg-muted p-1 rounded-md transition-colors text-left"
                                >
                                   <span className="text-muted-foreground">{item.name}</span>
                                   <span className="font-bold text-green-600">{item.score}</span>
-                               </a>
+                               </button>
                             </li>
                           ))}
                         </ul>
@@ -307,12 +319,13 @@ export default function IdeaReportPage() {
                          <ul className="mt-2 space-y-1 text-sm">
                           {bottomPerformers.map((item, i) => (
                              <li key={i}>
-                               <a href={`#sub-param-${item.name.replace(/[^a-zA-Z0-9]/g, '-')}`}
-                                   className="flex justify-between hover:bg-muted p-1 rounded-md transition-colors"
+                               <button
+                                   onClick={() => handleHighlightClick(item.clusterName, item.paramName, item.name)}
+                                   className="flex justify-between w-full hover:bg-muted p-1 rounded-md transition-colors text-left"
                                >
                                   <span className="text-muted-foreground">{item.name}</span>
                                   <span className="font-bold text-red-600">{item.score}</span>
-                                </a>
+                                </button>
                             </li>
                           ))}
                         </ul>
@@ -322,14 +335,14 @@ export default function IdeaReportPage() {
                 </div>
                 
                 <SectionCard title={report.sections.detailedEvaluation.title} description={report.sections.detailedEvaluation.description}>
-                  <Accordion type="multiple" className="w-full space-y-4">
+                  <Accordion type="multiple" className="w-full space-y-4" value={openAccordionItems} onValueChange={setOpenAccordionItems}>
                       {Object.entries(report.sections.detailedEvaluation.clusters).map(([clusterName, clusterData]) => (
                           <AccordionItem value={clusterName} key={clusterName} className="border rounded-lg">
                               <AccordionTrigger className="p-4 text-lg font-semibold text-primary hover:no-underline">
                                   {clusterName}
                               </AccordionTrigger>
                               <AccordionContent className="p-4 pt-0">
-                                  <Accordion type="multiple" className="w-full space-y-2">
+                                  <Accordion type="multiple" className="w-full space-y-2" value={openAccordionItems} onValueChange={setOpenAccordionItems}>
                                   {Object.entries(clusterData).map(([paramName, paramData]) => {
                                       if (typeof paramData !== 'object' || paramData === null) return null;
                                       return (
