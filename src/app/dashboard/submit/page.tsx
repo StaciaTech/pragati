@@ -625,9 +625,13 @@ export default function SubmitIdeaPage() {
             )}
         </div>
         {isEditing && (
-            <p className="text-sm font-medium text-blue-600 bg-blue-100 p-3 rounded-md mt-2">
-                You are editing a previous submission. Please review and make any necessary changes. Resubmitting will cost 1 credit.
-            </p>
+            <Alert variant="default" className="mt-4 border-orange-500/50 text-orange-700 dark:text-orange-300">
+                <TriangleAlert className="h-4 w-4 !text-orange-600" />
+                <AlertTitle>Second Wind!</AlertTitle>
+                <AlertDescription>
+                    You're back to refine your masterpiece. Polish it up and let's give it another go! Resubmitting costs 1 credit.
+                </AlertDescription>
+            </Alert>
         )}
       </CardHeader>
       <CardContent>
