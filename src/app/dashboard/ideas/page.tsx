@@ -325,14 +325,19 @@ export default function IdeasPage() {
                         View Report
                       </DropdownMenuItem>
                       {score !== null && score < 85 && (
-                        <DropdownMenuItem onSelect={() => handleResubmit(idea)}>
+                        <DropdownMenuItem onSelect={(e) => { e.stopPropagation(); handleResubmit(idea); }}>
                           Resubmit
                         </DropdownMenuItem>
                       )}
-                      <DropdownMenuItem onSelect={() => handleDownload(idea.id)}>
+                       {score !== null && score >= 85 && (
+                        <DropdownMenuItem onSelect={(e) => { e.stopPropagation(); router.push(`/dashboard/consultations?role=${ROLES.INNOVATOR}&ideaId=${idea.id}`); }}>
+                          Schedule Consultation
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem onSelect={(e) => { e.stopPropagation(); handleDownload(idea.id); }}>
                         Download
                       </DropdownMenuItem>
-                      <DropdownMenuItem onSelect={() => handleTrackHistory(idea)}>
+                      <DropdownMenuItem onSelect={(e) => { e.stopPropagation(); handleTrackHistory(idea); }}>
                         Track History
                       </DropdownMenuItem>
                     </DropdownMenuContent>
