@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Card,
@@ -14,10 +14,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { MOCK_IDEAS, STATUS_COLORS } from '@/lib/mock-data';
+import { MOCK_IDEAS, STATUS_COLORS, MOCK_CONSULTATIONS } from '@/lib/mock-data';
 import type { ValidationReport } from '@/ai/schemas';
 import { ROLES } from '@/lib/constants';
-import { ArrowLeft, Download, ThumbsUp, Lightbulb } from 'lucide-react';
+import { ArrowLeft, Download, ThumbsUp, Lightbulb, RefreshCw, MessageSquare } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useRef } from 'react';
@@ -28,6 +28,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { cn } from '@/lib/utils';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const SectionCard = ({ title, description, children, className }: { title: string, description?: string, children: React.ReactNode, className?: string }) => (
     <Card className={className}>
@@ -54,12 +55,17 @@ const getBackLink = (role: string | null) => {
 export default function IdeaReportPage() {
   const params = useParams();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const ideaId = params.ideaId as string;
   const role = searchParams.get('role');
   const reportRef = useRef<HTMLDivElement>(null);
 
   const idea = MOCK_IDEAS.find((i) => i.id === ideaId);
   const report = idea?.report as ValidationReport | null;
+
+  const pastConsultations = MOCK_CONSULTATIONS.filter(
+    (c) => c.ideaId === ideaId && c.status === 'Completed'
+  );
 
   const handleDownload = () => {
     const input = reportRef.current;
@@ -96,6 +102,26 @@ export default function IdeaReportPage() {
     });
   };
 
+  const handleResubmit = () => {
+    const ideaData = {
+      title: idea?.title,
+      description: idea?.description,
+      domain: idea?.domain,
+      weights: idea?.clusterWeights,
+    };
+    const newSearchParams = new URLSearchParams();
+    newSearchParams.set('idea', JSON.stringify(ideaData));
+    const role = searchParams.get('role');
+    if (role) {
+      newSearchParams.set('role', role);
+    }
+    router.push(`/dashboard/submit?${newSearchParams.toString()}`);
+  }
+
+  const handleRequestConsultation = () => {
+    router.push(`/dashboard/consultations?role=${ROLES.INNOVATOR}&ideaId=${ideaId}`);
+  }
+
   if (!idea) {
     return (
       <div className="text-center py-20">
@@ -109,6 +135,7 @@ export default function IdeaReportPage() {
   }
   
   const status = report?.validationOutcome || idea.status;
+  const score = report?.overallScore ?? null;
   
   const getVerdictStyle = (outcome: string) => {
     switch(outcome) {
@@ -121,53 +148,88 @@ export default function IdeaReportPage() {
 
   const { icon: verdictIcon, color: verdictColor, bg: verdictBg } = getVerdictStyle(status);
 
-  const getScoreColor = (score: number) => {
+  const getScoreColor = (score: number | null) => {
+    if (score === null) return 'text-muted-foreground';
     if (score >= 85) return 'text-green-600';
     if (score >= 50) return 'text-orange-600';
     return 'text-red-600';
   }
 
+  const scoreColor = getScoreColor(score);
+  const circumference = 2 * Math.PI * 20;
+  const strokeDashoffset = score !== null ? circumference - (score / 100) * circumference : circumference;
 
   return (
     <div className="space-y-6">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center flex-wrap gap-2">
              <Button variant="outline" asChild>
                 <Link href={getBackLink(role)}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back
                 </Link>
             </Button>
-             <Button onClick={handleDownload}>
-                <Download className="mr-2 h-4 w-4" />
-                Download PDF
-            </Button>
+             <div className="flex gap-2">
+                {score !== null && score < 85 && (
+                    <Button onClick={handleResubmit}>
+                        <RefreshCw className="mr-2 h-4 w-4" />
+                        Resubmit Idea
+                    </Button>
+                )}
+                 {score !== null && score >= 85 && (
+                    <Button onClick={handleRequestConsultation}>
+                        <MessageSquare className="mr-2 h-4 w-4" />
+                        Request Consultation
+                    </Button>
+                )}
+                <Button onClick={handleDownload}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Download PDF
+                </Button>
+             </div>
         </div>
 
         <div ref={reportRef} className="p-4 bg-background">
           <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">Idea Report: {idea.title}</CardTitle>
-              <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2">
-                <span>ID: {idea.id}</span>
-                <span>Version: {idea.version}</span>
-                <span>Submitted: {idea.dateSubmitted}</span>
-                <span>Status: <Badge className={STATUS_COLORS[status]}>{status}</Badge></span>
+            <CardHeader className="flex flex-row items-start justify-between">
+              <div>
+                <CardTitle className="text-2xl">Idea Report: {idea.title}</CardTitle>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2">
+                  <span>ID: {idea.id}</span>
+                  <span>Version: {idea.version}</span>
+                  <span>Submitted: {idea.dateSubmitted}</span>
+                  <span>Status: <Badge className={STATUS_COLORS[status]}>{status}</Badge></span>
+                </div>
               </div>
+              {report && (
+                <div className="flex flex-col items-center gap-2 text-center">
+                    <div className="relative h-24 w-24">
+                        <svg className="h-full w-full" viewBox="0 0 50 50">
+                            <circle cx="25" cy="25" r="20" className="stroke-muted" strokeWidth="4" fill="transparent" />
+                            <circle
+                            cx="25"
+                            cy="25"
+                            r="20"
+                            className={cn("stroke-current transition-all duration-500 ease-in-out", scoreColor)}
+                            strokeWidth="4"
+                            fill="transparent"
+                            strokeLinecap="round"
+                            strokeDasharray={circumference}
+                            strokeDashoffset={strokeDashoffset}
+                            transform="rotate(-90 25 25)"
+                            />
+                        </svg>
+                        <span className={cn("absolute inset-0 flex items-center justify-center text-xl font-bold", scoreColor)}>
+                            {score !== null ? score.toFixed(0) : 'N/A'}
+                        </span>
+                    </div>
+                    <span className={cn("font-semibold", scoreColor)}>{report.validationOutcome}</span>
+                </div>
+              )}
             </CardHeader>
             <CardContent>
               {report ? (
                 <div className="space-y-8">
                   <SectionCard title="Executive Summary" description={report.sections.executiveSummary.concept}>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className={`p-4 rounded-lg bg-muted/50 border-l-4 ${verdictBg.split(' ')[2]}`}>
-                           <p className="text-sm font-medium">Overall Score</p>
-                           <p className={`text-3xl font-bold ${getScoreColor(report.overallScore)}`}>{report.overallScore.toFixed(1)}/100</p>
-                        </div>
-                        <div className={`p-4 rounded-lg bg-muted/50 border-l-4 ${verdictBg.split(' ')[2]}`}>
-                           <p className="text-sm font-medium">Validation Outcome</p>
-                           <p className={`text-2xl font-bold ${verdictColor}`}>{verdictIcon} {report.validationOutcome}</p>
-                        </div>
-                      </div>
                       <div className="mt-4">
                         <p className="font-semibold">Recommendation:</p>
                         <p className="text-muted-foreground">{report.recommendationText}</p>
@@ -255,6 +317,50 @@ export default function IdeaReportPage() {
               )}
             </CardContent>
           </Card>
+          
+          {pastConsultations.length > 0 && (
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Consultation History</CardTitle>
+                <CardDescription>
+                  Review of past consultations for this idea.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Mentor</TableHead>
+                      <TableHead>Remarks</TableHead>
+                      <TableHead>Attachments</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {pastConsultations.map((consultation) => (
+                      <TableRow key={consultation.id}>
+                        <TableCell>{consultation.date}</TableCell>
+                        <TableCell>{consultation.mentor}</TableCell>
+                        <TableCell>
+                          {consultation.milestones.join(', ')}
+                        </TableCell>
+                        <TableCell>
+                          {consultation.files.map((file, index) => (
+                            <Button key={index} variant="link" asChild size="sm">
+                              <a href="#" download>
+                                {file}
+                              </a>
+                            </Button>
+                          ))}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          )}
+
         </div>
     </div>
   );
