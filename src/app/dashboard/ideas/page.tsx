@@ -81,9 +81,9 @@ type Idea = {
 };
 
 const mockHistory = [
-    { version: "V1.0", date: "2024-01-15", status: "Approved", score: 4.2 },
-    { version: "V0.9", date: "2024-01-10", status: "Moderate", score: 3.8 },
-    { version: "V0.8", date: "2024-01-05", status: "Rejected", score: 2.1 },
+    { version: "V1.0", date: "2024-01-15", status: "Approved", score: 84 },
+    { version: "V0.9", date: "2024-01-10", status: "Moderate", score: 76 },
+    { version: "V0.8", date: "2024-01-05", status: "Rejected", score: 42 },
 ];
 
 export default function IdeasPage() {
@@ -178,12 +178,7 @@ export default function IdeasPage() {
     if (idea.report) {
       return idea.report.overallScore.toFixed(1);
     }
-    if (idea.overallScore) {
-        return idea.overallScore.toFixed(1);
-    }
-    if (!idea.feedback) return 'N/A';
-    const total = idea.feedback.details.reduce((sum, d) => sum + d.score, 0);
-    return (total / idea.feedback.details.length).toFixed(1);
+    return 'N/A';
   };
   
   const getStatus = (idea: Idea) => {

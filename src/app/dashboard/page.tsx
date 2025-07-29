@@ -49,7 +49,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ROLES, type Role } from '@/lib/constants';
-import { MOCK_INNOVATOR_USER, MOCK_IDEAS, STATUS_COLORS } from '@/lib/mock-data';
+import { MOCK_INNOVATOR_USER, MOCK_IDEAS, STATUS_COLORS, MOCK_CONSULTATIONS } from '@/lib/mock-data';
 import type { ValidationReport } from '@/ai/schemas';
 import { useToast } from '@/hooks/use-toast';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -219,9 +219,10 @@ function DashboardPageContent() {
   }
   
   const getScoreColor = (score: number | string) => {
-    if (typeof score !== 'number') return 'text-muted-foreground';
-    if (score >= 85) return 'text-green-500';
-    if (score >= 50) return 'text-yellow-500';
+    const numericScore = Number(score);
+    if (isNaN(numericScore)) return 'text-muted-foreground';
+    if (numericScore >= 85) return 'text-green-500';
+    if (numericScore >= 50) return 'text-orange-500';
     return 'text-red-500';
   };
 
@@ -311,7 +312,7 @@ function DashboardPageContent() {
           <CardContent>
               <ChartContainer config={chartConfig} className="h-[250px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={submissionTrendData}>
+                  <BarChart data={submissionTrendData}>
                   <CartesianGrid vertical={false} />
                   <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} style={{fontSize: '12px'}} />
                   <YAxis allowDecimals={false} />
@@ -322,8 +323,8 @@ function DashboardPageContent() {
                           labelClassName="font-bold"
                       />}
                   />
-                  <Line type="monotone" dataKey="ideas" stroke="hsl(var(--chart-1))" strokeWidth={2} />
-                  </LineChart>
+                  <Bar dataKey="ideas" fill="hsl(var(--chart-1))" radius={4} />
+                  </BarChart>
               </ResponsiveContainer>
               </ChartContainer>
           </CardContent>
@@ -353,7 +354,7 @@ function DashboardPageContent() {
                                     <span>{idea.dateSubmitted}</span>
                                     <span className="flex items-center gap-1">
                                         <Award className="w-3 h-3" />
-                                        <span className={cn('font-medium', getScoreColor(Number(score)))}>{score}</span>
+                                        <span className={cn('font-medium', getScoreColor(score))}>{score}</span>
                                     </span>
                                 </div>
                             </div>

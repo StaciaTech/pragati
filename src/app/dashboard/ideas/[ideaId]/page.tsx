@@ -113,7 +113,7 @@ export default function IdeaReportPage() {
   const getVerdictStyle = (outcome: string) => {
     switch(outcome) {
         case 'Approved': return { icon: '✅', color: 'text-green-600', bg: 'bg-green-100 dark:bg-green-900/30 border-green-500' };
-        case 'Moderate': return { icon: '⚠️', color: 'text-yellow-600', bg: 'bg-yellow-100 dark:bg-yellow-900/30 border-yellow-500' };
+        case 'Moderate': return { icon: '⚠️', color: 'text-orange-600', bg: 'bg-orange-100 dark:bg-orange-900/30 border-orange-500' };
         case 'Rejected':
         default: return { icon: '❌', color: 'text-red-600', bg: 'bg-red-100 dark:bg-red-900/30 border-red-500' };
     }
@@ -122,9 +122,9 @@ export default function IdeaReportPage() {
   const { icon: verdictIcon, color: verdictColor, bg: verdictBg } = getVerdictStyle(status);
 
   const getScoreColor = (score: number) => {
-    if (score >= 85) return 'text-green-600';
-    if (score >= 50) return 'text-yellow-600';
-    return 'text-red-600';
+    if (score >= 85) return 'text-green-500';
+    if (score >= 50) return 'text-orange-500';
+    return 'text-red-500';
   }
 
 
@@ -161,7 +161,7 @@ export default function IdeaReportPage() {
                       <div className="grid grid-cols-2 gap-4">
                         <div className={`p-4 rounded-lg bg-muted/50 border-l-4 ${verdictBg.split(' ')[2]}`}>
                            <p className="text-sm font-medium">Overall Score</p>
-                           <p className={`text-3xl font-bold ${verdictColor}`}>{report.overallScore.toFixed(1)}/100</p>
+                           <p className={`text-3xl font-bold ${getScoreColor(report.overallScore)}`}>{report.overallScore.toFixed(1)}/100</p>
                         </div>
                         <div className={`p-4 rounded-lg bg-muted/50 border-l-4 ${verdictBg.split(' ')[2]}`}>
                            <p className="text-sm font-medium">Validation Outcome</p>
