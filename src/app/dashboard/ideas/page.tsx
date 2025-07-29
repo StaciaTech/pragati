@@ -57,6 +57,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Sector } from 'recharts';
 import type { PieSectorDataItem } from 'recharts/types/polar/Pie';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
 type Idea = {
@@ -310,9 +311,27 @@ export default function IdeasPage() {
                 </TableCell>
                 <TableCell className="cursor-pointer" onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>{score ? score.toFixed(1) : 'N/A'}</TableCell>
                 <TableCell className="text-right">
-                  <div className="flex justify-end items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button variant="outline" size="sm" onClick={() => handleShareClick(idea)}><Share2 className="mr-2" />Share</Button>
-                    <Button variant="outline" size="sm" onClick={() => handleTrackHistory(idea)}><History className="mr-2" />History</Button>
+                  <div className="flex justify-end items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon" onClick={() => handleShareClick(idea)}>
+                            <Share2 className="h-4 w-4" />
+                            <span className="sr-only">Share</span>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent><p>Share</p></TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                           <Button variant="ghost" size="icon" onClick={() => handleTrackHistory(idea)}>
+                            <History className="h-4 w-4" />
+                            <span className="sr-only">History</span>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent><p>View History</p></TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon">
