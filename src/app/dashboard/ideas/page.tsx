@@ -291,7 +291,7 @@ export default function IdeasPage() {
             <TableHead>Date</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Score</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="text-center">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -310,8 +310,8 @@ export default function IdeasPage() {
                   <Badge className={STATUS_COLORS[status]}>{status}</Badge>
                 </TableCell>
                 <TableCell className="cursor-pointer" onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>{score ? score.toFixed(1) : 'N/A'}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <TableCell className="text-center">
+                  <div className="flex justify-center items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
