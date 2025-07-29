@@ -3,7 +3,7 @@
 'use client';
 
 import * as React from 'react';
-import { useParams, useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Card,
@@ -64,12 +64,11 @@ const getBackLink = (role: string | null) => {
 }
 
 
-export default function IdeaReportPage() {
-  const params = useParams();
+export default function IdeaReportPage({ params }: { params: { ideaId: string } }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
-  const ideaId = params.ideaId as string;
+  const ideaId = params.ideaId;
   const role = searchParams.get('role');
   const reportRef = React.useRef<HTMLDivElement>(null);
 
