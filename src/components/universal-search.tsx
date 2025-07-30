@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/command';
 import { Search, Lightbulb, Users, Briefcase, Settings, FileText } from 'lucide-react';
 import type { Role } from '@/lib/constants';
-import { MOCK_IDEAS, MOCK_INNOVATORS, MOCK_COLLEGES, MOCK_PLANS } from '@/lib/mock-data';
+import { MOCK_IDEAS, MOCK_INNOVATORS, MOCK_COLLEGES, MOCK_PLANS, MOCK_TTCS } from '@/lib/mock-data';
 import { cn } from '@/lib/utils';
 
 interface Searchable {
