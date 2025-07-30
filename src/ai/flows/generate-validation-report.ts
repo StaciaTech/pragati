@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -19,7 +20,6 @@ import {
   GenerateValidationReportInputSchema,
   ValidationReport,
   ValidationReportSchema,
-  DetailedEvaluationClustersSchema,
   DetailedEvaluationClusters,
 } from '@/ai/schemas';
 import { generateEvaluation } from './generate-evaluation';
@@ -103,14 +103,14 @@ const generateValidationReportFlow = ai.defineFlow(
     
     // Step 3: Determine outcome based on the calculated score
     const validationOutcome = 
-        overallScore >= 4.0 ? "Approved" : 
-        overallScore >= 2.5 ? "Moderate" : 
-        "Rejected";
+        overallScore >= 85 ? "Slay" : 
+        overallScore >= 50 ? "Mid" : 
+        "Flop";
         
     const recommendationText = 
-        validationOutcome === "Approved" ? "Idea has strong potential. Focus on execution and scaling." :
-        validationOutcome === "Moderate" ? "Idea has potential but requires modification. Review the detailed report." :
-        "Idea is not viable at this stage. Consider a fundamental re-evaluation.";
+        validationOutcome === "Slay" ? "Rocket Fuel! This idea is cleared for launch. Let's make it happen!" :
+        validationOutcome === "Mid" ? "Diamond in the Rough! There's solid potential here. Polish it up with the feedback and resubmit." :
+        "Back to the Lab! A great learning opportunity. Rethink the core concept and come back stronger.";
 
 
     // Step 4: Construct the full report object
@@ -153,7 +153,7 @@ const generateValidationReportFlow = ai.defineFlow(
             },
             conclusion: {
                 title: "Conclusion",
-                content: `Based on the evaluation, the idea '${input.ideaName}' shows ${validationOutcome.toLowerCase()} potential. The overall score is ${overallScore.toFixed(2)}/5.0.`,
+                content: `Based on the evaluation, the idea '${input.ideaName}' shows ${validationOutcome.toLowerCase()} potential. The overall score is ${overallScore.toFixed(2)}/100.`,
             },
             recommendations: {
                 title: "Recommendations",

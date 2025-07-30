@@ -211,26 +211,27 @@ export const SUB_PARAMETER_DEFINITIONS = {
 };
 
 export const SCORING_RUBRIC = {
-  "5": "Excellent: Strong evidence, highly aligned with success factors, minimal risk, clear advantage.",
-  "4": "Good: Positive evidence, generally aligned, minor areas for improvement/risk.",
-  "3": "Moderate: Mixed evidence, some clear challenges/risks, requires attention.",
-  "2": "Weak: Significant gaps, major challenges/risks, requires substantial rework.",
-  "1": "Poor: No evidence, fundamental flaws, highly problematic, major red flags.",
+  "100-85": "Excellent: Strong evidence, highly aligned with success factors, minimal risk, clear advantage.",
+  "84-70": "Good: Positive evidence, generally aligned, minor areas for improvement/risk.",
+  "69-50": "Moderate: Mixed evidence, some clear challenges/risks, requires attention.",
+  "49-25": "Weak: Significant gaps, major challenges/risks, requires substantial rework.",
+  "24-1": "Poor: No evidence, fundamental flaws, highly problematic, major red flags.",
   "N/A": "Not Applicable: The sub-parameter is not relevant to this specific idea."
 };
 
+
 export const VALIDATION_OUTCOMES = {
-  "GOOD": {
-    "range": "4.0 - 5.0",
-    "recommendation": "Approved for Next Step (Consultancy): Idea has strong potential, minimal significant red flags. Focus on execution and scaling."
+  "Approved": {
+    "range": "85-100",
+    "recommendation": "Rocket Fuel! This idea is cleared for launch. Let's make it happen!"
   },
-  "MODERATE": {
-    "range": "2.5 - 3.9",
-    "recommendation": "Requires AI-Guided Modification & Re-upload: Idea has potential but with notable weaknesses or missing information. Please review the detailed report and make necessary revisions."
+  "Moderate": {
+    "range": "50-84",
+    "recommendation": "Diamond in the Rough! There's solid potential here. Polish it up with the feedback and resubmit."
   },
-  "NOT RECOMMENDED": {
-    "range": "1.0 - 2.4",
-    "recommendation": "Idea Not Viable (at this stage): Idea has fundamental flaws or significant unaddressed risks. Please consider a fundamental re-evaluation of the core concept."
+  "Rejected": {
+    "range": "0-49",
+    "recommendation": "Back to the Lab! A great learning opportunity. Rethink the core concept and come back stronger."
   }
 };
 
@@ -249,18 +250,18 @@ export const INITIAL_CLUSTER_WEIGHTS = {
 const MOCK_SAMPLE_REPORT: ValidationReport = {
   ideaName: 'AI-Powered Smart Farming',
   ideaConcept: 'An intelligent system using AI to optimize crop yield and detect diseases early.',
-  overallScore: 3.8,
-  validationOutcome: 'MODERATE',
-  recommendationText: 'Requires AI-Guided Modification & Re-upload: Idea has potential but with notable weaknesses or missing information. Please review the detailed report and make necessary revisions.',
+  overallScore: 76,
+  validationOutcome: 'Moderate',
+  recommendationText: 'Diamond in the Rough! There\'s solid potential here. Polish it up with the feedback and resubmit.',
   submissionDate: '2024-07-21',
   pptUrl: 'https://placehold.co/400x200/A0C4FF/1E2A38?text=Mock+PPT',
   sections: {
     executiveSummary: {
       ideaName: 'AI-Powered Smart Farming',
       concept: 'An intelligent system using AI to optimize crop yield and detect diseases early.',
-      overallScore: 3.8,
-      validationOutcome: 'MODERATE',
-      recommendation: 'Requires AI-Guided Modification & Re-upload: Idea has potential but with notable weaknesses or missing information. Please review the detailed report and make necessary revisions.',
+      overallScore: 76,
+      validationOutcome: 'Moderate',
+      recommendation: 'Diamond in the Rough! There\'s solid potential here. Polish it up with the feedback and resubmit.',
       reportGeneratedOn: '2024-07-21',
     },
     pragatiAIServiceProcess: {
@@ -293,7 +294,7 @@ const MOCK_SAMPLE_REPORT: ValidationReport = {
       sections: [
         {
           heading: '4.1 Scoring Rubric',
-          content: 'Each sub-parameter is scored on a scale of 1 to 5, where 5 is Excellent and 1 is Poor. An N/A score is used for non-relevant parameters.'
+          content: 'Each sub-parameter is scored on a scale of 1 to 100.'
         },
         {
           heading: '4.2 Weightage Structure',
@@ -314,111 +315,111 @@ const MOCK_SAMPLE_REPORT: ValidationReport = {
         },
         {
           heading: '4.3 Scoring Calculation Flow (Weighted Average)',
-          content: 'The overall viability score is a weighted average of all sub-parameter scores, scaled to a final 1-5 score, providing a holistic assessment.'
+          content: 'The overall viability score is a weighted average of all sub-parameter scores, scaled to a final 1-100 score, providing a holistic assessment.'
         },
         {
           heading: '4.4 Validation Thresholds',
-          content: 'Scores from 4.0-5.0 are considered GOOD, 2.5-3.9 MODERATE, and 1.0-2.4 NOT RECOMMENDED, each with a corresponding action plan.'
+          content: 'Scores from 85-100 are Approved, 50-84 are Moderate, and 0-49 are Rejected, each with a corresponding action plan.'
         }
       ]
     },
     detailedEvaluation: {
-      title: '4.5 Detailed Viability Assessment of AI-Powered Smart Farming',
+      title: 'Detailed Viability Assessment',
       description: 'Here is the granular breakdown of the scores for each sub-parameter.',
       clusters: {
         "Core Idea & Innovation": {
           "Novelty & Uniqueness": {
-            "Originality": { assignedScore: 4, explanation: "The use of AI for early disease detection is not entirely new, but the proposed model for Indian crop types shows significant improvement over existing generic solutions.", assumptions: ["The AI model can be trained effectively on diverse Indian agricultural data."] },
-            "Differentiation": { assignedScore: 3, explanation: "Differentiation is moderate. While scalable, it competes with established agritech startups and government advisories. The key differentiator will be the accuracy and accessibility of the AI.", assumptions: ["The service can be delivered at a cost-effective price point for Indian farmers."] }
+            "Originality": { assignedScore: 80, whatWentWell: "The use of AI for early disease detection is not entirely new, but the proposed model for Indian crop types shows significant improvement over existing generic solutions.", whatCanBeImproved: "Further clarify the unique aspects of the AI model compared to competitors.", assumptions: ["The AI model can be trained effectively on diverse Indian agricultural data."] },
+            "Differentiation": { assignedScore: 60, whatWentWell: "The scalability of the solution is a good differentiator.", whatCanBeImproved: "The key differentiator will be the accuracy and accessibility of the AI, which needs more emphasis.", assumptions: ["The service can be delivered at a cost-effective price point for Indian farmers."] }
           },
           "Problem-Solution Fit & Market Need": {
-            "Problem Clarity & Severity": { assignedScore: 5, explanation: "Crop loss due to disease is a severe and well-documented problem in India, causing significant financial distress to farmers.", assumptions: [] },
-            "Target Audience Identification & Definition": { assignedScore: 4, explanation: "The target audience (small to medium-scale farmers in specific regions) is well-defined, though reaching them will require a tailored strategy.", assumptions: ["Digital literacy among the target audience is sufficient for app usage."] },
-            "Customer Pain Points Validation": { assignedScore: 4, explanation: "The pain points are clearly validated by numerous agricultural reports. The solution directly addresses the need for timely and accurate information.", assumptions: [] },
-            "Solution Efficacy": { assignedScore: 3, explanation: "The potential efficacy is high, but it depends heavily on the AI model's real-world accuracy, which is yet to be proven at scale.", assumptions: ["Sufficient high-quality, labeled image data is available for training."] },
-            "Customer Willingness to Pay": { assignedScore: 3, explanation: "Farmers are traditionally price-sensitive. A freemium or subscription model needs to demonstrate clear ROI to gain traction.", assumptions: ["The economic benefits of using the app will outweigh its cost."] },
-            "Jobs-to-Be-Done (JTBD) Alignment": { assignedScore: 4, explanation: "The solution aligns well with the farmer's core 'job' of protecting their yield and maximizing income.", assumptions: [] }
+            "Problem Clarity & Severity": { assignedScore: 90, whatWentWell: "Crop loss due to disease is a severe and well-documented problem in India, causing significant financial distress to farmers.", whatCanBeImproved: "No major improvements needed.", assumptions: [] },
+            "Target Audience Identification & Definition": { assignedScore: 80, whatWentWell: "The target audience (small to medium-scale farmers in specific regions) is well-defined.", whatCanBeImproved: "A more detailed go-to-market strategy for reaching them would be beneficial.", assumptions: ["Digital literacy among the target audience is sufficient for app usage."] },
+            "Customer Pain Points Validation": { assignedScore: 80, whatWentWell: "The pain points are clearly validated by numerous agricultural reports. The solution directly addresses the need for timely and accurate information.", whatCanBeImproved: "No major improvements needed.", assumptions: [] },
+            "Solution Efficacy": { assignedScore: 65, whatWentWell: "The potential efficacy is high.", whatCanBeImproved: "It depends heavily on the AI model's real-world accuracy, which is yet to be proven at scale.", assumptions: ["Sufficient high-quality, labeled image data is available for training."] },
+            "Customer Willingness to Pay": { assignedScore: 60, whatWentWell: "A subscription model is proposed.", whatCanBeImproved: "Farmers are traditionally price-sensitive. A freemium or subscription model needs to demonstrate clear ROI to gain traction.", assumptions: ["The economic benefits of using the app will outweigh its cost."] },
+            "Jobs-to-Be-Done (JTBD) Alignment": { assignedScore: 80, whatWentWell: "The solution aligns well with the farmer's core 'job' of protecting their yield and maximizing income.", whatCanBeImproved: "No major improvements needed.", assumptions: [] }
           },
           "User Experience (UX) & Usability Potential": {
-            "Intuitive Design": { assignedScore: 4, explanation: "A simple, image-based interface has high potential for intuitive use, even with varying literacy levels.", assumptions: ["The app will be available in multiple regional languages."] },
-            "Accessibility Compliance": { assignedScore: 3, explanation: "Accessibility for users with disabilities has not been explicitly addressed but is a crucial consideration for a wide-reaching public service.", assumptions: [] }
+            "Intuitive Design": { assignedScore: 80, whatWentWell: "A simple, image-based interface has high potential for intuitive use, even with varying literacy levels.", whatCanBeImproved: "Consider offline capabilities.", assumptions: ["The app will be available in multiple regional languages."] },
+            "Accessibility Compliance": { assignedScore: 60, whatWentWell: "The concept is inclusive.", whatCanBeImproved: "Accessibility for users with disabilities has not been explicitly addressed but is a crucial consideration for a wide-reaching public service.", assumptions: [] }
           }
         },
         "Market & Commercial Opportunity": {
           "Market Validation": {
-            "Market Size (TAM)": { "assignedScore": 5, "explanation": "The Indian agriculture market is vast, with millions of farmers. The Total Addressable Market is exceptionally large.", "assumptions": [] },
-            "Competitive Intensity": { "assignedScore": 3, "explanation": "The agritech space has several well-funded players and government initiatives, making the competitive landscape moderately intense.", "assumptions": [] }
+            "Market Size (TAM)": { "assignedScore": 95, "whatWentWell": "The Indian agriculture market is vast, with millions of farmers. The Total Addressable Market is exceptionally large.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] },
+            "Competitive Intensity": { "assignedScore": 60, "whatWentWell": "The submission acknowledges competitors.", "whatCanBeImproved": "The agritech space has several well-funded players and government initiatives, making the competitive landscape moderately intense. A clearer strategy to outperform them is needed.", "assumptions": [] }
           },
           "Geographic Specificity (India)": {
-            "Regulatory Landscape": { "assignedScore": 4, "explanation": "Government policies are generally supportive of agritech. There are no major regulatory hurdles, but data privacy laws for farmer data must be followed.", "assumptions": [] },
-            "Infrastructure Readiness": { "assignedScore": 3, "explanation": "Smartphone penetration is high, but rural internet connectivity can be inconsistent, which might affect real-time AI analysis.", "assumptions": ["The app can function in low-bandwidth or offline modes."] }
+            "Regulatory Landscape": { "assignedScore": 80, "whatWentWell": "Government policies are generally supportive of agritech.", "whatCanBeImproved": "There are no major regulatory hurdles, but data privacy laws for farmer data must be followed closely.", "assumptions": [] },
+            "Infrastructure Readiness": { "assignedScore": 65, "whatWentWell": "Smartphone penetration is high.", "whatCanBeImproved": "Rural internet connectivity can be inconsistent, which might affect real-time AI analysis. An offline strategy is important.", "assumptions": ["The app can function in low-bandwidth or offline modes."] }
           },
           "Product-Market Fit": {
-            "User Engagement": { "assignedScore": 4, "explanation": "If the AI provides accurate and timely advice, engagement potential is high as farming is a daily activity.", "assumptions": ["The app provides tangible, recurring value."] },
-            "Retention Potential": { "assignedScore": 4, "explanation": "Retention will be high if the service proves reliable and leads to increased crop yield and income.", "assumptions": [] }
+            "User Engagement": { "assignedScore": 80, "whatWentWell": "If the AI provides accurate and timely advice, engagement potential is high as farming is a daily activity.", "whatCanBeImproved": "Gamification or community features could boost engagement further.", "assumptions": ["The app provides tangible, recurring value."] },
+            "Retention Potential": { "assignedScore": 80, "whatWentWell": "Retention will be high if the service proves reliable and leads to increased crop yield and income.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] }
           }
         },
         "Execution & Operations": {
           "Technical Feasibility": {
-            "Technology Maturity": { "assignedScore": 4, "explanation": "Image recognition and machine learning are mature technologies. The primary challenge is adapting them to specific Indian agricultural contexts.", "assumptions": ["The team has access to the required AI/ML expertise."] },
-            "Scalability & Performance": { "assignedScore": 4, "explanation": "The cloud-based architecture is inherently scalable, capable of serving millions of users with proper design.", "assumptions": ["Cloud infrastructure costs are managed effectively."] }
+            "Technology Maturity": { "assignedScore": 80, "whatWentWell": "Image recognition and machine learning are mature technologies.", "whatCanBeImproved": "The primary challenge is adapting them to specific Indian agricultural contexts.", "assumptions": ["The team has access to the required AI/ML expertise."] },
+            "Scalability & Performance": { "assignedScore": 80, "whatWentWell": "The cloud-based architecture is inherently scalable, capable of serving millions of users with proper design.", "whatCanBeImproved": "Cost management at scale needs to be considered.", "assumptions": ["Cloud infrastructure costs are managed effectively."] }
           },
           "Operational Viability": {
-            "Resource Availability": { "assignedScore": 3, "explanation": "Access to high-quality, localized agricultural data for training is a significant challenge and a critical resource.", "assumptions": ["Partnerships with agricultural research institutes can be formed."] },
-            "Process Efficiency": { "assignedScore": 5, "explanation": "The AI-driven process is vastly more efficient than manual inspection or traditional extension services.", "assumptions": [] }
+            "Resource Availability": { "assignedScore": 60, "whatWentWell": "The plan acknowledges the need for data.", "whatCanBeImproved": "Access to high-quality, localized agricultural data for training is a significant challenge and a critical resource. A clear data acquisition strategy is needed.", "assumptions": ["Partnerships with agricultural research institutes can be formed."] },
+            "Process Efficiency": { "assignedScore": 90, "whatWentWell": "The AI-driven process is vastly more efficient than manual inspection or traditional extension services.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] }
           },
           "Scalability Potential": {
-            "Business Model Scalability": { "assignedScore": 4, "explanation": "The business model is highly scalable, as serving an additional user has a low marginal cost.", "assumptions": [] },
-            "Market Expansion Potential": { "assignedScore": 5, "explanation": "The model can be expanded to different crops, regions, and even other countries with similar agricultural profiles.", "assumptions": [] }
+            "Business Model Scalability": { "assignedScore": 80, "whatWentWell": "The business model is highly scalable, as serving an additional user has a low marginal cost.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] },
+            "Market Expansion Potential": { "assignedScore": 90, "whatWentWell": "The model can be expanded to different crops, regions, and even other countries with similar agricultural profiles.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] }
           }
         },
         "Business Model & Strategy": {
           "Financial Viability": {
-            "Revenue Stream Diversity": { "assignedScore": 3, "explanation": "The model relies primarily on a subscription model. Diversifying with data analytics for institutions or a marketplace for supplies could strengthen it.", "assumptions": [] },
-            "Profitability & Margins": { "assignedScore": 3, "explanation": "Profitability depends on achieving a large scale of paid users to cover the initial R&D and ongoing cloud costs.", "assumptions": [] }
+            "Revenue Stream Diversity": { "assignedScore": 65, "whatWentWell": "A subscription model is proposed.", "whatCanBeImproved": "The model relies primarily on a subscription model. Diversifying with data analytics for institutions or a marketplace for supplies could strengthen it.", "assumptions": [] },
+            "Profitability & Margins": { "assignedScore": 60, "whatWentWell": "The long-term vision is profitable.", "whatCanBeImproved": "Profitability depends on achieving a large scale of paid users to cover the initial R&D and ongoing cloud costs. Financial projections are needed.", "assumptions": [] }
           },
           "Defensibility": {
-            "Intellectual Property (IP)": { "assignedScore": 2, "explanation": "The core AI algorithms may be hard to patent. Defensibility will likely come from proprietary data and brand trust rather than IP.", "assumptions": [] },
-            "Network Effects": { "assignedScore": 4, "explanation": "Strong network effects are possible: more user data improves the AI, which attracts more users, creating a virtuous cycle.", "assumptions": ["Users consent to their anonymized data being used for model improvement."] }
+            "Intellectual Property (IP)": { "assignedScore": 40, "whatWentWell": "N/A", "whatCanBeImproved": "The core AI algorithms may be hard to patent. Defensibility will likely come from proprietary data and brand trust rather than IP.", "assumptions": [] },
+            "Network Effects": { "assignedScore": 80, "whatWentWell": "Strong network effects are possible: more user data improves the AI, which attracts more users, creating a virtuous cycle.", "whatCanBeImproved": "No major improvements needed.", "assumptions": ["Users consent to their anonymized data being used for model improvement."] }
           }
         },
         "Team & Organizational Health": {
           "Founder-Fit": {
-            "Relevant Experience": { "assignedScore": 4, "explanation": "The team's background in technology is strong, but more deep-domain agricultural expertise would be beneficial.", "assumptions": ["The team can hire or partner with agricultural experts."] },
-            "Complementary Skills": { "assignedScore": 3, "explanation": "The team is tech-heavy and would benefit from adding skills in rural marketing, sales, and agricultural policy.", "assumptions": [] }
+            "Relevant Experience": { "assignedScore": 75, "whatWentWell": "The team's background in technology is strong.", "whatCanBeImproved": "More deep-domain agricultural expertise would be beneficial.", "assumptions": ["The team can hire or partner with agricultural experts."] },
+            "Complementary Skills": { "assignedScore": 60, "whatWentWell": "The team has strong tech skills.", "whatCanBeImproved": "The team is tech-heavy and would benefit from adding skills in rural marketing, sales, and agricultural policy.", "assumptions": [] }
           },
           "Culture/Values": {
-            "Mission Alignment": { "assignedScore": 5, "explanation": "The team shows strong alignment with a mission to use technology for social good and empower farmers.", "assumptions": [] },
-            "Diversity & Inclusion": { "assignedScore": 3, "explanation": "Ensuring the AI model is trained on data that is inclusive of all regions and farming communities is a critical challenge to address.", "assumptions": [] }
+            "Mission Alignment": { "assignedScore": 90, "whatWentWell": "The team shows strong alignment with a mission to use technology for social good and empower farmers.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] },
+            "Diversity & Inclusion": { "assignedScore": 60, "whatWentWell": "This is acknowledged as important.", "whatCanBeImproved": "Ensuring the AI model is trained on data that is inclusive of all regions and farming communities is a critical challenge to address.", "assumptions": [] }
           }
         },
         "External Environment & Compliance": {
           "Regulatory (India)": {
-            "Data Privacy Compliance": { "assignedScore": 3, "explanation": "Adherence to India's data privacy laws (DPDP Act) is crucial and requires careful implementation for handling farmer data.", "assumptions": ["Legal counsel will be sought for compliance."] },
-            "Sector-Specific Compliance": { "assignedScore": 4, "explanation": "There are no major sector-specific regulations that would block this idea. Alignment with government digital agriculture initiatives is a plus.", "assumptions": [] }
+            "Data Privacy Compliance": { "assignedScore": 65, "whatWentWell": "Awareness of data privacy is mentioned.", "whatCanBeImproved": "Adherence to India's data privacy laws (DPDP Act) is crucial and requires careful implementation for handling farmer data.", "assumptions": ["Legal counsel will be sought for compliance."] },
+            "Sector-Specific Compliance": { "assignedScore": 80, "whatWentWell": "There are no major sector-specific regulations that would block this idea. Alignment with government digital agriculture initiatives is a plus.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] }
           },
           "Sustainability (ESG)": {
-            "Environmental Impact": { "assignedScore": 5, "explanation": "The idea has a strong positive environmental impact by promoting targeted pesticide use and improving resource management.", "assumptions": [] },
-            "Social Impact (SDGs)": { "assignedScore": 5, "explanation": "Directly aligns with SDGs for Zero Hunger (SDG 2), and Industry, Innovation, and Infrastructure (SDG 9).", "assumptions": [] }
+            "Environmental Impact": { "assignedScore": 90, "whatWentWell": "The idea has a strong positive environmental impact by promoting targeted pesticide use and improving resource management.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] },
+            "Social Impact (SDGs)": { "assignedScore": 90, "whatWentWell": "Directly aligns with SDGs for Zero Hunger (SDG 2), and Industry, Innovation, and Infrastructure (SDG 9).", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] }
           },
           "Ecosystem Support (India)": {
-            "Government & Institutional Support": { "assignedScore": 4, "explanation": "High potential for support from government initiatives like Startup India and agritech incubators.", "assumptions": ["The team will actively seek this support."] },
-            "Investor & Partner Landscape": { "assignedScore": 4, "explanation": "The Indian agritech sector is attracting significant investor interest, making the funding landscape favorable.", "assumptions": ["The business model is attractive to VCs."] }
+            "Government & Institutional Support": { "assignedScore": 80, "whatWentWell": "High potential for support from government initiatives like Startup India and agritech incubators.", "whatCanBeImproved": "No major improvements needed.", "assumptions": ["The team will actively seek this support."] },
+            "Investor & Partner Landscape": { "assignedScore": 80, "whatWentWell": "The Indian agritech sector is attracting significant investor interest, making the funding landscape favorable.", "whatCanBeImproved": "No major improvements needed.", "assumptions": ["The business model is attractive to VCs."] }
           }
         },
         "Risk & Future Outlook": {
           "Risk Assessment": {
-            "Technical Risks": { "assignedScore": 3, "explanation": "The primary technical risk is the AI's accuracy and reliability across diverse real-world conditions.", "assumptions": [] },
-            "Market Risks": { "assignedScore": 3, "explanation": "Market risk includes user adoption challenges due to digital literacy and trust, and competition from other agritech players.", "assumptions": [] },
-            "Operational Risks": { "assignedScore": 2, "explanation": "Operational risks involve building a robust data pipeline and a support system for farmers.", "assumptions": [] }
+            "Technical Risks": { "assignedScore": 65, "whatWentWell": "Risks are identified.", "whatCanBeImproved": "The primary technical risk is the AI's accuracy and reliability across diverse real-world conditions. A mitigation plan is needed.", "assumptions": [] },
+            "Market Risks": { "assignedScore": 60, "whatWentWell": "Risks are identified.", "whatCanBeImproved": "Market risk includes user adoption challenges due to digital literacy and trust, and competition from other agritech players. A mitigation plan is needed.", "assumptions": [] },
+            "Operational Risks": { "assignedScore": 50, "whatWentWell": "Risks are identified.", "whatCanBeImproved": "Operational risks involve building a robust data pipeline and a support system for farmers. A mitigation plan is needed.", "assumptions": [] }
           },
           "Investor Attractiveness": {
-            "ROI Potential": { "assignedScore": 4, "explanation": "High ROI potential if the model can achieve scale, given the large market size and scalable tech.", "assumptions": [] },
-            "Exit Strategy Feasibility": { "assignedScore": 4, "explanation": "A clear exit path exists through acquisition by larger agritech or agriculture input companies.", "assumptions": [] }
+            "ROI Potential": { "assignedScore": 80, "whatWentWell": "High ROI potential if the model can achieve scale, given the large market size and scalable tech.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] },
+            "Exit Strategy Feasibility": { "assignedScore": 80, "whatWentWell": "A clear exit path exists through acquisition by larger agritech or agriculture input companies.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] }
           },
           "Academic/National Alignment": {
-            "Research Synergy": { "assignedScore": 4, "explanation": "Strong potential for collaboration with agricultural universities for research and data.", "assumptions": [] },
-            "National Priority Alignment": { "assignedScore": 5, "explanation": "The idea aligns perfectly with national priorities of increasing agricultural productivity and farmer income.", "assumptions": [] }
+            "Research Synergy": { "assignedScore": 85, "whatWentWell": "Strong potential for collaboration with agricultural universities for research and data.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] },
+            "National Priority Alignment": { "assignedScore": 90, "whatWentWell": "The idea aligns perfectly with national priorities of increasing agricultural productivity and farmer income.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] }
           }
         }
       }
@@ -480,7 +481,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Approved',
     dateSubmitted: '2024-01-15',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, overallScore: 4.2},
+    report: {...MOCK_SAMPLE_REPORT, ideaName: 'AI-Powered Smart Farming', overallScore: 88, validationOutcome: 'Approved', recommendationText: "Rocket Fuel! This idea is cleared for launch. Let's make it happen!"},
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Scheduled',
@@ -500,7 +501,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Moderate',
     dateSubmitted: '2024-02-20',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, ideaName: 'Decentralized Education Platform', overallScore: 3.1 },
+    report: {...MOCK_SAMPLE_REPORT, ideaName: 'Decentralized Education Platform', overallScore: 62 },
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Pending',
@@ -520,7 +521,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Rejected',
     dateSubmitted: '2024-03-10',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, ideaName: 'HealthTech Wearable for Seniors', overallScore: 2.1, validationOutcome: 'Rejected'},
+    report: {...MOCK_SAMPLE_REPORT, ideaName: 'HealthTech Wearable for Seniors', overallScore: 42, validationOutcome: 'Rejected', recommendationText: "Back to the Lab! A great learning opportunity. Rethink the core concept and come back stronger."},
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Not Requested',
@@ -540,7 +541,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Approved',
     dateSubmitted: '2024-04-05',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, ideaName: 'Smart City Traffic Management', overallScore: 4.5, validationOutcome: 'Approved'},
+    report: {...MOCK_SAMPLE_REPORT, ideaName: 'Smart City Traffic Management', overallScore: 90, validationOutcome: 'Approved', recommendationText: "Rocket Fuel! This idea is cleared for launch. Let's make it happen!"},
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Completed',
@@ -560,7 +561,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Approved',
     dateSubmitted: '2024-05-22',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, ideaName: 'Financial Advisor Bot', overallScore: 4.0, validationOutcome: 'Approved'},
+    report: {...MOCK_SAMPLE_REPORT, ideaName: 'Financial Advisor Bot', overallScore: 80, validationOutcome: 'Moderate'},
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Pending',
@@ -580,7 +581,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Moderate',
     dateSubmitted: '2024-06-30',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, ideaName: 'Grid Optimizer', overallScore: 3.5, validationOutcome: 'Moderate'},
+    report: {...MOCK_SAMPLE_REPORT, ideaName: 'Grid Optimizer', overallScore: 70, validationOutcome: 'Moderate'},
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Not Requested',
@@ -688,8 +689,8 @@ export const STATUS_COLORS: { [key: string]: string } = {
     Validating: 'bg-gray-500 text-white',
     Approved: 'bg-green-500 text-white',
     GOOD: 'bg-green-500 text-white',
-    Moderate: 'bg-yellow-500 text-white',
-    MODERATE: 'bg-yellow-500 text-white',
+    Moderate: 'bg-orange-500 text-white',
+    MODERATE: 'bg-orange-500 text-white',
     Rejected: 'bg-red-500 text-white',
     'NOT RECOMMENDED': 'bg-red-500 text-white',
     Pending: 'bg-blue-500 text-white',

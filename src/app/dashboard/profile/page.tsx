@@ -111,32 +111,39 @@ export default function ProfilePage() {
   return (
     <>
       <div className="space-y-6">
-          <div className="flex flex-col md:flex-row items-center gap-6">
-              <div className="relative group">
-                <Avatar className="h-24 w-24 border-4 border-primary">
-                  <AvatarImage src={avatarPreview || `https://avatar.vercel.sh/${user.name}.png`} alt={user.name} />
-                  <AvatarFallback className="text-3xl">{getInitials(user.name)}</AvatarFallback>
-                </Avatar>
-                <div 
-                    onClick={handleAvatarClick} 
-                    className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-2 cursor-pointer hover:bg-primary/90 transition-colors"
-                    title="Change profile picture"
-                >
-                    <Pencil className="h-4 w-4" />
+        <Card className="w-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg border-0 relative overflow-hidden">
+          <div className="absolute -top-1/4 -left-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-br from-[#FF00CC] to-[#333399] opacity-30 blur-3xl filter" />
+          <div className="absolute -bottom-1/4 -right-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-[#F472B6] to-[#06B6D4] opacity-20 blur-3xl filter" />
+          <div className="relative z-10 p-6">
+            <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="relative group">
+                  <Avatar className="h-24 w-24 border-4 border-primary-foreground/50">
+                    <AvatarImage src={avatarPreview || `https://avatar.vercel.sh/${user.name}.png`} alt={user.name} />
+                    <AvatarFallback className="text-3xl">{getInitials(user.name)}</AvatarFallback>
+                  </Avatar>
+                  <div 
+                      onClick={handleAvatarClick} 
+                      className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-2 cursor-pointer hover:bg-primary/90 transition-colors"
+                      title="Change profile picture"
+                  >
+                      <Pencil className="h-4 w-4" />
+                  </div>
+                  <Input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      className="hidden"
+                      accept="image/png, image/jpeg, image/gif"
+                  />
                 </div>
-                <Input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    className="hidden"
-                    accept="image/png, image/jpeg, image/gif"
-                />
-              </div>
-              <div>
-                <h2 className="text-3xl font-bold">{user.name}</h2>
-                <p className="text-muted-foreground">{user.role || role}</p>
-              </div>
+                <div>
+                  <h2 className="text-3xl font-bold text-white">{user.name}</h2>
+                  <p className="text-primary-foreground/80">{user.role || role}</p>
+                </div>
+            </div>
           </div>
+        </Card>
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
                  <Card>

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -32,13 +33,6 @@ export default function CollegeAnalyticsPage() {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>College Analytics</CardTitle>
-          <CardDescription>View analytics and performance metrics for your college.</CardDescription>
-        </CardHeader>
-      </Card>
-      
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card>
             <CardHeader><CardTitle>Approval Rate</CardTitle></CardHeader>

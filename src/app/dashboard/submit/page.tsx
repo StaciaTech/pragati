@@ -5,7 +5,7 @@ import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, type FieldError } from 'react-hook-form';
 import { z } from 'zod';
-import { FileUp, BrainCircuit } from 'lucide-react';
+import { FileUp, BrainCircuit, ArrowRight, ArrowLeft, TriangleAlert } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
@@ -63,6 +63,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import Lottie from 'lottie-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const clusterKeys = Object.keys(INITIAL_CLUSTER_WEIGHTS);
 const weightageSchema = clusterKeys.reduce((acc, key) => {
@@ -136,8 +137,8 @@ function Step1({ form }: { form: any }) {
   const { toast } = useToast();
   const preset = form.watch('preset');
   const watchedWeights = form.watch(clusters);
-  const totalWeight = clusters.reduce((acc, cluster, i) => acc + (form.getValues(cluster) || 0), 0);
-
+  const totalWeight = clusters.reduce((acc, cluster) => acc + Math.round(form.getValues(cluster) || 0), 0);
+  
   const handlePresetChange = (presetKey: keyof typeof presets | 'Manual') => {
       form.setValue('preset', presetKey);
       if (presetKey !== 'Manual') {
@@ -148,13 +149,65 @@ function Step1({ form }: { form: any }) {
       }
   };
 
+ const handleManualWeightChange = (changedCluster: string, newValue: number) => {
+    if (preset !== 'Manual') return;
+
+    newValue = Math.max(0, Math.min(100, Math.round(newValue)));
+
+    const otherClusters = clusters.filter(c => c !== changedCluster);
+    const oldTotal = clusters.reduce((sum, c) => sum + form.getValues(c), 0);
+    const oldValueForChanged = form.getValues(changedCluster);
+    
+    // Set the new value for the changed cluster
+    form.setValue(changedCluster, newValue, { shouldDirty: true });
+
+    // Calculate how much we need to adjust the others
+    let remainingToDistribute = 100 - (oldTotal - oldValueForChanged + newValue);
+
+    // Smart single-pass redistribution
+    let adjustableClusters = otherClusters.filter(c => form.getValues(c) + remainingToDistribute >= 0);
+    let totalAdjustableValue = adjustableClusters.reduce((sum, c) => sum + form.getValues(c), 0);
+    
+    if (totalAdjustableValue > 0) {
+        let distributedDelta = 0;
+        adjustableClusters.forEach(cluster => {
+            const clusterValue = form.getValues(cluster);
+            const proportion = clusterValue / totalAdjustableValue;
+            const adjustment = Math.round(remainingToDistribute * proportion);
+            const newClusterValue = Math.max(0, Math.min(100, clusterValue + adjustment));
+            form.setValue(cluster, newClusterValue);
+            distributedDelta += (newClusterValue - clusterValue);
+        });
+        remainingToDistribute -= distributedDelta;
+    }
+    
+    // Final check for rounding errors
+    let finalTotal = clusters.reduce((sum, c) => sum + form.getValues(c), 0);
+    let finalDelta = 100 - finalTotal;
+
+    if (finalDelta !== 0) {
+        const clusterToAdjust = otherClusters.find(c => {
+            const val = form.getValues(c);
+            return finalDelta > 0 ? val < 100 : val > 0;
+        }) || otherClusters[0];
+        
+        if (clusterToAdjust) {
+            form.setValue(clusterToAdjust, Math.max(0, Math.min(100, form.getValues(clusterToAdjust) + finalDelta)));
+        }
+    }
+    
+    clusters.forEach(c => form.trigger(c));
+};
+
+
   const handleNext = () => {
-    const totalWeight = clusters.reduce((acc, cluster) => acc + (form.getValues(cluster) || 0), 0);
-    if (preset === 'Manual' && totalWeight !== 100) {
+    const currentTotal = clusters.reduce((acc, cluster) => acc + Math.round(form.getValues(cluster) || 0), 0);
+    
+    if (preset === 'Manual' && currentTotal !== 100) {
         toast({
             variant: "destructive",
             title: "Weightage Error",
-            description: "In Manual mode, the total weightage must sum to 100%.",
+            description: `In Manual mode, the total weightage must sum to 100%. Current total: ${currentTotal}%`,
         });
         return;
     }
@@ -176,6 +229,17 @@ function Step1({ form }: { form: any }) {
                 <Button size="sm" variant={preset === 'Commercialization-Focused' ? 'default' : 'outline'} onClick={() => handlePresetChange('Commercialization-Focused')}>Commercialization-Focused</Button>
                 <Button size="sm" variant={preset === 'Manual' ? 'default' : 'outline'} onClick={() => handlePresetChange('Manual')}>Manual</Button>
             </div>
+            
+            {preset === 'Manual' && (
+              <Alert variant="default" className="border-orange-500/50 text-orange-700 dark:text-orange-300">
+                <TriangleAlert className="h-4 w-4 !text-orange-600" />
+                <AlertTitle>Expert Mode Activated</AlertTitle>
+                <AlertDescription>
+                  You are in full control. For best results, we recommend our pre-calibrated presets unless you are a pro!
+                </AlertDescription>
+              </Alert>
+            )}
+
             <div className="space-y-4">
               {clusters.map((key) => (
                 <FormField
@@ -186,29 +250,59 @@ function Step1({ form }: { form: any }) {
                     <FormItem>
                       <FormLabel className="flex items-center justify-between">
                         <span>{key}</span>
-                        <span className="text-primary font-bold">{field.value}%</span>
                       </FormLabel>
                       <FormControl>
-                        <Slider
-                          value={[field.value]}
-                          onValueChange={(value) => field.onChange(value[0])}
-                          max={100}
-                          step={1}
-                          disabled={preset !== 'Manual'}
-                        />
+                        <div className="flex items-center gap-4">
+                            <Slider
+                              value={[field.value || 0]}
+                              onValueChange={(value) => handleManualWeightChange(key, value[0])}
+                              max={100}
+                              step={1}
+                              disabled={preset !== 'Manual'}
+                            />
+                             <div className="w-24 text-right">
+                                {preset === 'Manual' ? (
+                                    <Input 
+                                        type="number"
+                                        className="w-20 text-center"
+                                        value={Math.round(field.value || 0)}
+                                        onChange={(e) => handleManualWeightChange(key, parseInt(e.target.value, 10) || 0)}
+                                        min="0"
+                                        max="100"
+                                    />
+                                ) : (
+                                    <span className="font-semibold text-lg">{Math.round(field.value || 0)}%</span>
+                                )}
+                            </div>
+                        </div>
                       </FormControl>
                     </FormItem>
                   )}
                 />
               ))}
             </div>
-             <div className={`text-sm font-medium p-3 border rounded-lg flex justify-between items-center ${ totalWeight === 100 ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 border-green-500' : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 border-red-500'}`}>
-                <span>Total Weight:</span>
-                <span className="font-bold text-xl">{totalWeight}%</span>
+             <div className={cn("relative text-sm font-medium p-3 border rounded-lg flex justify-between items-center overflow-hidden",
+                totalWeight === 100
+                ? 'bg-green-100 dark:bg-green-900/30 text-green-900 dark:text-green-100 border-green-300 dark:border-green-700' 
+                : 'bg-red-100 dark:bg-red-900/30 text-red-900 dark:text-red-100 border-red-300 dark:border-red-700'
+             )}>
+                {totalWeight === 100 ? (
+                  <>
+                    <div className="absolute -top-1/4 -left-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-br from-teal-400 to-green-600 opacity-20 blur-2xl filter" />
+                    <div className="absolute -bottom-1/4 -right-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-lime-400 to-green-500 opacity-10 blur-2xl filter" />
+                  </>
+                ) : (
+                  <>
+                    <div className="absolute -top-1/4 -left-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-br from-red-500 to-orange-600 opacity-20 blur-2xl filter" />
+                    <div className="absolute -bottom-1/4 -right-1/4 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-yellow-500 to-red-500 opacity-10 blur-2xl filter" />
+                  </>
+                )}
+                <span className="relative z-10">Total Weight:</span>
+                <span className="relative z-10 font-bold text-xl">{Math.round(totalWeight)}%</span>
             </div>
           </div>
-          <div className="w-full bg-background rounded-lg p-4">
-              <SpiderChart data={form.getValues()} size={400} />
+          <div className="w-full h-[500px] bg-background rounded-lg p-4 flex items-center justify-center">
+              <SpiderChart data={form.getValues()} size={500} />
           </div>
         </div>
         <div className="flex justify-end">
@@ -219,36 +313,43 @@ function Step1({ form }: { form: any }) {
   );
 }
 
+const formFields: (keyof SubmitIdeaForm)[] = ['title', 'description', 'pptFile', 'domain'];
+
 function Step2({ form }: { form: any }) {
     const { setActiveStep } = useStepper();
+    const [currentQuestion, setCurrentQuestion] = React.useState(0);
     const domain = form.watch('domain');
-    const [shakeErrors, setShakeErrors] = React.useState<Partial<Record<keyof SubmitIdeaForm, boolean>>>({});
-    const pptFileRef = React.useRef<HTMLInputElement>(null);
 
     const handleNext = async () => {
-        const fieldsToValidate: (keyof SubmitIdeaForm)[] = ['title', 'description', 'domain', 'pptFile'];
-        if (form.getValues('domain') === 'Other') {
-            fieldsToValidate.push('otherDomain');
-        }
+        const fieldToValidate = formFields[currentQuestion];
+        let isValid = await form.trigger(fieldToValidate);
         
-        const isValid = await form.trigger(fieldsToValidate);
+        if(fieldToValidate === 'domain' && form.getValues('domain') === 'Other') {
+            isValid = await form.trigger('otherDomain');
+        }
 
         if (isValid) {
-            setActiveStep(2);
-            setShakeErrors({});
-        } else {
-            const errors = form.formState.errors;
-            const errorFields = fieldsToValidate.reduce((acc, field) => {
-                if (errors[field]) {
-                    acc[field] = true;
-                }
-                return acc;
-            }, {} as typeof shakeErrors);
-            setShakeErrors(errorFields);
-            setTimeout(() => setShakeErrors({}), 1000);
+            if (currentQuestion < formFields.length - 1) {
+                setCurrentQuestion(q => q + 1);
+            } else {
+                setActiveStep(2);
+            }
         }
     };
 
+    const handleBack = () => {
+        if (currentQuestion > 0) {
+            setCurrentQuestion(q => q - 1);
+        } else {
+             setActiveStep(0);
+        }
+    };
+    
+    const getAnimationClass = (index: number) => {
+        if (index === currentQuestion) return "animate-in slide-in-from-right-16 fade-in";
+        if (index < currentQuestion) return "animate-out slide-out-to-left-16 fade-out hidden";
+        return "hidden";
+    }
 
     return (
         <StepperItem index={1}>
@@ -257,71 +358,82 @@ function Step2({ form }: { form: any }) {
           <CardDescription>Provide your idea description and supporting documents.</CardDescription>
         </StepperTrigger>
         <StepperContent>
-          <div className="space-y-6 py-6">
-            <FormField control={form.control} name="title" render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Idea Title</FormLabel>
-                    <FormControl><Input placeholder="e.g., AI-Powered Crop Disease Detection" {...field} className={cn(shakeErrors.title && 'animate-shake')} /></FormControl>
-                    <FormMessage />
-                </FormItem>
-            )} />
-            <FormField control={form.control} name="description" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Short Idea Description</FormLabel>
-                  <FormControl><Textarea placeholder="Briefly describe the core concept of your idea..." {...field} className={cn(shakeErrors.description && 'animate-shake')} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-            )} />
-            <FormField control={form.control} name="pptFile" render={({ field: { onChange, value, ...rest } }) => (
-                <FormItem>
-                  <FormLabel>Upload PPT</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <FileUp className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                      <Input type="file" ref={pptFileRef} className={cn("pl-10", shakeErrors.pptFile && 'animate-shake')} accept=".ppt, .pptx" 
-                        onChange={(e) => onChange(e.target.files)}
-                       {...rest}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormDescription>Please adhere to the provided PPT format guidelines.</FormDescription>
-                  <FormMessage />
-                </FormItem>
-            )} />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               <FormField control={form.control} name="domain" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Project Domain/Category</FormLabel>
-                     <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl><SelectTrigger className={cn(shakeErrors.domain && 'animate-shake')}><SelectValue placeholder="Select a domain" /></SelectTrigger></FormControl>
-                      <SelectContent>
-                        <SelectItem value="HealthTech">HealthTech</SelectItem>
-                        <SelectItem value="EdTech">EdTech</SelectItem>
-                        <SelectItem value="FinTech">FinTech</SelectItem>
-                        <SelectItem value="Agriculture">Agriculture</SelectItem>
-                        <SelectItem value="Smart Cities">Smart Cities</SelectItem>
-                        <SelectItem value="Renewable Energy">Renewable Energy</SelectItem>
-                        <SelectItem value="SpaceTech">SpaceTech</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
+          <div className="py-6 overflow-hidden min-h-[350px]">
+            <div className={cn("space-y-6", getAnimationClass(0))}>
+                <FormField control={form.control} name="title" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel className="text-lg">What is the title of your idea?</FormLabel>
+                        <FormControl><Input placeholder="e.g., AI-Powered Crop Disease Detection" {...field} /></FormControl>
+                        <FormMessage />
+                    </FormItem>
                 )} />
-                {domain === 'Other' && (
-                    <FormField control={form.control} name="otherDomain" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Please Specify Domain</FormLabel>
-                            <FormControl><Input placeholder="e.g., Sustainable Fashion" {...field} className={cn(shakeErrors.otherDomain && 'animate-shake')} /></FormControl>
-                            <FormMessage />
-                        </FormItem>
+            </div>
+             <div className={cn("space-y-6", getAnimationClass(1))}>
+                <FormField control={form.control} name="description" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-lg">Briefly describe the core concept of your idea.</FormLabel>
+                      <FormControl><Textarea placeholder="Describe the problem you're solving and your proposed solution..." {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                )} />
+            </div>
+            <div className={cn("space-y-6", getAnimationClass(2))}>
+                <FormField control={form.control} name="pptFile" render={({ field: { onChange, value, ...rest } }) => (
+                    <FormItem>
+                      <FormLabel className="text-lg">Please upload your Pitch Deck.</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <FileUp className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                          <Input type="file" className="pl-10" accept=".ppt, .pptx" 
+                            onChange={(e) => onChange(e.target.files)}
+                           {...rest}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormDescription>Please adhere to the provided PPT format guidelines.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                )} />
+            </div>
+            <div className={cn("space-y-6", getAnimationClass(3))}>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                   <FormField control={form.control} name="domain" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-lg">What is the domain of your project?</FormLabel>
+                         <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl><SelectTrigger><SelectValue placeholder="Select a domain" /></SelectTrigger></FormControl>
+                          <SelectContent>
+                            <SelectItem value="HealthTech">HealthTech</SelectItem>
+                            <SelectItem value="EdTech">EdTech</SelectItem>
+                            <SelectItem value="FinTech">FinTech</SelectItem>
+                            <SelectItem value="Agriculture">Agriculture</SelectItem>
+                            <SelectItem value="Smart Cities">Smart Cities</SelectItem>
+                            <SelectItem value="Renewable Energy">Renewable Energy</SelectItem>
+                            <SelectItem value="SpaceTech">SpaceTech</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
                     )} />
-                )}
+                    {domain === 'Other' && (
+                        <FormField control={form.control} name="otherDomain" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="text-lg">Please specify the domain</FormLabel>
+                                <FormControl><Input placeholder="e.g., Sustainable Fashion" {...field} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                    )}
+                </div>
             </div>
           </div>
           <div className="flex justify-between">
-              <StepperPrevious variant="outline" />
-              <Button onClick={handleNext}>Review & Submit</Button>
+              <Button variant="outline" onClick={handleBack}><ArrowLeft className="mr-2"/> Back</Button>
+              <Button onClick={handleNext}>
+                {currentQuestion < formFields.length - 1 ? "Next" : "Review & Submit"}
+                <ArrowRight className="ml-2"/>
+              </Button>
           </div>
         </StepperContent>
       </StepperItem>
@@ -355,11 +467,11 @@ function Step3({ form, isSubmitting }: { form: any, isSubmitting: boolean }) {
                         <p className="text-sm text-muted-foreground mb-4"><span className="font-medium">Preset:</span> {allValues.preset}</p>
                         <div className="grid grid-cols-2 gap-2 text-sm">
                             {Object.entries(weights).map(([key, value]) => (
-                                <p key={key}><span className="font-medium text-muted-foreground">{key}:</span> {value as number}%</p>
+                                <p key={key}><span className="font-medium text-muted-foreground">{key}:</span> {Math.round(value as number)}%</p>
                             ))}
                         </div>
-                        <div className="mt-4 flex justify-center">
-                            <SpiderChart data={weights} size={300} />
+                        <div className="mt-4 h-[350px] flex justify-center">
+                            <SpiderChart data={weights} size={350} />
                         </div>
                     </CardContent>
                 </Card>
@@ -481,7 +593,7 @@ export default function SubmitIdeaPage() {
   };
 
   return (
-    <Card className="relative">
+    <Card className="relative border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
       <CardHeader>
         <div className="flex justify-between items-center">
             <div>
@@ -513,9 +625,13 @@ export default function SubmitIdeaPage() {
             )}
         </div>
         {isEditing && (
-            <p className="text-sm font-medium text-blue-600 bg-blue-100 p-3 rounded-md mt-2">
-                You are editing a previous submission. Please review and make any necessary changes. Resubmitting will cost 1 credit.
-            </p>
+            <Alert variant="default" className="mt-4 border-orange-500/50 text-orange-700 dark:text-orange-300">
+                <TriangleAlert className="h-4 w-4 !text-orange-600" />
+                <AlertTitle>Second Wind!</AlertTitle>
+                <AlertDescription>
+                  You're back to refine your masterpiece. Polish it up and let's give it another go! Polishing this gem will use one of your shiny credits!
+                </AlertDescription>
+            </Alert>
         )}
       </CardHeader>
       <CardContent>

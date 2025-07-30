@@ -1,4 +1,6 @@
-"use client";
+
+
+'use client';
 
 import {
   Card,
@@ -101,15 +103,6 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Super Admin Dashboard</CardTitle>
-          <CardDescription>
-            Global statistics and system health for the PragatiAI platform.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="pb-2">
@@ -243,9 +236,9 @@ export default function AdminDashboardPage() {
                   </Pie>
                 </PieChart>
               </ResponsiveContainer>
-            </ChartContainer>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        
       </div>
 
       <Card>

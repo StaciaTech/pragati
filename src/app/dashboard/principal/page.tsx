@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -8,6 +9,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/
 import { SpiderChart } from '@/components/spider-chart';
 import { MOCK_COLLEGES, MOCK_IDEAS, MOCK_INNOVATORS, MOCK_TTCS, STATUS_COLORS } from '@/lib/mock-data';
 import { Bar, BarChart, CartesianGrid, Cell, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { cn } from '@/lib/utils';
 
 const chartConfig = {
   ideas: {
@@ -48,17 +50,19 @@ export default function PrincipalDashboardPage() {
 
     const topInnovators = MOCK_INNOVATORS
         .filter(innovator => innovator.collegeId === college.id)
-        .sort((a, b) => {
-            const scoreA = MOCK_IDEAS.filter(i => i.innovatorEmail === a.email).reduce((sum, i) => sum + (i.report?.overallScore || 0), 0);
-            const scoreB = MOCK_IDEAS.filter(i => i.innovatorEmail === b.email).reduce((sum, i) => sum + (i.report?.overallScore || 0), 0);
-            return scoreB - scoreA;
+        .map(innovator => {
+            const innovatorIdeas = MOCK_IDEAS.filter(i => i.innovatorEmail === innovator.email && i.report?.overallScore);
+            const ideasCount = innovatorIdeas.length;
+            if (ideasCount === 0) return null;
+            const avgScore = innovatorIdeas.reduce((sum, i) => sum + i.report!.overallScore, 0) / ideasCount;
+            return {
+                name: innovator.name,
+                score: avgScore,
+            };
         })
-        .slice(0, 5)
-        .map(innovator => ({
-            name: innovator.name,
-            score: MOCK_IDEAS.filter(i => i.innovatorEmail === innovator.email).reduce((sum, i) => sum + (i.report?.overallScore || 0), 0) / (MOCK_IDEAS.filter(i => i.innovatorEmail === innovator.email).length || 1),
-            avatar: `https://avatar.vercel.sh/${innovator.name}.png`
-        }));
+        .filter(Boolean)
+        .sort((a,b) => b!.score - a!.score)
+        .slice(0, 5) as { name: string, score: number }[];
 
     const clusterScores: Record<string, number[]> = {};
     ideas.forEach(idea => {
@@ -76,42 +80,28 @@ export default function PrincipalDashboardPage() {
 
     const avgClusterScores = Object.entries(clusterScores).reduce((acc, [key, scores]) => {
         const avg = scores.reduce((sum, s) => sum + s, 0) / scores.length;
-        acc[key] = (avg / 5) * 100; // Normalize to percentage for spider chart
+        acc[key] = (avg / 100) * 100; // Keep it on a 1-100 scale
         return acc;
     }, {} as Record<string, number>);
 
     
     return (
         <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Current Plan</CardTitle>
-                        <CardDescription>Your active subscription</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-3xl font-bold">{MOCK_COLLEGES[0].currentPlanId.replace('PLAN00', 'Plan ').replace('-M', ' Monthly').replace('-Y', ' Yearly')}</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Credits</CardTitle>
-                         <CardDescription>Used / Remaining</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-3xl font-bold">{totalCredits - college.creditsAvailable} / {college.creditsAvailable}</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>TTC Slots</CardTitle>
-                        <CardDescription>Used / Total</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-3xl font-bold">{ttcs.length} / {college.ttcLimit}</p>
-                    </CardContent>
-                </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-center">
+                    <Card>
+                        <CardHeader><CardTitle className="text-sm">Current Plan</CardTitle></CardHeader>
+                        <CardContent><p className="text-xl font-bold">{MOCK_COLLEGES[0].currentPlanId.replace('PLAN00', 'Plan ').replace('-M', ' Monthly').replace('-Y', ' Yearly')}</p></CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader><CardTitle className="text-sm">Credits (Used / Total)</CardTitle></CardHeader>
+                        <CardContent><p className="text-xl font-bold">{totalCredits - college.creditsAvailable} / {college.creditsAvailable}</p></CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader><CardTitle className="text-sm">TTC Slots (Used / Total)</CardTitle></CardHeader>
+                        <CardContent><p className="text-xl font-bold">{ttcs.length} / {college.ttcLimit}</p></CardContent>
+                    </Card>
             </div>
+
              <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
                 <Card className="lg:col-span-2">
                     <CardHeader>
@@ -134,6 +124,7 @@ export default function PrincipalDashboardPage() {
                                         const radius = 25 + innerRadius + (outerRadius - innerRadius);
                                         const x = cx + radius * Math.cos(-midAngle * RADIAN);
                                         const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                                        if (value === 0) return null;
                                         return <text x={x} y={y} fill="hsl(var(--foreground))" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">{`${statusData[index].name} (${value})`}</text>;
                                     }}>
                                         {statusData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.fill} />)}
@@ -152,7 +143,7 @@ export default function PrincipalDashboardPage() {
                          <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={topInnovators} layout="vertical" margin={{ left: 10, right: 10 }}>
                                 <CartesianGrid horizontal={false} />
-                                <XAxis type="number" hide />
+                                <XAxis type="number" domain={[0,100]} hide />
                                 <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={80} />
                                 <Tooltip
                                     cursor={true}

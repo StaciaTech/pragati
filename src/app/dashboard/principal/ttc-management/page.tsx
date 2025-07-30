@@ -1,13 +1,14 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
+import axios from 'axios';
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -15,10 +16,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { MOCK_CREDIT_REQUESTS, MOCK_TTCS } from "@/lib/mock-data";
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  MOCK_CREDIT_REQUESTS,
+  MOCK_TTCS,
+  MOCK_INNOVATORS,
+  MOCK_IDEAS,
+  STATUS_COLORS,
+} from '@/lib/mock-data';
 import {
   Dialog,
   DialogContent,
@@ -27,7 +34,7 @@ import {
   DialogFooter,
   DialogClose,
   DialogDescription,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,138 +45,181 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import axios from "axios";
+} from '@/components/ui/alert-dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Lightbulb } from 'lucide-react';
 
+/* ----------  TYPES  ---------- */
+interface Ttc {
+  id: string;
+  name: string;
+  email: string;
+  expertise: string[];
+  status: 'Active' | 'Inactive';
+  collegeId: string;
+}
+
+interface Innovator {
+  id: string;
+  name: string;
+  email: string;
+  status: 'Active' | 'Inactive';
+  ttcId: string;
+}
+
+/* ----------  HELPERS  ---------- */
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const getToken = () => localStorage.getItem('token');
+const getInitials = (name: string) =>
+  name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase();
+
+/* ----------  MAIN COMPONENT  ---------- */
 export default function TTCManagementPage() {
-  interface TtcCoordinator {
-    _id: string;
-    collegeId: string;
-    createdAt: string;
-    createdBy: string;
-    creditQuota: number;
-    email: string;
-    expertise: string[];
-    isActive: boolean;
-    isDeleted: boolean;
-    name: string;
-    role: string;
-  }
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  const token = localStorage.getItem("token");
   const { toast } = useToast();
-  const [ttcs, setTtcs] = React.useState<TtcCoordinator[]>([]);
+
+  /* state */
+  const [ttcs, setTtcs] = React.useState<Ttc[]>([]);
   const [requests, setRequests] = React.useState(MOCK_CREDIT_REQUESTS);
+  const [modalType, setModalType] = React.useState<'add' | 'edit'>('add');
+  const [currentTtc, setCurrentTtc] = React.useState<Ttc | null>(null);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [modalType, setModalType] = React.useState<"add" | "edit">("add");
-  const [currentTtc, setCurrentTtc] = React.useState<(typeof ttcs)[0] | null>(
-    null
-  );
-
   const [isRequestsModalOpen, setIsRequestsModalOpen] = React.useState(false);
+  const [isInnovatorModalOpen, setIsInnovatorModalOpen] = React.useState(false);
+  const [selectedTtcForInnovators, setSelectedTtcForInnovators] = React.useState<Ttc | null>(null);
+
+  /* derived */
   const pendingTTCRequests = requests.filter(
-    (req) => req.requesterType === "TTC" && req.status === "Pending"
+    (r: any) => r.requesterType === 'TTC' && r.status === 'Pending'
   );
 
-  const handleOpenModal = (type: "add" | "edit", ttc?: (typeof ttcs)[0]) => {
+  const innovatorsByTtc = React.useMemo(() => {
+    return MOCK_INNOVATORS.reduce<Record<string, Innovator[]>>((acc, inv) => {
+      const t = acc[inv.ttcId] || [];
+      t.push(inv);
+      acc[inv.ttcId] = t;
+      return acc;
+    }, {});
+  }, []);
+
+  /* API fetch */
+  const fetchAllTtcs = React.useCallback(async () => {
+    try {
+      const token = getToken();
+      if (!token) return;
+      const { uid } = JSON.parse(atob(token.split('.')[1]));
+      const { data } = await axios.get(`${apiUrl}/api/users`, {
+        params: { college_id: uid, role: 'ttc_coordinator' },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setTtcs(data.docs);
+    } catch (err) {
+      console.error(err);
+      toast({ title: 'Failed to load TTCs', description: 'Please try again later.' });
+    }
+  }, [toast]);
+
+  React.useEffect(() => {
+    fetchAllTtcs();
+  }, [fetchAllTtcs]);
+
+  /* handlers */
+  const handleOpenModal = (type: 'add' | 'edit', ttc?: Ttc) => {
     setModalType(type);
     setCurrentTtc(ttc || null);
     setIsModalOpen(true);
   };
 
-  const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const name = formData.get("name") as string;
-    const email = formData.get("email") as string;
-    const expertise = formData.get("expertise") as string;
-    try {
-      const res = await axios.post(
-        `${apiUrl}/api/principal/create-coordinator`,
-        { name, email, expertise },
-        { headers: { Authorization: `Bearer ${token}` } } // <— include super-admin JWT
-      );
-      console.log(res.data);
+  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    const name = form.get('name') as string;
+    const email = form.get('email') as string;
+    const expertise = (form.get('expertise') as string)
+      .split(',')
+      .map((s) => s.trim());
 
-      toast({
-        title: "TTC coordinator Added",
-        description: `${name} has been successfully saved.`,
-      });
+    try {
+      const token = getToken();
+      if (!token) return;
+      const { uid } = JSON.parse(atob(token.split('.')[1]));
+      if (modalType === 'add') {
+        await axios.post(
+          `${apiUrl}/api/principal/create-coordinator`,
+          { name, email, expertise: expertise.join(',') },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } else if (currentTtc) {
+        await axios.put(
+          `${apiUrl}/api/users/${currentTtc.id}`,
+          { name, email, expertise },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
+      toast({ title: `TTC ${modalType === 'add' ? 'Added' : 'Updated'}` });
       setIsModalOpen(false);
-    } catch (error) {
-      console.log(error);
-      toast({
-        title: "Server Error",
-        description: "Please try again later.",
-      });
+      fetchAllTtcs();
+    } catch (err: any) {
+      toast({ title: 'Error', description: err?.response?.data?.error || 'Unexpected error' });
     }
-    toast({
-      title: `TTC ${modalType === "add" ? "Added" : "Updated"}`,
-      description: `${name} has been successfully saved.`,
-    });
-    setIsModalOpen(false);
   };
 
-  const handleToggleStatus = (id: string) => {
-    setTtcs((prev) =>
-      prev.map((ttc) =>
-        ttc._id === id
-          ? ({
-              ...ttc,
-              status: ttc.isActive ? "Inactive" : "Active",
-            } as any)
-          : ttc
-      )
-    );
-    toast({
-      title: "Status Updated",
-      description: "TTC status has been toggled.",
-    });
-  };
-
-  const handleRequestAction = (
-    requestId: string,
-    action: "Approved" | "Rejected"
-  ) => {
-    setRequests((prev) =>
-      prev.map((req) =>
-        req.id === requestId ? { ...req, status: action } : req
-      )
-    );
-    toast({
-      title: `Request ${action}`,
-      description: `The credit request has been ${action.toLowerCase()}.`,
-    });
-  };
-
-  const fetchAllttcs = async () => {
+  const handleToggleStatus = async (id: string) => {
     try {
-      const { uid } = JSON.parse(atob(token.split(".")[1]));
-      const res = await axios.get(`${apiUrl}/api/users?college_id=${uid}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      console.log(res.data.docs);
-      setTtcs(res.data.docs);
-    } catch (error) {
-      console.log(error);
+      const token = getToken();
+      if (!token) return;
+      const ttc = ttcs.find((t) => t.id === id);
+      if (!ttc) return;
+      const newStatus = ttc.status === 'Active' ? 'Inactive' : 'Active';
+      await axios.put(
+        `${apiUrl}/api/users/${id}/toggle-active`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setTtcs((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, status: newStatus } : t))
+      );
+      toast({ title: 'Status Updated' });
+    } catch (err) {
+      toast({ title: 'Failed to toggle status' });
     }
   };
 
-  React.useEffect(() => {
-    fetchAllttcs();
-  }, [token, apiUrl]);
+  const handleRequestAction = (requestId: string, action: 'Approved' | 'Rejected') => {
+    setRequests((prev) =>
+      prev.map((r) => (r.id === requestId ? { ...r, status: action } : r))
+    );
+    toast({ title: `Request ${action}` });
+  };
+
+  const handleTtcClick = (ttc: Ttc) => {
+    setSelectedTtcForInnovators(ttc);
+    setIsInnovatorModalOpen(true);
+  };
+
+  const getIdeasForInnovator = (email: string) =>
+    MOCK_IDEAS.filter((idea) => idea.innovatorEmail === email);
+
+  /* render */
   return (
     <>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle>TTC Management</CardTitle>
-            <CardDescription>
-              Add, edit, and manage TTCs for your college.
-            </CardDescription>
+            <CardDescription>Add, edit, and manage TTCs.</CardDescription>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -177,10 +227,9 @@ export default function TTCManagementPage() {
               onClick={() => setIsRequestsModalOpen(true)}
               disabled={pendingTTCRequests.length === 0}
             >
-              Pending Requests{" "}
-              <Badge className="ml-2">{pendingTTCRequests.length}</Badge>
+              Pending Requests <Badge className="ml-2">{pendingTTCRequests.length}</Badge>
             </Button>
-            <Button onClick={() => handleOpenModal("add")}>Add New TTC</Button>
+            <Button onClick={() => handleOpenModal('add')}>Add New TTC</Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -197,34 +246,29 @@ export default function TTCManagementPage() {
             </TableHeader>
             <TableBody>
               {ttcs.map((ttc) => (
-                <TableRow key={ttc?._id}>
-                  <TableCell>{ttc?._id}</TableCell>
-                  <TableCell className="font-medium">{ttc?.name}</TableCell>
-                  <TableCell>{ttc?.email}</TableCell>
+                <TableRow key={ttc.id}>
+                  <TableCell>{ttc.id}</TableCell>
+                  <TableCell className="font-medium">{ttc.name}</TableCell>
+                  <TableCell>{ttc.email}</TableCell>
+                  <TableCell>{ttc.expertise.join(', ')}</TableCell>
                   <TableCell>
-                    {ttc.expertise.map((e, i) => (
-                      <span key={i}>{e}</span>
-                    ))}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={ttc?.isActive ? "default" : "destructive"}>
-                      {ttc?.isActive ? "Active" : "Inactive"}
+                    <Badge variant={ttc.status === 'Active' ? 'default' : 'destructive'}>
+                      {ttc.status}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleOpenModal("edit", ttc)}
-                    >
+                    <Button variant="outline" size="sm" onClick={() => handleOpenModal('edit', ttc)}>
                       Edit
                     </Button>
                     <Button
-                      variant={ttc?.isActive ? "destructive" : "default"}
+                      variant={ttc.status === 'Active' ? 'destructive' : 'default'}
                       size="sm"
-                      // onClick={() => handleToggleStatus(ttc._id)}
+                      onClick={() => handleToggleStatus(ttc.id)}
                     >
-                      {ttc?.isActive ? "Deactivate" : "Activate"}
+                      {ttc.status === 'Active' ? 'Deactivate' : 'Activate'}
+                    </Button>
+                    <Button size="sm" onClick={() => handleTtcClick(ttc)}>
+                      View Innovators
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -234,49 +278,35 @@ export default function TTCManagementPage() {
         </CardContent>
       </Card>
 
+      {/* Add / Edit TTC */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>
-              {modalType === "add" ? "Add New TTC" : "Edit TTC"}
-            </DialogTitle>
+            <DialogTitle>{modalType === 'add' ? 'Add New TTC' : 'Edit TTC'}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSave}>
             <div className="grid gap-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="name">TTC Name</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  defaultValue={currentTtc?.name}
-                  required
-                />
+                <Label htmlFor="name">Name</Label>
+                <Input id="name" name="name" defaultValue={currentTtc?.name} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  defaultValue={currentTtc?.email}
-                  required
-                />
+                <Input id="email" name="email" type="email" defaultValue={currentTtc?.email} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="expertise">Expertise (comma-separated)</Label>
                 <Input
                   id="expertise"
                   name="expertise"
-                  defaultValue={currentTtc?.expertise.join(", ")}
+                  defaultValue={currentTtc?.expertise.join(', ')}
                   required
                 />
               </div>
             </div>
             <DialogFooter>
               <DialogClose asChild>
-                <Button type="button" variant="outline">
-                  Cancel
-                </Button>
+                <Button type="button" variant="outline">Cancel</Button>
               </DialogClose>
               <Button type="submit">Save</Button>
             </DialogFooter>
@@ -284,13 +314,12 @@ export default function TTCManagementPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Pending Requests */}
       <Dialog open={isRequestsModalOpen} onOpenChange={setIsRequestsModalOpen}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>Pending TTC Credit Requests</DialogTitle>
-            <DialogDescription>
-              Approve or reject credit requests from your TTCs.
-            </DialogDescription>
+            <DialogDescription>Approve or reject credit requests from your TTCs.</DialogDescription>
           </DialogHeader>
           <Table>
             <TableHeader>
@@ -308,9 +337,7 @@ export default function TTCManagementPage() {
                   <TableCell>{req.requesterName}</TableCell>
                   <TableCell>{req.amount}</TableCell>
                   <TableCell>{req.date}</TableCell>
-                  <TableCell className="max-w-xs truncate">
-                    {req.purpose}
-                  </TableCell>
+                  <TableCell>{req.purpose}</TableCell>
                   <TableCell className="text-right space-x-2">
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
@@ -320,17 +347,12 @@ export default function TTCManagementPage() {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Approve Request?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Are you sure you want to approve this request for{" "}
-                            {req.amount} credits?
+                            Approve this request for {req.amount} credits?
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() =>
-                              handleRequestAction(req.id, "Approved")
-                            }
-                          >
+                          <AlertDialogAction onClick={() => handleRequestAction(req.id, 'Approved')}>
                             Yes, Approve
                           </AlertDialogAction>
                         </AlertDialogFooter>
@@ -338,25 +360,18 @@ export default function TTCManagementPage() {
                     </AlertDialog>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="destructive" size="sm">
-                          Reject
-                        </Button>
+                        <Button variant="destructive" size="sm">Reject</Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle>Reject Request?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Are you sure you want to reject this request? This
-                            action cannot be undone.
+                            This action cannot be undone.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() =>
-                              handleRequestAction(req.id, "Rejected")
-                            }
-                          >
+                          <AlertDialogAction onClick={() => handleRequestAction(req.id, 'Rejected')}>
                             Yes, Reject
                           </AlertDialogAction>
                         </AlertDialogFooter>
@@ -369,9 +384,76 @@ export default function TTCManagementPage() {
           </Table>
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="outline">
-                Close
-              </Button>
+              <Button variant="outline">Close</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Innovators under selected TTC */}
+      <Dialog open={isInnovatorModalOpen} onOpenChange={setIsInnovatorModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Innovators under {selectedTtcForInnovators?.name}</DialogTitle>
+            <DialogDescription>
+              List of innovators managed by this TTC.
+            </DialogDescription>
+          </DialogHeader>
+          {innovatorsByTtc[selectedTtcForInnovators?.id || '']?.length ? (
+            <Accordion type="single" collapsible className="w-full">
+              {innovatorsByTtc[selectedTtcForInnovators.id].map((inv) => {
+                const ideas = getIdeasForInnovator(inv.email);
+                return (
+                  <AccordionItem value={inv.id} key={inv.id}>
+                    <AccordionTrigger>
+                      <div className="flex items-center justify-between w-full pr-4">
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-6 w-6 text-xs">
+                            <AvatarImage
+                              src={`https://avatar.vercel.sh/${inv.name}.png`}
+                              alt={inv.name}
+                            />
+                            <AvatarFallback>{getInitials(inv.name)}</AvatarFallback>
+                          </Avatar>
+                          <span className="text-sm font-medium">{inv.name}</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <Badge variant="secondary" className="flex items-center gap-1">
+                            <Lightbulb className="h-3 w-3" />
+                            {ideas.length}
+                          </Badge>
+                          <Badge variant={inv.status === 'Active' ? 'default' : 'destructive'}>
+                            {inv.status}
+                          </Badge>
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      {ideas.length ? (
+                        <ul className="space-y-1 pl-8 pr-4">
+                          {ideas.map((idea) => (
+                            <li key={idea.id} className="text-xs flex justify-between items-center">
+                              <span>- {idea.title}</span>
+                              <Badge className={STATUS_COLORS[idea.status]}>{idea.status}</Badge>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-xs text-muted-foreground pl-8">No ideas submitted.</p>
+                      )}
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              })}
+            </Accordion>
+          ) : (
+            <p className="text-sm text-muted-foreground text-center py-8">
+              No innovators assigned to this TTC.
+            </p>
+          )}
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Close</Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>

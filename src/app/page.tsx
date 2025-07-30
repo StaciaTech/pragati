@@ -1,7 +1,5 @@
 "use client";
 
-import { BrainCircuit } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import * as React from "react";
 import dynamic from "next/dynamic";
 import Lottie from "lottie-react";
@@ -51,44 +49,22 @@ export default function LoginPage() {
           </p>
         </div>
       </div>
-      <div className="relative hidden h-full flex-col bg-primary p-10 text-primary-foreground dark:border-r lg:flex overflow-hidden dot-bg ripple-bg">
-        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/30 blur-3xl animate-wavy-bounce-1"></div>
-        <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-primary/20 blur-3xl animate-wavy-bounce-2"></div>
-        <div className="relative z-20 h-full flex flex-col justify-between">
-          <div className="flex items-center gap-2 text-lg font-medium text-primary-foreground">
-            <BrainCircuit className="h-7 w-7" />
-            <span>Innovation at Lightspeed</span>
-          </div>
-          <div className="relative hidden h-full flex-col bg-primary/10 p-10 text-white dark:border-r lg:flex">
-            <div className="absolute inset-0 bg-primary" />
-            {animationData && (
-              <Lottie
-                animationData={animationData}
-                loop={true}
-                autoplay={true}
-                className="absolute inset-0 w-full h-full"
-              />
-            )}
-            <div className="relative z-10 m-auto flex flex-col items-center text-center">
-              <h2 className="text-4xl font-bold">Catalyze Innovation</h2>
-              <p className="mt-4 text-lg text-primary-foreground/80 max-w-md text-balance">
-                Transform your groundbreaking ideas into viable solutions with
-                our AI-powered validation engine.
-              </p>
-            </div>
-          </div>
-          <Card className="bg-background/80 text-foreground backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle>AI-Powered Validation</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                "Our platform leverages advanced AI to provide instant,
-                data-driven feedback on your innovative ideas, helping you
-                refine and succeed faster than ever before."
-              </p>
-            </CardContent>
-          </Card>
+      <div className="relative hidden h-full flex-col bg-primary/10 p-10 text-white dark:border-r lg:flex">
+        <div className="absolute inset-0 bg-primary" />
+        {animationData && (
+          <Lottie
+            animationData={animationData}
+            loop={true}
+            autoplay={true}
+            className="absolute inset-0 w-full h-full"
+          />
+        )}
+        <div className="relative z-10 m-auto flex flex-col items-center text-center">
+          <h2 className="text-4xl font-bold">Catalyze Innovation</h2>
+          <p className="mt-4 text-lg text-primary-foreground/80 max-w-md text-balance">
+            Transform your groundbreaking ideas into viable solutions with our
+            AI-powered validation engine.
+          </p>
         </div>
       </div>
     </main>

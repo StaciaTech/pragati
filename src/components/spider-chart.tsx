@@ -2,6 +2,8 @@
 'use client';
 
 import * as React from 'react';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 
 const labelMap: { [key: string]: string } = {
   "Core Idea & Innovation": "CI & I",
@@ -13,15 +15,25 @@ const labelMap: { [key: string]: string } = {
   "Risk & Future Outlook": "R & FO",
 };
 
+const clusterColors = [
+  'hsl(var(--chart-1))',
+  'hsl(var(--chart-2))',
+  'hsl(var(--chart-3))',
+  'hsl(var(--chart-4))',
+  'hsl(var(--chart-5))',
+  'hsl(var(--chart-1) / 0.7)',
+  'hsl(var(--chart-2) / 0.7)',
+];
+
 export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record<string, number>, maxScore?: number, size?: number }) {
-  const padding = 60; 
+  const padding = 80; // Increased padding to give labels more room
   const chartSize = size - padding * 2;
   const centerX = size / 2;
   const centerY = size / 2;
   const radius = chartSize / 2;
 
-  const validDataKeys = Object.keys(data).filter(key => typeof data[key] === 'number');
-
+  const validDataKeys = Object.keys(data).filter(key => typeof data[key] === 'number' && Object.keys(labelMap).includes(key));
+  
   if (validDataKeys.length === 0) return null;
 
   const angles = validDataKeys.map((_, i) => (i * 2 * Math.PI) / validDataKeys.length - Math.PI / 2);
@@ -42,136 +54,156 @@ export function SpiderChart({ data, maxScore = 100, size = 400 }: { data: Record
   const gridLevels = 4; // For 25, 50, 75, 100
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block mx-auto">
-      {/* Grid Lines */}
-      {Array.from({ length: gridLevels }).map((_, levelIndex) => {
-        const gridRadius = radius * ((levelIndex + 1) / gridLevels);
-        const gridPoints = angles.map(angle => {
-          const x = centerX + gridRadius * Math.cos(angle);
-          const y = centerY + gridRadius * Math.sin(angle);
-          return `${x},${y}`;
-        }).join(' ');
-        return (
+    <div className="relative" style={{ width: size, height: size }}>
+      <TooltipProvider delayDuration={0}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block mx-auto">
+          <defs>
+            <radialGradient id="spider-gradient">
+              <stop offset="0%" stopColor="hsl(var(--primary) / 0.4)" />
+              <stop offset="100%" stopColor="hsl(var(--primary) / 0.1)" />
+            </radialGradient>
+          </defs>
+
+          {/* Grid Lines */}
+          {Array.from({ length: gridLevels }).map((_, levelIndex) => {
+            const gridRadius = radius * ((levelIndex + 1) / gridLevels);
+            const gridPoints = angles.map(angle => {
+              const x = centerX + gridRadius * Math.cos(angle);
+              const y = centerY + gridRadius * Math.sin(angle);
+              return `${x},${y}`;
+            }).join(' ');
+            return (
+              <polygon
+                key={`grid-${levelIndex}`}
+                points={gridPoints}
+                fill="none"
+                stroke="hsl(var(--muted-foreground) / 0.3)"
+                strokeWidth="1"
+              />
+            );
+          })}
+
+          {/* Spokes and Axis Labels */}
+          {angles.map((angle, i) => {
+            const point = getPoint(angle, maxScore);
+            const isFirstSpoke = i === 0;
+            return (
+              <g key={`spoke-group-${i}`}>
+                <line
+                  key={`spoke-${i}`}
+                  x1={centerX}
+                  y1={centerY}
+                  x2={point.x}
+                  y2={point.y}
+                  stroke={clusterColors[i % clusterColors.length]}
+                  strokeWidth="1"
+                  strokeDasharray="2 4"
+                />
+                {isFirstSpoke && Array.from({ length: gridLevels }).map((_, levelIndex) => {
+                  if (levelIndex < gridLevels -1) return null; // Only show outermost label
+                  const value = (maxScore / gridLevels) * (levelIndex + 1);
+                  const labelPoint = getPoint(angle, value);
+                  return (
+                    <text
+                      key={`axis-label-${levelIndex}`}
+                      x={labelPoint.x + 5}
+                      y={labelPoint.y}
+                      textAnchor="start"
+                      dominantBaseline="middle"
+                      fontSize="12"
+                      className="fill-muted-foreground"
+                    >
+                      {value}
+                    </text>
+                  );
+                })}
+              </g>
+            );
+          })}
+          
+          {/* Data Polygon */}
           <polygon
-            key={`grid-${levelIndex}`}
-            points={gridPoints}
-            fill="none"
-            stroke="hsl(var(--muted-foreground))"
-            strokeWidth="1"
-            strokeDasharray="2 4"
+            points={points}
+            fill="url(#spider-gradient)"
+            stroke="hsl(var(--primary))"
+            strokeWidth="2.5"
           />
-        );
-      })}
 
-      {/* Spokes and Axis Labels */}
-      {angles.map((angle, i) => {
-        const point = getPoint(angle, maxScore);
-        const isFirstSpoke = i === 0;
-        return (
-          <g key={`spoke-group-${i}`}>
-            <line
-              key={`spoke-${i}`}
-              x1={centerX}
-              y1={centerY}
-              x2={point.x}
-              y2={point.y}
-              stroke="hsl(var(--muted-foreground))"
-              strokeWidth="1"
-            />
-            {isFirstSpoke && Array.from({ length: gridLevels }).map((_, levelIndex) => {
-              const value = (maxScore / gridLevels) * (levelIndex + 1);
-              if (value % 25 !== 0 && value !== 100) return null;
+          {/* Labels */}
+          {angles.map((angle, i) => {
+            const value = data[validDataKeys[i]];
+            const fullLabel = validDataKeys[i];
+            const shortLabel = labelMap[fullLabel] || fullLabel;
+            
+            const labelRadius = radius + 25;
+            const textPointX = centerX + labelRadius * Math.cos(angle);
+            const textPointY = centerY + labelRadius * Math.sin(angle);
 
-              const labelPoint = getPoint(angle, value);
-              return (
+            let textAnchor = "middle";
+            let dominantBaseline = "middle";
+
+            if (textPointX < centerX - 1) textAnchor = "end";
+            if (textPointX > centerX + 1) textAnchor = "start";
+            
+            if (textPointY < centerY) dominantBaseline = "alphabetic";
+            if (textPointY > centerY) dominantBaseline = "hanging";
+
+            return (
+              <g key={`label-group-${i}`}>
                 <text
-                  key={`axis-label-${levelIndex}`}
-                  x={labelPoint.x + 5}
-                  y={labelPoint.y}
-                  textAnchor="start"
-                  dominantBaseline="middle"
-                  fontSize="10"
-                  className="fill-muted-foreground"
+                  x={textPointX}
+                  y={textPointY - 10}
+                  textAnchor={textAnchor}
+                  dominantBaseline={dominantBaseline}
+                  className="font-bold text-lg"
+                  fill={clusterColors[i % clusterColors.length]}
                 >
-                  {value}
+                  {Math.round(value)}%
                 </text>
-              );
+                <text
+                  x={textPointX}
+                  y={textPointY + 10}
+                  textAnchor={textAnchor}
+                  dominantBaseline={dominantBaseline}
+                  className="text-sm fill-muted-foreground"
+                >
+                  {shortLabel}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+
+        <div className="absolute top-0 left-0 w-full h-full">
+            {angles.map((angle, i) => {
+                const value = data[validDataKeys[i]];
+                const fullLabel = validDataKeys[i];
+                const point = getPoint(angle, value);
+                const color = clusterColors[i % clusterColors.length];
+                
+                return (
+                    <Tooltip key={`tooltip-${i}`}>
+                        <TooltipTrigger asChild>
+                            <div
+                                className="absolute rounded-full transition-transform duration-200 ease-in-out hover:scale-150 cursor-pointer"
+                                style={{
+                                    left: `${point.x - 6}px`,
+                                    top: `${point.y - 6}px`,
+                                    width: '12px',
+                                    height: '12px',
+                                    backgroundColor: color,
+                                    border: '2px solid hsl(var(--card))',
+                                }}
+                            />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p className="font-bold" style={{color: color}}>{fullLabel}: {Math.round(value)}%</p>
+                        </TooltipContent>
+                    </Tooltip>
+                )
             })}
-          </g>
-        );
-      })}
-
-      {/* Labels */}
-      {angles.map((angle, i) => {
-        const value = data[validDataKeys[i]];
-        const labelText = labelMap[validDataKeys[i]] || validDataKeys[i];
-        
-        const labelRadius = radius + 25; 
-        const textPointX = centerX + labelRadius * Math.cos(angle);
-        const textPointY = centerY + labelRadius * Math.sin(angle);
-
-        let textAnchor = "middle";
-        if (angle > -Math.PI / 2 && angle < Math.PI / 2) {
-            textAnchor = "start";
-        } else if (angle > Math.PI / 2 || angle < -Math.PI / 2) {
-            textAnchor = "end";
-        }
-
-        let yOffset = 0;
-        if (Math.abs(angle - (-Math.PI / 2)) < 0.1) { // Top
-            yOffset = -10;
-        } else if (Math.abs(angle - (Math.PI / 2)) < 0.1) { // Bottom
-            yOffset = 10;
-        }
-
-        return (
-          <g key={`label-group-${i}`}>
-            <text
-              x={textPointX}
-              y={textPointY + yOffset - 8}
-              textAnchor={textAnchor}
-              dominantBaseline="middle"
-              className="font-bold text-lg fill-foreground"
-            >
-              {value}%
-            </text>
-            <text
-              x={textPointX}
-              y={textPointY + yOffset + 12}
-              textAnchor={textAnchor}
-              dominantBaseline="middle"
-              className="text-xs fill-muted-foreground"
-            >
-              {labelText}
-            </text>
-          </g>
-        );
-      })}
-
-      {/* Data Polygon */}
-      <polygon
-        points={points}
-        fill="none"
-        stroke="hsl(var(--primary))"
-        strokeWidth="2"
-      />
-
-      {/* Data Points */}
-      {angles.map((angle, i) => {
-        const value = data[validDataKeys[i]];
-        const point = getPoint(angle, value);
-        const size = 4;
-        return (
-          <polygon
-            key={`point-${i}`}
-            points={`${point.x},${point.y - size} ${point.x + size},${point.y} ${point.x},${point.y + size} ${point.x - size},${point.y}`}
-            fill="hsl(var(--primary))"
-            stroke="hsl(var(--card))"
-            strokeWidth={1.5}
-            className="transition-transform duration-200 ease-in-out hover:scale-150"
-          />
-        );
-      })}
-    </svg>
+        </div>
+      </TooltipProvider>
+    </div>
   );
 };

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -80,13 +81,6 @@ export default function CoordinatorAnalyticsPage() {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>TTC Analytics</CardTitle>
-          <CardDescription>View performance and idea analytics for your college.</CardDescription>
-        </CardHeader>
-      </Card>
-
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           <Card className="lg:col-span-2">
               <CardHeader>
@@ -203,4 +197,3 @@ export default function CoordinatorAnalyticsPage() {
     </div>
   );
 }
-

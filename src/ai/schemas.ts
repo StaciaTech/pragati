@@ -18,8 +18,9 @@ export type GenerateValidationReportInput = z.infer<
 
 // Schemas for the detailed report structure
 const SubParameterEvaluationSchema = z.object({
-  assignedScore: z.number().int().min(1).max(5).describe("Score from 1-5"),
-  explanation: z.string().describe("Concise explanation for the score (1-3 sentences)"),
+  assignedScore: z.number().int().min(1).max(100).describe("Score from 1-100"),
+  whatWentWell: z.string().describe("Concise explanation of what was done well for this parameter (1-3 sentences)."),
+  whatCanBeImproved: z.string().describe("Concise explanation of what can be improved for this parameter (1-3 sentences)."),
   assumptions: z.array(z.string()).describe("List of assumptions made for this evaluation"),
 });
 export type SubParameterEvaluation = z.infer<typeof SubParameterEvaluationSchema>;

@@ -1,3 +1,5 @@
+
+
 'use client';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -6,6 +8,7 @@ import { MOCK_TTCS, MOCK_IDEAS, MOCK_INNOVATORS, MOCK_COLLEGES, STATUS_COLORS } 
 import { Lightbulb, ListChecks, Users, MessageSquare } from "lucide-react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { cn } from "@/lib/utils";
 
 
 export default function CoordinatorDashboardPage() {
@@ -97,7 +100,7 @@ export default function CoordinatorDashboardPage() {
                              <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={topInnovators} layout="vertical" margin={{ left: 10, right: 10 }}>
                                     <CartesianGrid horizontal={false} />
-                                    <XAxis type="number" domain={[0,5]} hide />
+                                    <XAxis type="number" domain={[0,100]} hide />
                                     <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={100} />
                                     <Tooltip
                                         cursor={true}
@@ -161,7 +164,7 @@ export default function CoordinatorDashboardPage() {
                                     <TableCell>{idea.title}</TableCell>
                                     <TableCell>{idea.innovatorName}</TableCell>
                                     <TableCell>{idea.consultationDate} at {idea.consultationTime}</TableCell>
-                                    <TableCell><Badge className={STATUS_COLORS[idea.consultationStatus || '']}>{idea.consultationStatus}</Badge></TableCell>
+                                    <TableCell><Badge className={cn(STATUS_COLORS[idea.consultationStatus || ''])}>{idea.consultationStatus}</Badge></TableCell>
                                 </TableRow>
                             )) : (
                                 <TableRow>
