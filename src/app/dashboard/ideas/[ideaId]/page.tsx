@@ -65,7 +65,8 @@ const getBackLink = (role: string | null) => {
 
 type ParameterSummary = {
   avgScore: number;
-  aiOneLiner: string;
+  strongestPoint: string;
+  improvementPoint: string;
 };
 
 type ReportMetrics = {
@@ -191,8 +192,8 @@ export default function IdeaReportPage() {
         if (subParams.length === 0) return;
 
         let totalScore = 0;
-        let bestWell = { score: -1, text: '' };
-        let worstImproved = { score: 101, text: '' };
+        let bestWell = { score: -1, text: 'No specific strengths noted.' };
+        let worstImproved = { score: 101, text: 'No specific improvement areas noted.' };
 
         subParams.forEach(([subParamName, subParamDetails]: [string, any]) => {
           if (subParamDetails.assignedScore) {
@@ -213,9 +214,9 @@ export default function IdeaReportPage() {
         const avgScore = totalScore / subParams.length;
         parameterSummaries[clusterName][paramName] = {
             avgScore,
-            aiOneLiner: `Strongest aspect: ${bestWell.text.split('.')[0]}. Key improvement: ${worstImproved.text.split('.')[0]}.`
+            strongestPoint: bestWell.text,
+            improvementPoint: worstImproved.text,
         };
-
       });
     });
     
@@ -404,15 +405,31 @@ export default function IdeaReportPage() {
                                             <AccordionTrigger className="font-semibold mb-2 hover:no-underline">
                                                 <div className="flex justify-between items-center w-full pr-2">
                                                     <span className="text-left">{paramName}</span>
+                                                    {summary && (
                                                     <div className="flex items-center gap-4 text-right">
-                                                        {summary && (
-                                                            <>
-                                                                <span className="text-xs text-muted-foreground hidden lg:inline truncate max-w-xs" title={summary.aiOneLiner}>{summary.aiOneLiner}</span>
-                                                                <Badge className={cn(getScoreColor(summary.avgScore), 'bg-opacity-10 border-opacity-20')} variant="outline">{summary.avgScore.toFixed(0)}</Badge>
-                                                            </>
-                                                        )}
-                                                        <ChevronRight className="h-4 w-4 shrink-0 transition-transform duration-200" />
+                                                        <div className="hidden lg:flex items-center gap-4 text-xs text-muted-foreground">
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <div className="flex items-center gap-1.5 cursor-default">
+                                                                        <ThumbsUp className="h-4 w-4 text-green-500" />
+                                                                        <span className="truncate max-w-[150px]">{summary.strongestPoint}</span>
+                                                                    </div>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent side="top" align="start"><p className="max-w-xs">{summary.strongestPoint}</p></TooltipContent>
+                                                            </Tooltip>
+                                                             <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <div className="flex items-center gap-1.5 cursor-default">
+                                                                        <Lightbulb className="h-4 w-4 text-orange-400" />
+                                                                        <span className="truncate max-w-[150px]">{summary.improvementPoint}</span>
+                                                                    </div>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent side="top" align="start"><p className="max-w-xs">{summary.improvementPoint}</p></TooltipContent>
+                                                            </Tooltip>
+                                                        </div>
+                                                        <Badge className={cn(getScoreColor(summary.avgScore), 'bg-opacity-10 border-opacity-20')} variant="outline">{summary.avgScore.toFixed(0)}</Badge>
                                                     </div>
+                                                    )}
                                                 </div>
                                             </AccordionTrigger>
                                             <AccordionContent>
