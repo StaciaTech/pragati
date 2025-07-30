@@ -30,8 +30,22 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
+
+interface CollegeAdmin {
+  _id: string;
+  email: string;
+  collegeName: string;
+  ttcCoordinatorLimit: number;
+  creditQuota: number; // ← match backend
+  isActive: boolean;
+}
 
 export default function InstitutionManagementPage() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const token = localStorage.getItem("token");
+  const [collegeData, setCollegeData] = React.useState<CollegeAdmin[]>([]);
+
   const { toast } = useToast();
   const [colleges, setColleges] = React.useState(MOCK_COLLEGES);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -49,10 +63,45 @@ export default function InstitutionManagementPage() {
     setIsModalOpen(true);
   };
 
-  const handleSave = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const name = formData.get("name") as string;
+
+    const collegeName = formData.get("name") as string;
+    const email = formData.get("principalEmail") as string;
+    const ttcCoordinatorLimit = Number(formData.get("ttcLimit"));
+    const creditQuota = Number(formData.get("creditsAvailable"));
+
+    try {
+      const res = await axios.post(
+        `${apiUrl}/api/admin/create-principal`,
+        { collegeName, email, ttcCoordinatorLimit, creditQuota },
+        { headers: { Authorization: `Bearer ${token}` } } // <— include super-admin JWT
+      );
+      console.log(res.data);
+      setCollegeData([
+        ...collegeData,
+        {
+          _id: Date.now().toString(),
+          collegeName,
+          email,
+          ttcCoordinatorLimit,
+          creditQuota,
+          isActive: true,
+        },
+      ]);
+      toast({
+        title: "Institution Added",
+        description: `${collegeName} has been successfully saved.`,
+      });
+      setIsModalOpen(false);
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "Server Error",
+        description: "Please try again later.",
+      });
+    }
     toast({
       title: `Institution ${modalType === "add" ? "Added" : "Updated"}`,
       description: `${name} has been successfully saved.`,
@@ -76,6 +125,22 @@ export default function InstitutionManagementPage() {
       description: "College status has been toggled.",
     });
   };
+
+  const fetchColleges = async () => {
+    try {
+      const res = await axios.get(`${apiUrl}/api/users?role=college_admin`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(res.data);
+      setCollegeData(res.data.docs);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchColleges();
+  }, [apiUrl, token]);
 
   return (
     <>
@@ -104,37 +169,35 @@ export default function InstitutionManagementPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {colleges.map((college) => (
-                <TableRow key={college.id}>
-                  <TableCell>{college.id}</TableCell>
-                  <TableCell className="font-medium">{college.name}</TableCell>
-                  <TableCell>{college.principalEmail}</TableCell>
+              {collegeData?.map((college) => (
+                <TableRow key={college?._id}>
+                  <TableCell>{college?._id}</TableCell>
+                  <TableCell className="font-medium">
+                    {college?.collegeName}
+                  </TableCell>
+                  <TableCell>{college?.email}</TableCell>
                   <TableCell>
                     <Badge
-                      variant={
-                        college.status === "Active" ? "default" : "destructive"
-                      }
+                      variant={college?.isActive ? "default" : "destructive"}
                     >
-                      {college.status}
+                      {college?.isActive ? "Active" : "Disabled"}
                     </Badge>
                   </TableCell>
-                  <TableCell>{college.creditsAvailable}</TableCell>
+                  <TableCell>{college.creditQuota ?? 0}</TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleOpenModal("edit", college)}
+                      // onClick={() => handleOpenModal("edit", college)}
                     >
                       Edit
                     </Button>
                     <Button
-                      variant={
-                        college.status === "Active" ? "destructive" : "default"
-                      }
+                      variant={college?.isActive ? "destructive" : "default"}
                       size="sm"
-                      onClick={() => handleToggleStatus(college.id)}
+                      // onClick={() => handleToggleStatus(college.id)}
                     >
-                      {college.status === "Active" ? "Deactivate" : "Activate"}
+                      {college.isActive ? "Deactivate" : "Activate"}
                     </Button>
                   </TableCell>
                 </TableRow>

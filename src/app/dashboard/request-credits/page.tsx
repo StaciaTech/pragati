@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import * as React from 'react';
+import * as React from "react";
 import {
   Card,
   CardContent,
@@ -8,13 +8,13 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { MOCK_INNOVATOR_USER, MOCK_CREDIT_REQUESTS } from '@/lib/mock-data';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { MOCK_INNOVATOR_USER, MOCK_CREDIT_REQUESTS } from "@/lib/mock-data";
+import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,62 +25,83 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
+import axios from "axios";
 
 export default function RequestCreditsPage() {
   const { toast } = useToast();
   const user = MOCK_INNOVATOR_USER;
   const [requests, setRequests] = React.useState(MOCK_CREDIT_REQUESTS);
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const token = localStorage.getItem("token");
+
   const pendingRequest = requests.find(
-    (req) => req.requesterId === user.id && req.status === 'Pending' && req.requesterType === 'Innovator'
+    (req) =>
+      req.requesterId === user.id &&
+      req.status === "Pending" &&
+      req.requesterType === "Innovator"
   );
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (pendingRequest) {
       toast({
-        variant: 'destructive',
-        title: 'Request Already Pending',
+        variant: "destructive",
+        title: "Request Already Pending",
         description:
-          'You already have a credit request awaiting approval. Please wait for it to be resolved.',
+          "You already have a credit request awaiting approval. Please wait for it to be resolved.",
       });
       return;
     }
 
     const formData = new FormData(event.currentTarget);
-    const amount = formData.get('amount');
-    const purpose = formData.get('purpose');
+    const amount = formData.get("amount");
+    const purpose = formData.get("purpose");
+    const reason = formData.get("purpose");
 
-    if (!amount || !purpose) {
+    if (!amount || !reason) {
       toast({
-        variant: 'destructive',
-        title: 'Missing Information',
+        variant: "destructive",
+        title: "Missing Information",
         description:
-          'Please enter a valid amount and purpose for your credit request.',
+          "Please enter a valid amount and purpose for your credit request.",
       });
       return;
     }
 
-    // Simulate adding to mock data
-    const newRequest = {
-      id: `CR-INV-${Date.now()}`,
-      requesterType: 'Innovator' as const,
-      requesterId: user.id,
-      requesterName: user.name,
-      amount: Number(amount),
-      status: 'Pending' as const,
-      date: new Date().toISOString().split('T')[0],
-      purpose: purpose as string,
-    };
-    setRequests((prev) => [...prev, newRequest]);
-    MOCK_CREDIT_REQUESTS.push(newRequest);
+    const res = await axios.post(
+      `${apiUrl}/api/credits/request-from-ttc`,
+      {
+        amount,
+        reason,
+      },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
 
-    toast({
-      title: 'Request Submitted',
-      description: `Your request for ${amount} credits has been submitted to your TTC Coordinator.`,
-    });
+    console.log(res.data);
+
+    // Simulate adding to mock data
+    // const newRequest = {
+    //   id: `CR-INV-${Date.now()}`,
+    //   requesterType: "Innovator" as const,
+    //   requesterId: user.id,
+    //   requesterName: user.name,
+    //   amount: Number(amount),
+    //   status: "Pending" as const,
+    //   date: new Date().toISOString().split("T")[0],
+    //   purpose: purpose as string,
+    // };
+    // setRequests((prev) => [...prev, newRequest]);
+    // MOCK_CREDIT_REQUESTS.push(newRequest);
+
+    if (res.data.success) {
+      toast({
+        title: "Request Submitted",
+        description: `Your request for ${amount} credits has been submitted to your TTC Coordinator.`,
+      });
+    }
     event.currentTarget.reset();
   };
 
@@ -91,8 +112,8 @@ export default function RequestCreditsPage() {
       MOCK_CREDIT_REQUESTS.splice(index, 1);
     }
     toast({
-      title: 'Request Cancelled',
-      description: 'Your credit request has been successfully cancelled.',
+      title: "Request Cancelled",
+      description: "Your credit request has been successfully cancelled.",
     });
   };
 
@@ -103,25 +124,26 @@ export default function RequestCreditsPage() {
           <CardHeader>
             <CardTitle>Pending Request</CardTitle>
             <CardDescription>
-              You have a credit request awaiting approval from your TTC Coordinator.
+              You have a credit request awaiting approval from your TTC
+              Coordinator.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
             <p>
               <span className="font-semibold text-muted-foreground">
-                Amount:{' '}
+                Amount:{" "}
               </span>
               {pendingRequest.amount} credits
             </p>
             <p>
               <span className="font-semibold text-muted-foreground">
-                Date:{' '}
+                Date:{" "}
               </span>
               {pendingRequest.date}
             </p>
             <p>
               <span className="font-semibold text-muted-foreground">
-                Purpose:{' '}
+                Purpose:{" "}
               </span>
               {pendingRequest.purpose}
             </p>
@@ -158,9 +180,10 @@ export default function RequestCreditsPage() {
           <CardHeader>
             <CardTitle>Request Credits from TTC Coordinator</CardTitle>
             <CardDescription>
-              You currently have{' '}
-              <span className="font-bold text-primary">{user.credits}</span>{' '}
-              credits available. Use this form to request additional credits from your TTC.
+              You currently have{" "}
+              <span className="font-bold text-primary">{user.credits}</span>{" "}
+              credits available. Use this form to request additional credits
+              from your TTC.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">

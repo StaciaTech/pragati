@@ -57,6 +57,8 @@ export function LoginForm() {
       console.log(res);
       if (res.data.success) {
         localStorage.setItem("token", res.data.token);
+        localStorage.setItem("collegeId", res.data.user.collegeId);
+
         toast({
           title: "Login Successful",
           description: `Welcome! Redirecting to the ${res.data.user.role} dashboard.`,
