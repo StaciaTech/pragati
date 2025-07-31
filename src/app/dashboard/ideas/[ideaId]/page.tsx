@@ -3,7 +3,7 @@
 'use client';
 
 import * as React from 'react';
-import { useSearchParams, useRouter, useParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Card,
@@ -18,7 +18,7 @@ import { Separator } from '@/components/ui/separator';
 import { MOCK_IDEAS, STATUS_COLORS, MOCK_CONSULTATIONS, MOCK_TTCS } from '@/lib/mock-data';
 import type { ValidationReport } from '@/ai/schemas';
 import { ROLES } from '@/lib/constants';
-import { ArrowLeft, Download, ThumbsUp, Lightbulb, RefreshCw, MessageSquare, TrendingUp, TrendingDown, Star, Share2, Copy, CalendarIcon, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Download, ThumbsUp, Lightbulb, RefreshCw, MessageSquare, TrendingUp, TrendingDown, Star, Share2, Copy, CalendarIcon, ChevronRight, CheckCircle2 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {
@@ -50,7 +50,7 @@ import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { FacebookIcon, LinkedInIcon, TwitterIcon, WhatsAppIcon, MailIcon } from '@/components/social-icons';
 import { ScoreDisplay } from '@/components/score-display';
-import { Logo } from '@/components/icons';
+import { Logo, StaciaLogo } from '@/components/icons';
 
 
 const getBackLink = (role: string | null) => {
@@ -78,9 +78,9 @@ type ReportMetrics = {
 };
 
 export default function IdeaReportPage() {
-  const params = useParams();
-  const searchParams = useSearchParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const params = useParams();
   const { toast } = useToast();
   const ideaId = params.ideaId as string;
   const role = searchParams.get('role');
@@ -440,6 +440,46 @@ export default function IdeaReportPage() {
     });
   };
 
+  const actionPoints = React.useMemo(() => {
+    if (!report) return [];
+    const points = [];
+    const hasIPRisk = bottomPerformers.some(p => p.name.includes("Intellectual Property"));
+    const hasMarketRisk = bottomPerformers.some(p => p.name.includes("Market Risk"));
+    const hasOperationalRisk = bottomPerformers.some(p => p.name.includes("Operational Risk"));
+
+    if (hasIPRisk) {
+        points.push({
+            title: "Strengthen Defensibility Strategy",
+            todos: [
+                "Consult with a legal expert on patentability of core algorithms.",
+                "Research alternative 'moats' like proprietary data sets or network effects.",
+                "Document trade secrets and internal know-how securely.",
+            ]
+        });
+    }
+     if (hasMarketRisk) {
+        points.push({
+            title: "Refine Market Entry Plan",
+            todos: [
+                "Conduct surveys with at least 50 potential customers to validate willingness-to-pay.",
+                "Develop a detailed competitor analysis matrix.",
+                "Create a phased go-to-market strategy, starting with a niche segment.",
+            ]
+        });
+    }
+     if (hasOperationalRisk) {
+        points.push({
+            title: "Develop Operational Mitigation Plan",
+            todos: [
+                "Identify potential data pipeline bottlenecks and solutions.",
+                "Outline a farmer support system (e.g., chatbot, FAQ, local reps).",
+                "Create a budget for initial operational costs for the first year.",
+            ]
+        });
+    }
+    return points;
+  }, [report, bottomPerformers]);
+
   if (!idea) {
     return (
       <div className="text-center py-20">
@@ -573,6 +613,34 @@ export default function IdeaReportPage() {
                       </div>
                   </div>
                 </div>
+                
+                <Separator />
+                
+                 {actionPoints.length > 0 && (
+                    <div className="space-y-4">
+                        <h3 className="text-xl font-semibold">Next Steps</h3>
+                        <p className="text-sm text-muted-foreground">
+                            Actionable steps to improve your idea based on the evaluation.
+                        </p>
+                        <Accordion type="single" collapsible className="w-full">
+                            {actionPoints.map((point, i) => (
+                                <AccordionItem value={`action-${i}`} key={i}>
+                                    <AccordionTrigger className="text-base">{point.title}</AccordionTrigger>
+                                    <AccordionContent>
+                                        <ul className="space-y-2 pl-2">
+                                            {point.todos.map((todo, j) => (
+                                                <li key={j} className="flex items-start gap-2 text-sm text-muted-foreground">
+                                                    <CheckCircle2 className="h-4 w-4 text-primary mt-1 shrink-0"/>
+                                                    <span>{todo}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            ))}
+                        </Accordion>
+                    </div>
+                )}
                 
                 <Separator />
                 
