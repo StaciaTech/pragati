@@ -2,6 +2,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -33,10 +34,12 @@ import { useToast } from '@/hooks/use-toast';
 import { CreditCard, UserPlus, UserX, UserCheck } from 'lucide-react';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { ROLES } from '@/lib/constants';
 
 
 export default function InnovatorManagementPage() {
     const { toast } = useToast();
+    const router = useRouter();
     const userTTC = MOCK_TTCS[0]; 
     const college = MOCK_COLLEGES.find(c => c.id === userTTC.collegeId);
     
@@ -90,6 +93,10 @@ export default function InnovatorManagementPage() {
             description: `The credit request has been ${action.toLowerCase()}.`,
         });
     };
+    
+    const handleRowClick = (innovatorId: string) => {
+        router.push(`/dashboard/coordinator/innovators/${innovatorId}?role=${ROLES.COORDINATOR}`);
+    };
 
   return (
     <>
@@ -124,19 +131,17 @@ export default function InnovatorManagementPage() {
                 </TableHeader>
                 <TableBody>
                 {collegeInnovators.map((innovator) => (
-                    <TableRow key={innovator.id}>
+                    <TableRow key={innovator.id} onClick={() => handleRowClick(innovator.id)} className="cursor-pointer">
                     <TableCell>{innovator.id}</TableCell>
-                    <TableCell className="font-medium">
-                        <Link href={`/dashboard/coordinator/innovators/${innovator.id}?role=TTC Coordinator`} className="hover:underline text-primary">
-                            {innovator.name}
-                        </Link>
+                    <TableCell className="font-medium text-primary hover:underline">
+                        {innovator.name}
                     </TableCell>
                     <TableCell>{innovator.email}</TableCell>
                     <TableCell>{innovator.credits}</TableCell>
                     <TableCell>
                         <Badge className={STATUS_COLORS[innovator.status]}>{innovator.status}</Badge>
                     </TableCell>
-                    <TableCell className="text-right space-x-1">
+                    <TableCell className="text-right space-x-1" onClick={(e) => e.stopPropagation()}>
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button variant="ghost" size="icon" onClick={() => handleOpenModal('assign', innovator)}>
@@ -272,3 +277,5 @@ export default function InnovatorManagementPage() {
     </>
   );
 }
+
+    
