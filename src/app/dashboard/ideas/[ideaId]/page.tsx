@@ -126,8 +126,8 @@ export default function IdeaReportPage() {
     const doc = new jsPDF('p', 'pt', 'a4');
     const margins = { top: 60, bottom: 60, left: 40, right: 40 };
     const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
     const centerX = pageWidth / 2;
+    const pageHeight = doc.internal.pageSize.getHeight();
     const contentWidth = pageWidth - margins.left - margins.right;
     let y = margins.top;
 
@@ -555,7 +555,7 @@ export default function IdeaReportPage() {
                   <span>ID: {idea.id}</span>
                   <span>Version: {idea.version}</span>
                   <span>Submitted: {idea.dateSubmitted}</span>
-                  <span>Status: <Badge className={STATUS_COLORS[status]}>{status}</Badge></span>
+                  <span>Status: <Badge className={cn(STATUS_COLORS[status])}>{status}</Badge></span>
                 </div>
               </div>
               {report && (
@@ -681,7 +681,7 @@ export default function IdeaReportPage() {
                     <Accordion type="multiple" value={openAccordionItems} onValueChange={setOpenAccordionItems} className="w-full pt-4">
                         {Object.entries(report.sections.detailedEvaluation.clusters).map(([clusterName, clusterData]) => (
                             <AccordionItem value={clusterName} key={clusterName}>
-                                <AccordionTrigger className="text-lg font-semibold text-primary">
+                                <AccordionTrigger className="text-lg font-semibold text-primary hover:no-underline">
                                     {clusterName}
                                 </AccordionTrigger>
                                 <AccordionContent className="p-4 pt-0 space-y-4">
@@ -691,7 +691,7 @@ export default function IdeaReportPage() {
                                     const summary = parameterSummaries[clusterName]?.[paramName];
                                     return (
                                         <AccordionItem value={paramName} key={paramName}>
-                                            <AccordionTrigger className="font-semibold mb-2">
+                                            <AccordionTrigger className="font-semibold mb-2 hover:no-underline">
                                                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center w-full pr-2 gap-2 text-left">
                                                     <span className="flex-1">{paramName}</span>
                                                     {summary && (
