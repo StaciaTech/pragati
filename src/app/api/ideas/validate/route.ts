@@ -13,17 +13,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields: title, description, domain' }, { status: 400 });
     }
 
+    // Generate new IDs
+    const ideaId = `IDEA-${String(MOCK_IDEAS.length + 1).padStart(3, '0')}`;
+    const validationId = `VALID-${String(MOCK_IDEAS.length + 1).padStart(3, '0')}-001`;
+    const reportId = `REPID-${String(MOCK_IDEAS.length + 1).padStart(3, '0')}-001-${Date.now()}`;
+    
+    console.log(`Generating report for Idea: ${ideaId}, Validation: ${validationId}, Report: ${reportId}`);
+
     // Call the Genkit flow to get the validation report
     const report: ValidationReport = await generateValidationReport({
+      ideaId,
+      validationId,
       ideaName: title,
       ideaConcept: description,
       category: domain,
       institution: "Pragati University (Mock)", // This would come from user context
     });
 
+    // Add the generated reportId to the report object
+    report.reportId = reportId;
+
     // Simulate saving to a database by adding to our mock data array
     const newIdea = {
-      id: `IDEA-${String(MOCK_IDEAS.length + 1).padStart(3, '0')}`,
+      id: ideaId,
+      validationId: validationId,
       title: report.ideaName,
       description: report.ideaConcept,
       collegeId: 'COL001',

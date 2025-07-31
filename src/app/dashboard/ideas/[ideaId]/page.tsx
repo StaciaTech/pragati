@@ -50,6 +50,7 @@ import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { FacebookIcon, LinkedInIcon, TwitterIcon, WhatsAppIcon, MailIcon } from '@/components/social-icons';
 import { ScoreDisplay } from '@/components/score-display';
+import { Logo } from '@/components/icons';
 
 
 const getBackLink = (role: string | null) => {
@@ -244,9 +245,14 @@ export default function IdeaReportPage() {
     doc.setTextColor(themeColors.background);
     doc.text(report.ideaName, centerX, pageHeight / 3 + 40, { align: 'center' });
     
-    doc.setFontSize(12);
+    doc.setFontSize(10);
     doc.setTextColor(themeColors.text);
     doc.text(`Generated on: ${new Date().toLocaleDateString()}`, centerX, pageHeight / 2 + 30, { align: 'center' });
+    
+    doc.setFontSize(8);
+    doc.setTextColor(themeColors.muted);
+    const idText = `Idea ID: ${report.ideaId} | Validation ID: ${report.validationId} | Report ID: ${report.reportId}`;
+    doc.text(idText, centerX, pageHeight / 2 + 50, { align: 'center' });
     
     // Executive Summary
     doc.addPage();
@@ -864,4 +870,3 @@ export default function IdeaReportPage() {
     </>
   );
 }
-

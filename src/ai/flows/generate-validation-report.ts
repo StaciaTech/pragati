@@ -115,6 +115,9 @@ const generateValidationReportFlow = ai.defineFlow(
 
     // Step 4: Construct the full report object
     const report: ValidationReport = {
+        ideaId: input.ideaId,
+        validationId: input.validationId,
+        reportId: '', // This will be populated by the API route
         ideaName: input.ideaName,
         ideaConcept: input.ideaConcept,
         overallScore: overallScore,
@@ -167,7 +170,7 @@ const generateValidationReportFlow = ai.defineFlow(
         },
     };
 
-    console.log(`Report generated. Overall Score: ${report.overallScore}, Outcome: ${report.validationOutcome}`);
+    console.log(`Report generated for Idea ${input.ideaId}. Overall Score: ${report.overallScore}, Outcome: ${report.validationOutcome}`);
     return report;
   }
 );

@@ -7,6 +7,8 @@ import { z } from 'zod';
 
 // Input Schema for the validation report generator
 export const GenerateValidationReportInputSchema = z.object({
+  ideaId: z.string().describe("The unique ID of the idea being validated."),
+  validationId: z.string().describe("The unique ID for this specific validation attempt."),
   ideaName: z.string().describe('The name of the idea.'),
   ideaConcept: z.string().describe('The detailed concept of the idea.'),
   category: z.string().describe('The category or domain of the idea.'),
@@ -67,6 +69,9 @@ export type DetailedEvaluationClusters = z.infer<typeof DetailedEvaluationCluste
 
 // Main Report Output Schema
 export const ValidationReportSchema = z.object({
+  ideaId: z.string(),
+  validationId: z.string(),
+  reportId: z.string(),
   ideaName: z.string(),
   ideaConcept: z.string(),
   overallScore: z.number(),

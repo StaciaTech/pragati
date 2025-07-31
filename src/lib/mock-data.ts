@@ -248,6 +248,9 @@ export const INITIAL_CLUSTER_WEIGHTS = {
 };
 
 const MOCK_SAMPLE_REPORT: ValidationReport = {
+  ideaId: 'IDEA-001',
+  validationId: 'VALID-001-001',
+  reportId: 'REPID-001-001-20240721',
   ideaName: 'AI-Powered Smart Farming',
   ideaConcept: 'An intelligent system using AI to optimize crop yield and detect diseases early.',
   overallScore: 76,
@@ -451,6 +454,7 @@ const MOCK_SAMPLE_REPORT: ValidationReport = {
 
 export let MOCK_IDEAS: Array<{
   id: string;
+  validationId: string;
   title: string;
   description: string;
   collegeId: string;
@@ -471,6 +475,7 @@ export let MOCK_IDEAS: Array<{
 }> = [
   {
     id: 'IDEA-001',
+    validationId: 'VALID-001-001',
     title: 'AI-Powered Smart Farming',
     description: 'An intelligent system using AI to optimize crop yield and detect diseases early.',
     collegeId: 'COL001',
@@ -491,6 +496,7 @@ export let MOCK_IDEAS: Array<{
   },
   {
     id: 'IDEA-002',
+    validationId: 'VALID-002-001',
     title: 'Decentralized Education Platform',
     description: 'A blockchain-based platform for peer-to-peer learning with verified credentials.',
     collegeId: 'COL002',
@@ -501,7 +507,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Moderate',
     dateSubmitted: '2024-02-20',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, ideaName: 'Decentralized Education Platform', overallScore: 62 },
+    report: {...MOCK_SAMPLE_REPORT, ideaId: 'IDEA-002', validationId: 'VALID-002-001', reportId: 'REPID-002-001-20240722', ideaName: 'Decentralized Education Platform', overallScore: 62 },
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Pending',
@@ -511,6 +517,7 @@ export let MOCK_IDEAS: Array<{
   },
    {
     id: 'IDEA-003',
+    validationId: 'VALID-003-001',
     title: 'HealthTech Wearable for Seniors',
     description: 'A wearable device that monitors vital signs for elderly individuals and alerts caregivers.',
     collegeId: 'COL001',
@@ -521,7 +528,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Rejected',
     dateSubmitted: '2024-03-10',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, ideaName: 'HealthTech Wearable for Seniors', overallScore: 42, validationOutcome: 'Rejected', recommendationText: "Back to the Lab! A great learning opportunity. Rethink the core concept and come back stronger."},
+    report: {...MOCK_SAMPLE_REPORT, ideaId: 'IDEA-003', validationId: 'VALID-003-001', reportId: 'REPID-003-001-20240723', ideaName: 'HealthTech Wearable for Seniors', overallScore: 42, validationOutcome: 'Rejected', recommendationText: "Back to the Lab! A great learning opportunity. Rethink the core concept and come back stronger."},
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Not Requested',
@@ -531,6 +538,7 @@ export let MOCK_IDEAS: Array<{
   },
   {
     id: 'IDEA-004',
+    validationId: 'VALID-004-001',
     title: 'Smart City Traffic Management',
     description: 'An IoT and AI-based system to optimize traffic flow in real-time.',
     collegeId: 'COL003',
@@ -541,7 +549,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Approved',
     dateSubmitted: '2024-04-05',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, ideaName: 'Smart City Traffic Management', overallScore: 90, validationOutcome: 'Approved', recommendationText: "Rocket Fuel! This idea is cleared for launch. Let's make it happen!"},
+    report: {...MOCK_SAMPLE_REPORT, ideaId: 'IDEA-004', validationId: 'VALID-004-001', reportId: 'REPID-004-001-20240724', ideaName: 'Smart City Traffic Management', overallScore: 90, validationOutcome: 'Approved', recommendationText: "Rocket Fuel! This idea is cleared for launch. Let's make it happen!"},
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Completed',
@@ -551,6 +559,7 @@ export let MOCK_IDEAS: Array<{
   },
    {
     id: 'IDEA-005',
+    validationId: 'VALID-005-001',
     title: 'Personalized Financial Advisor Bot',
     description: 'A FinTech chatbot that provides personalized investment advice based on user goals.',
     collegeId: 'COL001',
@@ -561,7 +570,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Approved',
     dateSubmitted: '2024-05-22',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, ideaName: 'Financial Advisor Bot', overallScore: 80, validationOutcome: 'Moderate'},
+    report: {...MOCK_SAMPLE_REPORT, ideaId: 'IDEA-005', validationId: 'VALID-005-001', reportId: 'REPID-005-001-20240725', ideaName: 'Financial Advisor Bot', overallScore: 80, validationOutcome: 'Moderate'},
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Pending',
@@ -571,6 +580,7 @@ export let MOCK_IDEAS: Array<{
   },
    {
     id: 'IDEA-006',
+    validationId: 'VALID-006-001',
     title: 'Renewable Energy Grid Optimizer',
     description: 'AI model to predict energy production from solar/wind and optimize grid distribution.',
     collegeId: 'COL002',
@@ -581,7 +591,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Moderate',
     dateSubmitted: '2024-06-30',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, ideaName: 'Grid Optimizer', overallScore: 70, validationOutcome: 'Moderate'},
+    report: {...MOCK_SAMPLE_REPORT, ideaId: 'IDEA-006', validationId: 'VALID-006-001', reportId: 'REPID-006-001-20240726', ideaName: 'Grid Optimizer', overallScore: 70, validationOutcome: 'Moderate'},
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Not Requested',
