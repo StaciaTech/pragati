@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -32,9 +31,9 @@ export default function AdminDashboardPage() {
   }, {} as Record<string, number>);
 
   const ideaStatusData = [
-    { name: 'Slay', value: ideaStatusCounts.Slay || 0, fill: 'hsl(var(--color-approved))' },
-    { name: 'Mid', value: ideaStatusCounts.Mid || 0, fill: 'hsl(var(--color-moderate))' },
-    { name: 'Flop', value: ideaStatusCounts.Flop || 0, fill: 'hsl(var(--color-rejected))' },
+    { name: 'Slay', value: ideaStatusCounts['Slay'] || 0, fill: 'hsl(var(--color-approved))' },
+    { name: 'Mid', value: ideaStatusCounts['Mid'] || 0, fill: 'hsl(var(--color-moderate))' },
+    { name: 'Flop', value: ideaStatusCounts['Flop'] || 0, fill: 'hsl(var(--color-rejected))' },
   ];
 
   const collegePerformance = MOCK_COLLEGES.map(college => {
@@ -44,8 +43,8 @@ export default function AdminDashboardPage() {
     return {
         name: college.name,
         ideas: collegeIdeas.length,
-        approvalRate: approvalRate, // Keep as a number
-    }
+        approvalRate: approvalRate,
+    };
   }).sort((a, b) => b.ideas - a.ideas);
 
 
