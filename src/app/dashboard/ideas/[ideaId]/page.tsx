@@ -3,7 +3,7 @@
 'use client';
 
 import * as React from 'react';
-import { useSearchParams, useRouter, useParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Card,
@@ -80,9 +80,8 @@ type ReportMetrics = {
 export default function IdeaReportPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const params = useParams();
   const { toast } = useToast();
-  const ideaId = params.ideaId as string;
+  const ideaId = useSearchParams().get('ideaId') as string;
   const role = searchParams.get('role');
   const reportRef = React.useRef<HTMLDivElement>(null);
   const spiderChartRef = React.useRef<HTMLDivElement>(null);
@@ -692,17 +691,17 @@ export default function IdeaReportPage() {
                                     return (
                                         <AccordionItem value={paramName} key={paramName}>
                                             <AccordionTrigger className="font-semibold mb-2 hover:no-underline">
-                                                <div className="flex justify-between items-center w-full pr-2">
-                                                    <span className="text-left">{paramName}</span>
+                                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center w-full pr-2 gap-2 text-left">
+                                                    <span className="flex-1">{paramName}</span>
                                                     {summary && (
-                                                    <div className="flex items-center gap-4 text-right">
-                                                        <div className="hidden lg:flex items-center gap-4 text-xs text-muted-foreground">
+                                                    <div className="flex items-center gap-4 text-right shrink-0">
+                                                        <div className="hidden md:flex items-center gap-4 text-xs text-muted-foreground">
                                                             <TooltipProvider>
                                                                 <Tooltip>
                                                                     <TooltipTrigger asChild>
                                                                         <div className="flex items-center gap-1.5 cursor-default">
                                                                             <ThumbsUp className="h-4 w-4 text-green-500" />
-                                                                            <span className="truncate max-w-[150px]">{summary.strongestPoint}</span>
+                                                                            <span className="w-full max-w-[120px] lg:max-w-[150px] truncate">{summary.strongestPoint}</span>
                                                                         </div>
                                                                     </TooltipTrigger>
                                                                     <TooltipContent side="top" align="start"><p className="max-w-xs">{summary.strongestPoint}</p></TooltipContent>
@@ -711,7 +710,7 @@ export default function IdeaReportPage() {
                                                                     <TooltipTrigger asChild>
                                                                         <div className="flex items-center gap-1.5 cursor-default">
                                                                             <Lightbulb className="h-4 w-4 text-orange-400" />
-                                                                            <span className="truncate max-w-[150px]">{summary.improvementPoint}</span>
+                                                                             <span className="w-full max-w-[120px] lg:max-w-[150px] truncate">{summary.improvementPoint}</span>
                                                                         </div>
                                                                     </TooltipTrigger>
                                                                     <TooltipContent side="top" align="start"><p className="max-w-xs">{summary.improvementPoint}</p></TooltipContent>
