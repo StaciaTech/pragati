@@ -32,9 +32,9 @@ export default function AdminDashboardPage() {
   }, {} as Record<string, number>);
 
   const ideaStatusData = [
-    { name: 'Approved', value: ideaStatusCounts.Approved || 0, fill: 'hsl(var(--color-approved))' },
-    { name: 'Moderate', value: ideaStatusCounts.Moderate || 0, fill: 'hsl(var(--color-moderate))' },
-    { name: 'Rejected', value: ideaStatusCounts.Rejected || 0, fill: 'hsl(var(--color-rejected))' },
+    { name: 'Slay', value: ideaStatusCounts.Slay || 0, fill: 'hsl(var(--color-approved))' },
+    { name: 'Mid', value: ideaStatusCounts.Mid || 0, fill: 'hsl(var(--color-moderate))' },
+    { name: 'Flop', value: ideaStatusCounts.Flop || 0, fill: 'hsl(var(--color-rejected))' },
   ];
 
   const collegePerformance = MOCK_COLLEGES.map(college => {
@@ -44,7 +44,7 @@ export default function AdminDashboardPage() {
     return {
         name: college.name,
         ideas: collegeIdeas.length,
-        approvalRate: approvalRate.toFixed(1) + '%',
+        approvalRate: approvalRate, // Keep as a number
     }
   }).sort((a, b) => b.ideas - a.ideas);
 
@@ -151,7 +151,7 @@ export default function AdminDashboardPage() {
                             <TableCell className="font-bold">{index + 1}</TableCell>
                             <TableCell>{college.name}</TableCell>
                             <TableCell>{college.ideas}</TableCell>
-                            <TableCell><Badge variant="secondary">{college.approvalRate}</Badge></TableCell>
+                            <TableCell><Badge variant="secondary">{college.approvalRate.toFixed(1)}%</Badge></TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
