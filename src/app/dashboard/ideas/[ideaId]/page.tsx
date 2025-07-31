@@ -129,26 +129,28 @@ export default function IdeaReportPage() {
     let y = margins.top;
 
     const themeColors = {
-        primary: '#20639B',
-        accent: '#3CAEA3',
+        primary: '#20639B', // Dark Blue
+        accent: '#3CAEA3',  // Teal
         text: '#333333',
-        muted: '#666666'
+        muted: '#666666',
+        background: '#FFFFFF',
+        lightGray: '#F0F4F8',
+        green: '#10B981',
+        orange: '#F59E0B',
+        red: '#EF4444',
     };
 
     const addHeaderFooter = () => {
         const pageCount = doc.internal.pages.length;
         for (let i = 1; i <= pageCount; i++) {
             doc.setPage(i);
-            // Header
-            doc.setFontSize(10);
-            doc.setTextColor(themeColors.muted);
-            doc.text('PragatiAI Validation Report', margins.left, 30);
-            doc.text(report.ideaName, pageWidth - margins.right, 30, { align: 'right' });
-            doc.setDrawColor(themeColors.accent);
-            doc.line(margins.left, 40, pageWidth - margins.right, 40);
-
             // Footer
-            doc.text(`Page ${i} of ${pageCount}`, pageWidth - margins.right, pageHeight - 30, { align: 'right' });
+            doc.setFontSize(8);
+            doc.setTextColor(themeColors.muted);
+            doc.text(`Page ${i} of ${pageCount}`, margins.left, pageHeight - 30);
+            doc.text(`Powered by Stacia Corp`, pageWidth - margins.right, pageHeight - 30, { align: 'right' });
+            doc.setDrawColor(themeColors.lightGray);
+            doc.line(margins.left, pageHeight - 40, pageWidth - margins.right, pageHeight - 40);
         }
     };
     
@@ -168,7 +170,7 @@ export default function IdeaReportPage() {
         y += spacing;
     };
     
-    const addSubTitle = (text: string, size = 16, spacing = 25) => {
+    const addSubTitle = (text: string, size = 14, spacing = 25) => {
         checkPageBreak(spacing * 2);
         doc.setFontSize(size);
         doc.setFont('helvetica', 'bold');
@@ -177,7 +179,7 @@ export default function IdeaReportPage() {
         y += spacing;
     };
 
-    const addBodyText = (text: string, size = 10, spacing = 15) => {
+    const addBodyText = (text: string | string[], size = 10, spacing = 15) => {
         if (!text) return;
         checkPageBreak(spacing * 2);
         const splitText = doc.splitTextToSize(text, contentWidth);
@@ -185,42 +187,71 @@ export default function IdeaReportPage() {
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(themeColors.muted);
         doc.text(splitText, margins.left, y);
-        y += splitText.length * size * 1.5;
+        y += (Array.isArray(splitText) ? splitText.length : 1) * size * 1.2;
     };
     
      const addKeyValue = (key: string, value: string | number) => {
         checkPageBreak(20);
         const keyText = `${key}: `;
-        const keyWidth = doc.getTextWidth(keyText) * 10 / doc.getFontSize(); // Estimate width
         doc.setFontSize(10);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(themeColors.text);
+        
+        const valueLines = doc.splitTextToSize(String(value), contentWidth - doc.getTextWidth(keyText));
         doc.text(keyText, margins.left, y);
-
+        
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(themeColors.muted);
-        const valueLines = doc.splitTextToSize(String(value), contentWidth - keyWidth);
-        doc.text(valueLines, margins.left + keyWidth, y);
-        y += valueLines.length * 10 * 1.5;
+        doc.text(valueLines, margins.left + doc.getTextWidth(keyText), y);
+        y += (Array.isArray(valueLines) ? valueLines.length : 1) * 10 * 1.2 + 5;
     };
+
+    const drawScoreMeter = (x: number, c_y: number, score: number) => {
+        const radius = 15;
+        const scoreColor = score >= 85 ? themeColors.green : score >= 50 ? themeColors.orange : themeColors.red;
+        
+        doc.setDrawColor(themeColors.lightGray);
+        doc.setLineWidth(4);
+        doc.circle(x, c_y, radius, 'S');
+
+        const angle = (score / 100) * 360;
+        doc.setDrawColor(scoreColor);
+        doc.setLineWidth(4);
+        for (let i = 0; i < angle; i++) {
+            const rad = (i - 90) * (Math.PI / 180);
+            doc.line(x + radius * Math.cos(rad), c_y + radius * Math.sin(rad), x + radius * Math.cos(rad), c_y + radius * Math.sin(rad));
+        }
+
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(scoreColor);
+        doc.text(String(score), x, c_y, { align: 'center', baseline: 'middle' });
+    };
+
     
     // --- PDF Generation ---
     // Cover Page
+    doc.setFillColor(themeColors.primary);
+    doc.rect(0, 0, pageWidth, pageHeight / 2, 'F');
+    doc.setFillColor(themeColors.background);
+    doc.rect(0, pageHeight / 2, pageWidth, pageHeight / 2, 'F');
+
     doc.setFontSize(36);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(themeColors.primary);
-    doc.text('PragatiAI Validation Report', centerX, pageHeight / 3, { align: 'center' });
+    doc.setTextColor(themeColors.background);
+    doc.text('Validation Report', centerX, pageHeight / 3, { align: 'center' });
     doc.setFontSize(24);
-    doc.setTextColor(themeColors.text);
+    doc.setTextColor(themeColors.background);
     doc.text(report.ideaName, centerX, pageHeight / 3 + 40, { align: 'center' });
+    
     doc.setFontSize(12);
-    doc.setTextColor(themeColors.muted);
-    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, centerX, pageHeight / 3 + 70, { align: 'center' });
-
+    doc.setTextColor(themeColors.text);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, centerX, pageHeight / 2 + 30, { align: 'center' });
+    
     // Executive Summary
     doc.addPage();
     y = margins.top;
-    addTitle('1. Executive Summary');
+    addTitle('Executive Summary');
     addKeyValue('Idea Name', report.sections.executiveSummary.ideaName);
     addKeyValue('Concept', report.sections.executiveSummary.concept);
     addKeyValue('Overall Score', report.sections.executiveSummary.overallScore.toFixed(2));
@@ -232,11 +263,11 @@ export default function IdeaReportPage() {
     try {
         const canvas = await html2canvas(spiderChartRef.current, { scale: 2, backgroundColor: null });
         const imgData = canvas.toDataURL('image/png');
-        const imgWidth = contentWidth;
+        const imgWidth = contentWidth * 0.8;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         checkPageBreak(imgHeight + 40);
-        addTitle('2. Cluster Performance Overview', 22, 30);
-        doc.addImage(imgData, 'PNG', margins.left, y, imgWidth, imgHeight);
+        addTitle('Cluster Performance Overview');
+        doc.addImage(imgData, 'PNG', centerX - imgWidth/2, y, imgWidth, imgHeight);
         y += imgHeight + 20;
     } catch (error) {
         console.error("Failed to render spider chart", error);
@@ -244,13 +275,15 @@ export default function IdeaReportPage() {
     }
 
     // Detailed Assessment
-    doc.addPage();
-    y = margins.top;
-    addTitle('3. Detailed Viability Assessment');
+    addTitle('Detailed Viability Assessment');
 
     for (const [clusterName, clusterData] of Object.entries(report.sections.detailedEvaluation.clusters)) {
         checkPageBreak(80);
-        addSubTitle(clusterName);
+        doc.setFillColor(themeColors.lightGray);
+        doc.roundedRect(margins.left, y - 5, contentWidth, 30, 5, 5, 'F');
+        addSubTitle(clusterName, 14, 20);
+        y += 10;
+        
         for (const [paramName, paramData] of Object.entries(clusterData)) {
             checkPageBreak(60);
             doc.setFontSize(12);
@@ -260,24 +293,35 @@ export default function IdeaReportPage() {
             y += 20;
             for (const [subParamName, subParamDetails] of Object.entries(paramData as any)) {
                  if (subParamDetails.assignedScore) {
-                    checkPageBreak(50);
-                    doc.setFillColor(240, 248, 255); // Light blue background
-                    doc.rect(margins.left + 20, y - 10, contentWidth - 20, 55, 'F');
+                    checkPageBreak(70);
+                    
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(themeColors.text);
+                    doc.text(subParamName, margins.left + 20, y + 5);
 
-                    addKeyValue(`    • ${subParamName}`, `${subParamDetails.assignedScore}/100`);
-                    y -= 5;
-                    addKeyValue(`      Well`, subParamDetails.whatWentWell);
-                    addKeyValue(`      Improve`, subParamDetails.whatCanBeImproved);
-                    y += 15;
+                    drawScoreMeter(margins.left + 150, y + 5, subParamDetails.assignedScore);
+                    
+                    const textX = margins.left + 180;
+                    const textWidth = contentWidth - 180;
+                    
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(themeColors.muted);
+                    const wentWellLines = doc.splitTextToSize(`Well: ${subParamDetails.whatWentWell}`, textWidth);
+                    doc.text(wentWellLines, textX, y);
+                    y += (wentWellLines.length * 10 * 1.2);
+
+                    const improveLines = doc.splitTextToSize(`Improve: ${subParamDetails.whatCanBeImproved}`, textWidth);
+                    doc.text(improveLines, textX, y);
+                    y += (improveLines.length * 10 * 1.2) + 15;
                  }
             }
         }
     }
 
     // Conclusion & Recommendations
-    doc.addPage();
-    y = margins.top;
-    addTitle('4. Conclusion & Recommendations');
+    checkPageBreak(100);
+    addTitle('Conclusion & Recommendations');
     addSubTitle('Conclusion');
     addBodyText(report.sections.conclusion.content);
     y += 10;
@@ -286,7 +330,6 @@ export default function IdeaReportPage() {
         addBodyText(`• ${item}`);
     });
     
-    // Add Headers and Footers to all pages
     addHeaderFooter();
 
     doc.save(`${ideaId}-PragatiAI-Report.pdf`);
@@ -821,3 +864,4 @@ export default function IdeaReportPage() {
     </>
   );
 }
+
