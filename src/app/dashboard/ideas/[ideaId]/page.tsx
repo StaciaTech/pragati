@@ -3,7 +3,7 @@
 'use client';
 
 import * as React from 'react';
-import { useSearchParams, useRouter, useParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Card,
@@ -77,12 +77,11 @@ type ReportMetrics = {
   parameterSummaries: Record<string, Record<string, ParameterSummary>>;
 };
 
-export default function IdeaReportPage() {
+export default function IdeaReportPage({ params }: { params: { ideaId: string } }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const params = useParams();
   const { toast } = useToast();
-  const ideaId = params.ideaId as string;
+  const { ideaId } = params;
   const role = searchParams.get('role');
   const reportRef = React.useRef<HTMLDivElement>(null);
   const spiderChartRef = React.useRef<HTMLDivElement>(null);
@@ -91,7 +90,7 @@ export default function IdeaReportPage() {
   const [isShareDialogOpen, setIsShareDialogOpen] = React.useState(false);
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
   
-  const idea = MOCK_IDEAS.find((i) => i.id === ideaId);
+  const idea = MOCK_IDEAS.find((i) => i.id === ideaId && i.innovatorEmail === 'jane.doe@example.com');
   const report = idea?.report as ValidationReport | null;
 
   const [openAccordionItems, setOpenAccordionItems] = React.useState<string[]>([]);
