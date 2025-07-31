@@ -84,6 +84,7 @@ export default function IdeaReportPage() {
   const ideaId = params.ideaId as string;
   const role = searchParams.get('role');
   const reportRef = React.useRef<HTMLDivElement>(null);
+  const spiderChartRef = React.useRef<HTMLDivElement>(null);
 
   const [isRequestConsultationOpen, setIsRequestConsultationOpen] = React.useState(false);
   const [isShareDialogOpen, setIsShareDialogOpen] = React.useState(false);
@@ -109,40 +110,134 @@ export default function IdeaReportPage() {
     (c) => c.ideaId === ideaId && c.status === 'Completed'
   );
 
-  const handleDownload = () => {
-    const input = reportRef.current;
-    if (!input) {
-      console.error("Report element not found for PDF generation.");
-      return;
+  const handleDownload = async () => {
+    if (!report || !spiderChartRef.current) {
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Report data is not available for download.',
+        });
+        return;
     }
 
-    html2canvas(input, { scale: 2 }).then((canvas) => {
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
-      const ratio = pdfWidth / canvasWidth;
-      const height = canvasHeight * ratio;
-      
-      let position = 0;
-      let heightLeft = height;
+    const doc = new jsPDF('p', 'pt', 'a4');
+    const margins = { top: 40, bottom: 40, left: 40, right: 40 };
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const contentWidth = pageWidth - margins.left - margins.right;
+    let y = margins.top;
 
-      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, height);
-      heightLeft -= pdfHeight;
+    // --- Helper Functions ---
+    const addHeader = (text: string, size = 20, spacing = 25) => {
+        if (y > pageHeight - margins.bottom - 50) { // Check for space
+            doc.addPage();
+            y = margins.top;
+        }
+        doc.setFontSize(size);
+        doc.setTextColor(40, 40, 40);
+        doc.text(text, margins.left, y);
+        y += spacing;
+    };
 
-      while (heightLeft > 0) {
-        position = -heightLeft;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, height);
-        heightLeft -= pdfHeight;
-      }
-      
-      pdf.save(`${ideaId}-report.pdf`);
+    const addSubHeader = (text: string, size = 14, spacing = 20) => {
+        if (y > pageHeight - margins.bottom - 40) {
+            doc.addPage();
+            y = margins.top;
+        }
+        doc.setFontSize(size);
+        doc.setTextColor(60, 60, 60);
+        doc.text(text, margins.left, y);
+        y += spacing;
+    };
+
+    const addBodyText = (text: string, size = 10, spacing = 15) => {
+        if (!text) return;
+        const splitText = doc.splitTextToSize(text, contentWidth);
+        if (y + (splitText.length * size) > pageHeight - margins.bottom) {
+            doc.addPage();
+            y = margins.top;
+        }
+        doc.setFontSize(size);
+        doc.setTextColor(80, 80, 80);
+        doc.text(splitText, margins.left, y);
+        y += splitText.length * size * 1.2;
+    };
+    
+    const addKeyValue = (key: string, value: string) => {
+        const fullText = `${key}: ${value}`;
+        addBodyText(fullText);
+    };
+
+    // --- PDF Generation ---
+    // Title Page
+    addHeader(`PragatiAI Validation Report`, 24, 40);
+    addHeader(report.ideaName, 18, 30);
+    addBodyText(`Report for Idea ID: ${ideaId}`);
+    addBodyText(`Generated on: ${new Date().toLocaleDateString()}`);
+    y += 50;
+    addKeyValue('Overall Score', `${report.overallScore.toFixed(2)} / 100`);
+    addKeyValue('Validation Outcome', report.validationOutcome);
+    addKeyValue('Recommendation', report.recommendationText);
+
+
+    // Executive Summary
+    doc.addPage();
+    y = margins.top;
+    addHeader('1. Executive Summary');
+    addKeyValue('Idea Name', report.sections.executiveSummary.ideaName);
+    addKeyValue('Concept', report.sections.executiveSummary.concept);
+    addKeyValue('Overall Score', report.sections.executiveSummary.overallScore.toFixed(2));
+    addKeyValue('Outcome', report.sections.executiveSummary.validationOutcome);
+    addKeyValue('Recommendation', report.sections.executiveSummary.recommendation);
+
+    // Spider Chart
+    try {
+        const canvas = await html2canvas(spiderChartRef.current, { scale: 2, backgroundColor: null });
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = contentWidth * 0.8;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        if (y + imgHeight > pageHeight - margins.bottom) {
+            doc.addPage();
+            y = margins.top;
+        }
+        addHeader('2. Cluster Performance Overview', 20, 25);
+        doc.addImage(imgData, 'PNG', margins.left + (contentWidth - imgWidth) / 2, y, imgWidth, imgHeight);
+        y += imgHeight + 20;
+
+    } catch (error) {
+        console.error("Failed to render spider chart", error);
+        addBodyText("Error: Could not render spider chart.", 10);
+    }
+
+    // Detailed Assessment
+    addHeader('3. Detailed Viability Assessment');
+
+    for (const [clusterName, clusterData] of Object.entries(report.sections.detailedEvaluation.clusters)) {
+        addSubHeader(clusterName, 14, 20);
+        for (const [paramName, paramData] of Object.entries(clusterData)) {
+            addBodyText(`- ${paramName}`, 12, 18);
+            for (const [subParamName, subParamDetails] of Object.entries(paramData as any)) {
+                 if (subParamDetails.assignedScore) {
+                    addBodyText(`  • ${subParamName}: ${subParamDetails.assignedScore}/100`, 10, 15);
+                    addBodyText(`    Well: ${subParamDetails.whatWentWell}`, 9, 14);
+                    addBodyText(`    Improve: ${subParamDetails.whatCanBeImproved}`, 9, 14);
+                    y+= 5;
+                 }
+            }
+        }
+    }
+
+    // Conclusion & Recommendations
+    addHeader('4. Conclusion & Recommendations');
+    addSubHeader('Conclusion');
+    addBodyText(report.sections.conclusion.content);
+    addSubHeader('Recommendations');
+    report.sections.recommendations.items.forEach(item => {
+        addBodyText(`• ${item}`);
     });
-  };
+
+    doc.save(`${ideaId}-PragatiAI-Report.pdf`);
+};
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -329,7 +424,7 @@ export default function IdeaReportPage() {
                   <div className="space-y-4">
                       <h3 className="text-xl font-semibold">Cluster Performance</h3>
                       <p className="text-sm text-muted-foreground">Average scores across the main evaluation clusters.</p>
-                      <div className="h-[350px] flex items-center justify-center">
+                      <div ref={spiderChartRef} className="h-[350px] flex items-center justify-center">
                          <SpiderChart data={avgClusterScores} maxScore={100} size={400} />
                       </div>
                   </div>
@@ -408,24 +503,26 @@ export default function IdeaReportPage() {
                                                     {summary && (
                                                     <div className="flex items-center gap-4 text-right">
                                                         <div className="hidden lg:flex items-center gap-4 text-xs text-muted-foreground">
-                                                            <Tooltip>
-                                                                <TooltipTrigger asChild>
-                                                                    <div className="flex items-center gap-1.5 cursor-default">
-                                                                        <ThumbsUp className="h-4 w-4 text-green-500" />
-                                                                        <span className="truncate max-w-[150px]">{summary.strongestPoint}</span>
-                                                                    </div>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent side="top" align="start"><p className="max-w-xs">{summary.strongestPoint}</p></TooltipContent>
-                                                            </Tooltip>
-                                                             <Tooltip>
-                                                                <TooltipTrigger asChild>
-                                                                    <div className="flex items-center gap-1.5 cursor-default">
-                                                                        <Lightbulb className="h-4 w-4 text-orange-400" />
-                                                                        <span className="truncate max-w-[150px]">{summary.improvementPoint}</span>
-                                                                    </div>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent side="top" align="start"><p className="max-w-xs">{summary.improvementPoint}</p></TooltipContent>
-                                                            </Tooltip>
+                                                            <TooltipProvider>
+                                                                <Tooltip>
+                                                                    <TooltipTrigger asChild>
+                                                                        <div className="flex items-center gap-1.5 cursor-default">
+                                                                            <ThumbsUp className="h-4 w-4 text-green-500" />
+                                                                            <span className="truncate max-w-[150px]">{summary.strongestPoint}</span>
+                                                                        </div>
+                                                                    </TooltipTrigger>
+                                                                    <TooltipContent side="top" align="start"><p className="max-w-xs">{summary.strongestPoint}</p></TooltipContent>
+                                                                </Tooltip>
+                                                                 <Tooltip>
+                                                                    <TooltipTrigger asChild>
+                                                                        <div className="flex items-center gap-1.5 cursor-default">
+                                                                            <Lightbulb className="h-4 w-4 text-orange-400" />
+                                                                            <span className="truncate max-w-[150px]">{summary.improvementPoint}</span>
+                                                                        </div>
+                                                                    </TooltipTrigger>
+                                                                    <TooltipContent side="top" align="start"><p className="max-w-xs">{summary.improvementPoint}</p></TooltipContent>
+                                                                </Tooltip>
+                                                            </TooltipProvider>
                                                         </div>
                                                         <Badge className={cn(getScoreColor(summary.avgScore), 'bg-opacity-10 border-opacity-20')} variant="outline">{summary.avgScore.toFixed(0)}</Badge>
                                                     </div>
