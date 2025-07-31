@@ -2,14 +2,9 @@
 'use client';
 
 import * as React from 'react';
-import dynamic from 'next/dynamic';
 import { Logo } from '@/components/icons';
 import { ThemeToggle } from '@/components/theme-toggle';
-
-const LoginForm = dynamic(() => import('@/components/login-form').then(mod => mod.LoginForm), {
-  ssr: false,
-  loading: () => <p>Loading...</p>
-});
+import { LoginForm } from '@/components/login-form';
 
 
 export default function LoginPage() {
