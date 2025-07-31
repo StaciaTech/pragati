@@ -124,6 +124,7 @@ export default function IdeaReportPage() {
     const margins = { top: 60, bottom: 60, left: 40, right: 40 };
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
+    const centerX = pageWidth / 2;
     const contentWidth = pageWidth - margins.left - margins.right;
     let y = margins.top;
 
