@@ -42,6 +42,7 @@ export async function POST(request: NextRequest) {
       collegeId: 'COL001',
       collegeName: 'Pragati Institute of Technology',
       domain: domain,
+      innovatorId: 'INV001', // Mock data - associate with Jane Doe
       innovatorName: 'Jane Doe', // Mock data
       innovatorEmail: 'jane.doe@example.com', // Mock data
       status: report.validationOutcome,

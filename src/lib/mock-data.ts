@@ -460,6 +460,7 @@ export let MOCK_IDEAS: Array<{
   collegeId: string;
   collegeName: string;
   domain: string;
+  innovatorId: string;
   innovatorName: string;
   innovatorEmail: string;
   status: string;
@@ -481,6 +482,7 @@ export let MOCK_IDEAS: Array<{
     collegeId: 'COL001',
     collegeName: 'Pragati Institute of Technology',
     domain: 'Agriculture',
+    innovatorId: 'INV001',
     innovatorName: 'Jane Doe',
     innovatorEmail: 'jane.doe@example.com',
     status: 'Approved',
@@ -502,6 +504,7 @@ export let MOCK_IDEAS: Array<{
     collegeId: 'COL002',
     collegeName: 'Global School of Innovation',
     domain: 'EdTech',
+    innovatorId: 'INV002',
     innovatorName: 'John Smith',
     innovatorEmail: 'john.smith@example.com',
     status: 'Moderate',
@@ -523,6 +526,7 @@ export let MOCK_IDEAS: Array<{
     collegeId: 'COL001',
     collegeName: 'Pragati Institute of Technology',
     domain: 'HealthTech',
+    innovatorId: 'INV001',
     innovatorName: 'Jane Doe',
     innovatorEmail: 'jane.doe@example.com',
     status: 'Rejected',
@@ -544,6 +548,7 @@ export let MOCK_IDEAS: Array<{
     collegeId: 'COL003',
     collegeName: 'Tech University Chennai',
     domain: 'Smart Cities',
+    innovatorId: 'INV004',
     innovatorName: 'Arjun Kumar',
     innovatorEmail: 'arjun.k@example.com',
     status: 'Approved',
@@ -565,6 +570,7 @@ export let MOCK_IDEAS: Array<{
     collegeId: 'COL001',
     collegeName: 'Pragati Institute of Technology',
     domain: 'FinTech',
+    innovatorId: 'INV001',
     innovatorName: 'Jane Doe',
     innovatorEmail: 'jane.doe@example.com',
     status: 'Approved',
@@ -586,6 +592,7 @@ export let MOCK_IDEAS: Array<{
     collegeId: 'COL002',
     collegeName: 'Global School of Innovation',
     domain: 'Renewable Energy',
+    innovatorId: 'INV002',
     innovatorName: 'Priya Singh',
     innovatorEmail: 'priya.s@example.com',
     status: 'Moderate',
@@ -605,6 +612,7 @@ export let MOCK_CONSULTATIONS = [
   {
     id: 'CONS-001',
     ideaId: 'IDEA-001',
+    innovatorId: 'INV001',
     title: 'Discussion on MVP for Smart Farming',
     date: '2024-07-20',
     time: '10:00 AM',
@@ -616,6 +624,7 @@ export let MOCK_CONSULTATIONS = [
   {
     id: 'CONS-002',
     ideaId: 'IDEA-002',
+    innovatorId: 'INV002',
     title: 'Market Strategy Review for EdTech',
     date: '2024-07-18',
     time: '02:00 PM',
