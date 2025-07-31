@@ -3,7 +3,7 @@
 'use client';
 
 import * as React from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   Card,
@@ -80,8 +80,9 @@ type ReportMetrics = {
 export default function IdeaReportPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const params = useParams();
   const { toast } = useToast();
-  const ideaId = useSearchParams().get('ideaId') as string;
+  const ideaId = params.ideaId as string;
   const role = searchParams.get('role');
   const reportRef = React.useRef<HTMLDivElement>(null);
   const spiderChartRef = React.useRef<HTMLDivElement>(null);
@@ -241,7 +242,7 @@ export default function IdeaReportPage() {
     doc.setFontSize(36);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(themeColors.background);
-    doc.text('Validation Report', centerX, pageHeight / 3, { align: 'center' });
+    doc.text('PragatiAI Validation Report', centerX, pageHeight / 3, { align: 'center' });
     doc.setFontSize(24);
     doc.setTextColor(themeColors.background);
     doc.text(report.ideaName, centerX, pageHeight / 3 + 40, { align: 'center' });
@@ -680,7 +681,7 @@ export default function IdeaReportPage() {
                     <Accordion type="multiple" value={openAccordionItems} onValueChange={setOpenAccordionItems} className="w-full pt-4">
                         {Object.entries(report.sections.detailedEvaluation.clusters).map(([clusterName, clusterData]) => (
                             <AccordionItem value={clusterName} key={clusterName}>
-                                <AccordionTrigger className="text-lg font-semibold text-primary hover:no-underline">
+                                <AccordionTrigger className="text-lg font-semibold text-primary">
                                     {clusterName}
                                 </AccordionTrigger>
                                 <AccordionContent className="p-4 pt-0 space-y-4">
@@ -690,7 +691,7 @@ export default function IdeaReportPage() {
                                     const summary = parameterSummaries[clusterName]?.[paramName];
                                     return (
                                         <AccordionItem value={paramName} key={paramName}>
-                                            <AccordionTrigger className="font-semibold mb-2 hover:no-underline">
+                                            <AccordionTrigger className="font-semibold mb-2">
                                                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center w-full pr-2 gap-2 text-left">
                                                     <span className="flex-1">{paramName}</span>
                                                     {summary && (
@@ -701,7 +702,7 @@ export default function IdeaReportPage() {
                                                                     <TooltipTrigger asChild>
                                                                         <div className="flex items-center gap-1.5 cursor-default">
                                                                             <ThumbsUp className="h-4 w-4 text-green-500" />
-                                                                            <span className="w-full max-w-[120px] lg:max-w-[150px] truncate">{summary.strongestPoint}</span>
+                                                                            <span className="w-full md:max-w-[120px] lg:max-w-[150px] truncate">{summary.strongestPoint}</span>
                                                                         </div>
                                                                     </TooltipTrigger>
                                                                     <TooltipContent side="top" align="start"><p className="max-w-xs">{summary.strongestPoint}</p></TooltipContent>
@@ -710,7 +711,7 @@ export default function IdeaReportPage() {
                                                                     <TooltipTrigger asChild>
                                                                         <div className="flex items-center gap-1.5 cursor-default">
                                                                             <Lightbulb className="h-4 w-4 text-orange-400" />
-                                                                             <span className="w-full max-w-[120px] lg:max-w-[150px] truncate">{summary.improvementPoint}</span>
+                                                                             <span className="w-full md:max-w-[120px] lg:max-w-[150px] truncate">{summary.improvementPoint}</span>
                                                                         </div>
                                                                     </TooltipTrigger>
                                                                     <TooltipContent side="top" align="start"><p className="max-w-xs">{summary.improvementPoint}</p></TooltipContent>
