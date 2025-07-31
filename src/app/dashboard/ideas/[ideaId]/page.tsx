@@ -3,7 +3,7 @@
 'use client';
 
 import * as React from 'react';
-import { useSearchParams, useRouter, useParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Card,
@@ -746,10 +746,15 @@ export default function IdeaReportPage({ params }: { params: { ideaId: string } 
                                                                     <svg className="h-full w-full" viewBox="0 0 40 40">
                                                                         <circle cx="20" cy="20" r="18" className="stroke-muted" strokeWidth="3" fill="transparent" />
                                                                         <circle
-                                                                            cx="20" cy="20" r="18"
+                                                                            cx="20"
+                                                                            cy="20"
+                                                                            r="18"
                                                                             className={cn("stroke-current transition-all duration-500 ease-in-out", getScoreColor(score))}
-                                                                            strokeWidth="3" fill="transparent" strokeLinecap="round"
-                                                                            strokeDasharray={subCircumference} strokeDashoffset={subStrokeDashoffset}
+                                                                            strokeWidth="3"
+                                                                            fill="transparent"
+                                                                            strokeLinecap="round"
+                                                                            strokeDasharray={subCircumference}
+                                                                            strokeDashoffset={subStrokeDashoffset}
                                                                             transform="rotate(-90 20 20)"
                                                                         />
                                                                     </svg>
