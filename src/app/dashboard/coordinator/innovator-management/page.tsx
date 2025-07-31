@@ -30,6 +30,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { CreditCard, UserPlus, UserX, UserCheck } from 'lucide-react';
+import Link from 'next/link';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
 
 export default function InnovatorManagementPage() {
     const { toast } = useToast();
@@ -99,10 +103,14 @@ export default function InnovatorManagementPage() {
                     <Button variant="outline" onClick={() => setIsRequestsModalOpen(true)} disabled={pendingInnovatorRequests.length === 0}>
                         Pending Requests <Badge className="ml-2">{pendingInnovatorRequests.length}</Badge>
                     </Button>
-                    <Button onClick={() => handleOpenModal('add')}>Add Innovator</Button>
+                    <Button onClick={() => handleOpenModal('add')}>
+                        <UserPlus className="mr-2 h-4 w-4" />
+                        Add Innovator
+                    </Button>
                 </div>
             </CardHeader>
             <CardContent>
+            <TooltipProvider>
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -118,26 +126,46 @@ export default function InnovatorManagementPage() {
                 {collegeInnovators.map((innovator) => (
                     <TableRow key={innovator.id}>
                     <TableCell>{innovator.id}</TableCell>
-                    <TableCell className="font-medium">{innovator.name}</TableCell>
+                    <TableCell className="font-medium">
+                        <Link href={`/dashboard/coordinator/innovators/${innovator.id}?role=TTC Coordinator`} className="hover:underline text-primary">
+                            {innovator.name}
+                        </Link>
+                    </TableCell>
                     <TableCell>{innovator.email}</TableCell>
                     <TableCell>{innovator.credits}</TableCell>
                     <TableCell>
                         <Badge className={STATUS_COLORS[innovator.status]}>{innovator.status}</Badge>
                     </TableCell>
-                    <TableCell className="text-right space-x-2">
-                        <Button variant="outline" size="sm" onClick={() => handleOpenModal('assign', innovator)}>Assign Credits</Button>
-                         <Button 
-                            variant={innovator.status === 'Active' ? 'destructive' : 'default'} 
-                            size="sm" 
-                            onClick={() => handleToggleStatus(innovator.id)}
-                        >
-                          {innovator.status === 'Active' ? 'Deactivate' : 'Activate'}
-                        </Button>
+                    <TableCell className="text-right space-x-1">
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant="ghost" size="icon" onClick={() => handleOpenModal('assign', innovator)}>
+                                    <CreditCard className="h-4 w-4" />
+                                    <span className="sr-only">Assign Credits</span>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent><p>Assign Credits</p></TooltipContent>
+                        </Tooltip>
+                        
+                         <Tooltip>
+                            <TooltipTrigger asChild>
+                                 <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    onClick={() => handleToggleStatus(innovator.id)}
+                                >
+                                  {innovator.status === 'Active' ? <UserX className="h-4 w-4 text-red-500" /> : <UserCheck className="h-4 w-4 text-green-500" />}
+                                  <span className="sr-only">{innovator.status === 'Active' ? 'Deactivate' : 'Activate'}</span>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent><p>{innovator.status === 'Active' ? 'Deactivate' : 'Activate'}</p></TooltipContent>
+                        </Tooltip>
                     </TableCell>
                     </TableRow>
                 ))}
                 </TableBody>
             </Table>
+            </TooltipProvider>
             </CardContent>
         </Card>
 
