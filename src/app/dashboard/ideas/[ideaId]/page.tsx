@@ -3,7 +3,7 @@
 'use client';
 
 import * as React from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   Card,
@@ -77,10 +77,11 @@ type ReportMetrics = {
   parameterSummaries: Record<string, Record<string, ParameterSummary>>;
 };
 
-export default function IdeaReportPage({ params }: { params: { ideaId: string } }) {
+export default function IdeaReportPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { ideaId } = params;
+  const params = useParams();
+  const { ideaId } = params as { ideaId: string };
   const { toast } = useToast();
   const reportRef = React.useRef<HTMLDivElement>(null);
   const spiderChartRef = React.useRef<HTMLDivElement>(null);
