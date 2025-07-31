@@ -3,7 +3,7 @@
 'use client';
 
 import * as React from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   Card,
@@ -674,7 +674,7 @@ export default function IdeaReportPage() {
                            <h3 className="text-xl font-semibold">Detailed Viability Assessment</h3>
                            <p className="text-sm text-muted-foreground">{report.sections.detailedEvaluation.description}</p>
                         </div>
-                        <Button variant="ghost" size="sm" onClick={handleToggleExpandAll}>
+                        <Button variant="secondary" size="sm" onClick={handleToggleExpandAll}>
                           {allClustersExpanded ? 'Collapse All' : 'Expand All'}
                         </Button>
                     </div>
