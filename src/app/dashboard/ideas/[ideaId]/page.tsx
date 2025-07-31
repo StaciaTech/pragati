@@ -3,7 +3,7 @@
 'use client';
 
 import * as React from 'react';
-import { useSearchParams, useRouter, useParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Card,
@@ -96,6 +96,8 @@ export default function IdeaReportPage() {
 
   const [openAccordionItems, setOpenAccordionItems] = React.useState<string[]>([]);
   const allClusterNames = report ? Object.keys(report.sections.detailedEvaluation.clusters) : [];
+  const [activeActionPoint, setActiveActionPoint] = React.useState(0);
+
 
   const allClustersExpanded = openAccordionItems.length > 0 && openAccordionItems.length === allClusterNames.length;
 
@@ -477,6 +479,16 @@ export default function IdeaReportPage() {
             ]
         });
     }
+    if (points.length === 0 && bottomPerformers.length > 0) {
+        points.push({
+            title: `Address Lowest Score: ${bottomPerformers[0].name}`,
+            todos: [
+                `Review the feedback for '${bottomPerformers[0].name}' in the detailed assessment.`,
+                `Brainstorm 3-5 ways to directly improve this aspect.`,
+                `Update your pitch deck to reflect these improvements.`
+            ]
+        })
+    }
     return points;
   }, [report, bottomPerformers]);
 
@@ -616,30 +628,42 @@ export default function IdeaReportPage() {
                 
                 <Separator />
                 
-                 {actionPoints.length > 0 && (
-                    <div className="space-y-4">
-                        <h3 className="text-xl font-semibold">Next Steps</h3>
-                        <p className="text-sm text-muted-foreground">
-                            Actionable steps to improve your idea based on the evaluation.
-                        </p>
-                        <Accordion type="single" collapsible className="w-full">
+                {actionPoints.length > 0 && (
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold">Next Steps</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Actionable steps to improve your idea based on the evaluation. Select an action point to see the to-do list.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <div className="flex flex-col gap-2">
                             {actionPoints.map((point, i) => (
-                                <AccordionItem value={`action-${i}`} key={i}>
-                                    <AccordionTrigger className="text-base">{point.title}</AccordionTrigger>
-                                    <AccordionContent>
-                                        <ul className="space-y-2 pl-2">
-                                            {point.todos.map((todo, j) => (
-                                                <li key={j} className="flex items-start gap-2 text-sm text-muted-foreground">
-                                                    <CheckCircle2 className="h-4 w-4 text-primary mt-1 shrink-0"/>
-                                                    <span>{todo}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </AccordionContent>
-                                </AccordionItem>
+                                <button
+                                    key={i}
+                                    onClick={() => setActiveActionPoint(i)}
+                                    className={cn(
+                                        "p-3 rounded-md text-left transition-colors border-l-4",
+                                        i === activeActionPoint 
+                                            ? "bg-muted border-primary" 
+                                            : "bg-transparent hover:bg-muted/50 border-transparent"
+                                    )}
+                                >
+                                    <p className="font-semibold">{point.title}</p>
+                                </button>
                             ))}
-                        </Accordion>
+                        </div>
+                        <div className="bg-muted/50 p-4 rounded-lg">
+                           <h4 className="font-semibold mb-3">To-Do List:</h4>
+                           <ul className="space-y-3">
+                                {actionPoints[activeActionPoint]?.todos.map((todo, j) => (
+                                    <li key={j} className="flex items-start gap-3 text-sm text-muted-foreground">
+                                        <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0"/>
+                                        <span>{todo}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     </div>
+                  </div>
                 )}
                 
                 <Separator />
