@@ -2,6 +2,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -10,11 +11,13 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MOCK_IDEAS, STATUS_COLORS, MOCK_TTCS } from '@/lib/mock-data';
 import Link from 'next/link';
+import { ROLES } from '@/lib/constants';
 
 export default function IdeaManagementPage() {
     const userTTC = MOCK_TTCS[0];
     const [searchTerm, setSearchTerm] = React.useState('');
     const [filterStatus, setFilterStatus] = React.useState('all');
+    const router = useRouter();
   
     const assignedIdeas = MOCK_IDEAS.filter(idea => idea.ttcAssigned === userTTC.id);
 
@@ -61,7 +64,11 @@ export default function IdeaManagementPage() {
           </TableHeader>
           <TableBody>
             {filteredIdeas.map((idea) => (
-              <TableRow key={idea.id}>
+              <TableRow 
+                key={idea.id} 
+                className="cursor-pointer" 
+                onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.COORDINATOR}`)}
+              >
                 <TableCell className="font-medium">{idea.id}</TableCell>
                 <TableCell>{idea.title}</TableCell>
                 <TableCell>{idea.innovatorName}</TableCell>
@@ -69,8 +76,13 @@ export default function IdeaManagementPage() {
                   <Badge className={STATUS_COLORS[idea.status]}>{idea.status}</Badge>
                 </TableCell>
                 <TableCell className="text-right">
-                    <Button variant="link" size="sm" asChild>
-                        <Link href={`/dashboard/ideas/${idea.id}?role=TTC Coordinator`}>View Report</Link>
+                    <Button 
+                      variant="link" 
+                      size="sm" 
+                      asChild 
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                        <Link href={`/dashboard/ideas/${idea.id}?role=${ROLES.COORDINATOR}`}>View Report</Link>
                     </Button>
                 </TableCell>
               </TableRow>
