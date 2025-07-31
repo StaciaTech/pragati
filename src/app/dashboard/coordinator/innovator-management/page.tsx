@@ -32,7 +32,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { CreditCard, UserPlus, UserX, UserCheck } from 'lucide-react';
-import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ROLES } from '@/lib/constants';
 
@@ -65,7 +64,8 @@ export default function InnovatorManagementPage() {
         
         if (modalType === 'add') {
              const name = formData.get('name') as string;
-             toast({ title: "Innovator Added", description: `${name} has been added.`});
+             const credits = formData.get('credits') as string;
+             toast({ title: "Innovator Added", description: `${name} has been added with ${credits || 0} credits.`});
         } else {
              const credits = formData.get('credits') as string;
              toast({ title: "Credits Assigned", description: `${credits} credits assigned to ${currentInnovator?.name}.`});
@@ -196,6 +196,10 @@ export default function InnovatorManagementPage() {
                                     <Label htmlFor="email">Innovator Email</Label>
                                     <Input id="email" name="email" type="email" required />
                                 </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="credits">Initial Credits (Optional)</Label>
+                                    <Input id="credits" name="credits" type="number" min="0" max={college?.creditsAvailable} />
+                                </div>
                             </>
                         ) : (
                              <div className="space-y-2">
@@ -277,5 +281,3 @@ export default function InnovatorManagementPage() {
     </>
   );
 }
-
-    

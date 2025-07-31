@@ -2,20 +2,21 @@
 'use client';
 
 import * as React from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, User, Mail, School, CreditCard } from 'lucide-react';
-import { MOCK_INNOVATORS, MOCK_IDEAS, STATUS_COLORS, MOCK_COLLEGES } from '@/lib/mock-data';
+import { ArrowLeft, User, Mail, School, CreditCard, MessageSquare } from 'lucide-react';
+import { MOCK_INNOVATORS, MOCK_IDEAS, STATUS_COLORS, MOCK_COLLEGES, MOCK_CONSULTATIONS } from '@/lib/mock-data';
 import { ROLES } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import type { ValidationReport } from '@/ai/schemas';
 
 export default function InnovatorDetailPage() {
     const params = useParams();
+    const router = useRouter();
     const searchParams = useSearchParams();
     const innovatorId = params.innovatorId as string;
     const role = searchParams.get('role') || ROLES.COORDINATOR;
@@ -23,6 +24,7 @@ export default function InnovatorDetailPage() {
     const innovator = MOCK_INNOVATORS.find(inv => inv.id === innovatorId);
     const innovatorIdeas = MOCK_IDEAS.filter(idea => idea.innovatorEmail === innovator?.email);
     const college = MOCK_COLLEGES.find(c => c.id === innovator?.collegeId);
+    const consultationHistory = MOCK_CONSULTATIONS.filter(c => c.ideaId && innovatorIdeas.some(i => i.id === c.ideaId));
 
     if (!innovator) {
         return <p>Innovator not found.</p>;
@@ -93,7 +95,7 @@ export default function InnovatorDetailPage() {
                         <TableBody>
                             {innovatorIdeas.length > 0 ? (
                                 innovatorIdeas.map(idea => (
-                                    <TableRow key={idea.id}>
+                                    <TableRow key={idea.id} className="cursor-pointer" onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=${role}`)}>
                                         <TableCell>{idea.id}</TableCell>
                                         <TableCell>{idea.title}</TableCell>
                                         <TableCell>{idea.dateSubmitted}</TableCell>
@@ -115,6 +117,45 @@ export default function InnovatorDetailPage() {
                             ) : (
                                 <TableRow>
                                     <TableCell colSpan={6} className="text-center">No ideas submitted yet.</TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+
+             <Card>
+                <CardHeader>
+                    <CardTitle>Consultation History</CardTitle>
+                    <CardDescription>A log of all consultations requested by {innovator.name}.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                     <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Idea</TableHead>
+                                <TableHead>Mentor</TableHead>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Status</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {consultationHistory.length > 0 ? (
+                                consultationHistory.map(consultation => (
+                                    <TableRow key={consultation.id} className="cursor-pointer" onClick={() => router.push(`/dashboard/coordinator/consultations?role=${role}`)}>
+                                        <TableCell>{consultation.title}</TableCell>
+                                        <TableCell>{consultation.mentor}</TableCell>
+                                        <TableCell>{consultation.date}</TableCell>
+                                        <TableCell>
+                                            <Badge className={cn(STATUS_COLORS[consultation.status])}>
+                                                {consultation.status}
+                                            </Badge>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={4} className="text-center">No consultation history.</TableCell>
                                 </TableRow>
                             )}
                         </TableBody>
