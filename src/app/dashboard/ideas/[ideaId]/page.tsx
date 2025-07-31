@@ -96,7 +96,7 @@ export default function IdeaReportPage() {
   const [openAccordionItems, setOpenAccordionItems] = React.useState<string[]>([]);
   const allClusterNames = report ? Object.keys(report.sections.detailedEvaluation.clusters) : [];
 
-  const allClustersExpanded = openAccordionItems.length === allClusterNames.length;
+  const allClustersExpanded = openAccordionItems.length > 0 && openAccordionItems.length === allClusterNames.length;
 
   const handleToggleExpandAll = () => {
     if (allClustersExpanded) {
@@ -121,120 +121,172 @@ export default function IdeaReportPage() {
     }
 
     const doc = new jsPDF('p', 'pt', 'a4');
-    const margins = { top: 40, bottom: 40, left: 40, right: 40 };
+    const margins = { top: 60, bottom: 60, left: 40, right: 40 };
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const contentWidth = pageWidth - margins.left - margins.right;
     let y = margins.top;
 
-    // --- Helper Functions ---
-    const addHeader = (text: string, size = 20, spacing = 25) => {
-        if (y > pageHeight - margins.bottom - 50) { // Check for space
+    const themeColors = {
+        primary: '#20639B',
+        accent: '#3CAEA3',
+        text: '#333333',
+        muted: '#666666'
+    };
+
+    const addHeaderFooter = () => {
+        const pageCount = doc.internal.pages.length;
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            // Header
+            doc.setFontSize(10);
+            doc.setTextColor(themeColors.muted);
+            doc.text('PragatiAI Validation Report', margins.left, 30);
+            doc.text(report.ideaName, pageWidth - margins.right, 30, { align: 'right' });
+            doc.setDrawColor(themeColors.accent);
+            doc.line(margins.left, 40, pageWidth - margins.right, 40);
+
+            // Footer
+            doc.text(`Page ${i} of ${pageCount}`, pageWidth - margins.right, pageHeight - 30, { align: 'right' });
+        }
+    };
+    
+    const checkPageBreak = (requiredHeight: number) => {
+        if (y + requiredHeight > pageHeight - margins.bottom) {
             doc.addPage();
             y = margins.top;
         }
+    };
+
+    const addTitle = (text: string, size = 22, spacing = 30) => {
+        checkPageBreak(spacing * 2);
         doc.setFontSize(size);
-        doc.setTextColor(40, 40, 40);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(themeColors.primary);
         doc.text(text, margins.left, y);
         y += spacing;
     };
-
-    const addSubHeader = (text: string, size = 14, spacing = 20) => {
-        if (y > pageHeight - margins.bottom - 40) {
-            doc.addPage();
-            y = margins.top;
-        }
+    
+    const addSubTitle = (text: string, size = 16, spacing = 25) => {
+        checkPageBreak(spacing * 2);
         doc.setFontSize(size);
-        doc.setTextColor(60, 60, 60);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(themeColors.text);
         doc.text(text, margins.left, y);
         y += spacing;
     };
 
     const addBodyText = (text: string, size = 10, spacing = 15) => {
         if (!text) return;
+        checkPageBreak(spacing * 2);
         const splitText = doc.splitTextToSize(text, contentWidth);
-        if (y + (splitText.length * size) > pageHeight - margins.bottom) {
-            doc.addPage();
-            y = margins.top;
-        }
         doc.setFontSize(size);
-        doc.setTextColor(80, 80, 80);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(themeColors.muted);
         doc.text(splitText, margins.left, y);
-        y += splitText.length * size * 1.2;
+        y += splitText.length * size * 1.5;
     };
     
-    const addKeyValue = (key: string, value: string) => {
-        const fullText = `${key}: ${value}`;
-        addBodyText(fullText);
+     const addKeyValue = (key: string, value: string | number) => {
+        checkPageBreak(20);
+        const keyText = `${key}: `;
+        const keyWidth = doc.getTextWidth(keyText) * 10 / doc.getFontSize(); // Estimate width
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(themeColors.text);
+        doc.text(keyText, margins.left, y);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(themeColors.muted);
+        const valueLines = doc.splitTextToSize(String(value), contentWidth - keyWidth);
+        doc.text(valueLines, margins.left + keyWidth, y);
+        y += valueLines.length * 10 * 1.5;
     };
-
+    
     // --- PDF Generation ---
-    // Title Page
-    addHeader(`PragatiAI Validation Report`, 24, 40);
-    addHeader(report.ideaName, 18, 30);
-    addBodyText(`Report for Idea ID: ${ideaId}`);
-    addBodyText(`Generated on: ${new Date().toLocaleDateString()}`);
-    y += 50;
-    addKeyValue('Overall Score', `${report.overallScore.toFixed(2)} / 100`);
-    addKeyValue('Validation Outcome', report.validationOutcome);
-    addKeyValue('Recommendation', report.recommendationText);
-
+    // Cover Page
+    doc.setFontSize(36);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(themeColors.primary);
+    doc.text('PragatiAI Validation Report', centerX, pageHeight / 3, { align: 'center' });
+    doc.setFontSize(24);
+    doc.setTextColor(themeColors.text);
+    doc.text(report.ideaName, centerX, pageHeight / 3 + 40, { align: 'center' });
+    doc.setFontSize(12);
+    doc.setTextColor(themeColors.muted);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, centerX, pageHeight / 3 + 70, { align: 'center' });
 
     // Executive Summary
     doc.addPage();
     y = margins.top;
-    addHeader('1. Executive Summary');
+    addTitle('1. Executive Summary');
     addKeyValue('Idea Name', report.sections.executiveSummary.ideaName);
     addKeyValue('Concept', report.sections.executiveSummary.concept);
     addKeyValue('Overall Score', report.sections.executiveSummary.overallScore.toFixed(2));
     addKeyValue('Outcome', report.sections.executiveSummary.validationOutcome);
     addKeyValue('Recommendation', report.sections.executiveSummary.recommendation);
+    y += 20;
 
     // Spider Chart
     try {
         const canvas = await html2canvas(spiderChartRef.current, { scale: 2, backgroundColor: null });
         const imgData = canvas.toDataURL('image/png');
-        const imgWidth = contentWidth * 0.8;
+        const imgWidth = contentWidth;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        if (y + imgHeight > pageHeight - margins.bottom) {
-            doc.addPage();
-            y = margins.top;
-        }
-        addHeader('2. Cluster Performance Overview', 20, 25);
-        doc.addImage(imgData, 'PNG', margins.left + (contentWidth - imgWidth) / 2, y, imgWidth, imgHeight);
+        checkPageBreak(imgHeight + 40);
+        addTitle('2. Cluster Performance Overview', 22, 30);
+        doc.addImage(imgData, 'PNG', margins.left, y, imgWidth, imgHeight);
         y += imgHeight + 20;
-
     } catch (error) {
         console.error("Failed to render spider chart", error);
         addBodyText("Error: Could not render spider chart.", 10);
     }
 
     // Detailed Assessment
-    addHeader('3. Detailed Viability Assessment');
+    doc.addPage();
+    y = margins.top;
+    addTitle('3. Detailed Viability Assessment');
 
     for (const [clusterName, clusterData] of Object.entries(report.sections.detailedEvaluation.clusters)) {
-        addSubHeader(clusterName, 14, 20);
+        checkPageBreak(80);
+        addSubTitle(clusterName);
         for (const [paramName, paramData] of Object.entries(clusterData)) {
-            addBodyText(`- ${paramName}`, 12, 18);
+            checkPageBreak(60);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(themeColors.text);
+            doc.text(`- ${paramName}`, margins.left + 10, y);
+            y += 20;
             for (const [subParamName, subParamDetails] of Object.entries(paramData as any)) {
                  if (subParamDetails.assignedScore) {
-                    addBodyText(`  • ${subParamName}: ${subParamDetails.assignedScore}/100`, 10, 15);
-                    addBodyText(`    Well: ${subParamDetails.whatWentWell}`, 9, 14);
-                    addBodyText(`    Improve: ${subParamDetails.whatCanBeImproved}`, 9, 14);
-                    y+= 5;
+                    checkPageBreak(50);
+                    doc.setFillColor(240, 248, 255); // Light blue background
+                    doc.rect(margins.left + 20, y - 10, contentWidth - 20, 55, 'F');
+
+                    addKeyValue(`    • ${subParamName}`, `${subParamDetails.assignedScore}/100`);
+                    y -= 5;
+                    addKeyValue(`      Well`, subParamDetails.whatWentWell);
+                    addKeyValue(`      Improve`, subParamDetails.whatCanBeImproved);
+                    y += 15;
                  }
             }
         }
     }
 
     // Conclusion & Recommendations
-    addHeader('4. Conclusion & Recommendations');
-    addSubHeader('Conclusion');
+    doc.addPage();
+    y = margins.top;
+    addTitle('4. Conclusion & Recommendations');
+    addSubTitle('Conclusion');
     addBodyText(report.sections.conclusion.content);
-    addSubHeader('Recommendations');
+    y += 10;
+    addSubTitle('Recommendations');
     report.sections.recommendations.items.forEach(item => {
         addBodyText(`• ${item}`);
     });
+    
+    // Add Headers and Footers to all pages
+    addHeaderFooter();
 
     doc.save(`${ideaId}-PragatiAI-Report.pdf`);
 };
@@ -306,7 +358,7 @@ export default function IdeaReportPage() {
           }
         });
         
-        const avgScore = totalScore / subParams.length;
+        const avgScore = subParams.length > 0 ? totalScore / subParams.length : 0;
         parameterSummaries[clusterName][paramName] = {
             avgScore,
             strongestPoint: bestWell.text,
