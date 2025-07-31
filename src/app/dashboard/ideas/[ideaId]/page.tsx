@@ -3,7 +3,7 @@
 'use client';
 
 import * as React from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   Card,
@@ -80,9 +80,8 @@ type ReportMetrics = {
 export default function IdeaReportPage({ params }: { params: { ideaId: string } }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { toast } = useToast();
   const { ideaId } = params;
-  const role = searchParams.get('role');
+  const { toast } = useToast();
   const reportRef = React.useRef<HTMLDivElement>(null);
   const spiderChartRef = React.useRef<HTMLDivElement>(null);
 
@@ -90,7 +89,8 @@ export default function IdeaReportPage({ params }: { params: { ideaId: string } 
   const [isShareDialogOpen, setIsShareDialogOpen] = React.useState(false);
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
   
-  const idea = MOCK_IDEAS.find((i) => i.id === ideaId && i.innovatorEmail === 'jane.doe@example.com');
+  const role = searchParams.get('role');
+  const idea = MOCK_IDEAS.find((i) => i.id === ideaId);
   const report = idea?.report as ValidationReport | null;
 
   const [openAccordionItems, setOpenAccordionItems] = React.useState<string[]>([]);
@@ -695,13 +695,13 @@ export default function IdeaReportPage({ params }: { params: { ideaId: string } 
                                                     <span className="flex-1">{paramName}</span>
                                                     {summary && (
                                                     <div className="flex items-center gap-4 text-right shrink-0">
-                                                        <div className="hidden md:flex items-center gap-4 text-xs text-muted-foreground">
+                                                        <div className="hidden md:flex flex-col md:flex-row items-end md:items-center gap-2 md:gap-4 text-xs text-muted-foreground">
                                                             <TooltipProvider>
                                                                 <Tooltip>
                                                                     <TooltipTrigger asChild>
                                                                         <div className="flex items-center gap-1.5 cursor-default">
                                                                             <ThumbsUp className="h-4 w-4 text-green-500" />
-                                                                            <span className="w-full md:max-w-[120px] lg:max-w-[150px] truncate">{summary.strongestPoint}</span>
+                                                                            <span className="flex-1 text-left">{summary.strongestPoint}</span>
                                                                         </div>
                                                                     </TooltipTrigger>
                                                                     <TooltipContent side="top" align="start"><p className="max-w-xs">{summary.strongestPoint}</p></TooltipContent>
@@ -710,7 +710,7 @@ export default function IdeaReportPage({ params }: { params: { ideaId: string } 
                                                                     <TooltipTrigger asChild>
                                                                         <div className="flex items-center gap-1.5 cursor-default">
                                                                             <Lightbulb className="h-4 w-4 text-orange-400" />
-                                                                             <span className="w-full md:max-w-[120px] lg:max-w-[150px] truncate">{summary.improvementPoint}</span>
+                                                                             <span className="flex-1 text-left">{summary.improvementPoint}</span>
                                                                         </div>
                                                                     </TooltipTrigger>
                                                                     <TooltipContent side="top" align="start"><p className="max-w-xs">{summary.improvementPoint}</p></TooltipContent>
