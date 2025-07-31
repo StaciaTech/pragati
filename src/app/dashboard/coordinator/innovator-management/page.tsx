@@ -34,6 +34,7 @@ import { useToast } from '@/hooks/use-toast';
 import { CreditCard, UserPlus, UserX, UserCheck } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ROLES } from '@/lib/constants';
+import { FormDescription } from '@/components/ui/form';
 
 
 export default function InnovatorManagementPage() {
@@ -180,7 +181,7 @@ export default function InnovatorManagementPage() {
                     <DialogTitle>{modalType === 'add' ? 'Add New Innovator' : `Assign Credits to ${currentInnovator?.name}`}</DialogTitle>
                     <DialogDescription>
                         {modalType === 'add' 
-                            ? 'Enter the details for the new innovator.' 
+                            ? `Enter the details for the new innovator. Your college has ${college?.creditsAvailable} credits available.` 
                             : `College has ${college?.creditsAvailable} credits available.`}
                     </DialogDescription>
                   </DialogHeader>
@@ -198,7 +199,10 @@ export default function InnovatorManagementPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="credits">Initial Credits (Optional)</Label>
-                                    <Input id="credits" name="credits" type="number" min="0" max={college?.creditsAvailable} />
+                                    <Input id="credits" name="credits" type="number" min="0" max={college?.creditsAvailable || 0} />
+                                    <FormDescription>
+                                        Your college has {college?.creditsAvailable || 0} credits available to assign.
+                                    </FormDescription>
                                 </div>
                             </>
                         ) : (
@@ -281,5 +285,3 @@ export default function InnovatorManagementPage() {
     </>
   );
 }
-
-    
