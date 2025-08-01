@@ -123,6 +123,47 @@ export const MOCK_PRINCIPAL_AUDIT_TRAIL = [
     { id: 'PAT-002', actor: 'Dr. Evelyn Reed', timestamp: '2024-07-28 09:05 AM', action: 'Approved credit request for Dr. Emily White' },
 ];
 
+export const MOCK_CONSULTATIONS = [
+    {
+      id: 'CONS001',
+      ideaId: 'IDEA-001',
+      title: 'AI-Powered Crop Disease Detection',
+      innovatorId: 'INV001',
+      ttcId: 'TTC001',
+      mentor: 'Dr. Emily White',
+      date: '2024-08-15',
+      time: '11:00 AM',
+      status: 'Scheduled',
+      milestones: ['Finalize MVP features', 'Develop go-to-market strategy'],
+      files: ['Pitch_Deck_v2.pptx', 'Market_Analysis.pdf'],
+    },
+    {
+      id: 'CONS002',
+      ideaId: 'IDEA-002',
+      title: 'Blockchain-Based Voting System',
+      innovatorId: 'INV002',
+      ttcId: 'TTC002',
+      mentor: 'Dr. Raj Patel',
+      date: '2024-08-20',
+      time: '02:00 PM',
+      status: 'Scheduled',
+      milestones: ['Validate technical architecture', 'Review security protocols'],
+      files: ['Technical_Whitepaper.pdf'],
+    },
+    {
+      id: 'CONS003',
+      ideaId: 'IDEA-003',
+      title: 'Gamified Language Learning App',
+      innovatorId: 'INV003',
+      ttcId: 'TTC003',
+      mentor: 'Dr. Priya Singh',
+      date: '2024-07-25',
+      time: '10:00 AM',
+      status: 'Completed',
+      milestones: ['Initial concept discussion'],
+      files: ['Concept_Note.docx'],
+    },
+];
 
 export const CLUSTER_WEIGHTS = {
   "Core Idea & Innovation": 0.20,
@@ -404,6 +445,22 @@ export const STATUS_COLORS: Record<string, string> = {
   'Inactive': 'bg-gray-500 text-white',
 };
 
+export const MOCK_NOTIFICATIONS = {
+  [ROLES.INNOVATOR]: [
+    { id: '1', title: 'Report Ready!', description: 'Your report for "AI Crop Health Monitor" is complete.', read: false },
+    { id: '2', title: 'Consultation Confirmed', description: 'Your meeting with Dr. White is set for Aug 15.', read: true },
+  ],
+  [ROLES.COORDINATOR]: [
+    { id: '3', title: 'New Consultation Request', description: 'Jane Doe requested a consultation for "AI Crop Health".', read: false },
+  ],
+  [ROLES.PRINCIPAL]: [
+    { id: '4', title: 'Credit Request', description: 'Dr. Patel has requested 50 credits for a hackathon.', read: false },
+  ],
+  [ROLES.SUPER_ADMIN]: [
+    { id: '5', title: 'New Institution Onboarded', description: 'Vanguard College has joined PragatiAI.', read: true },
+  ],
+};
+
 export const MOCK_SAMPLE_REPORT: ValidationReport = {
   ideaName: "Hydrogen Smart Bottle",
   preparedFor: "[Innovator Name]",
@@ -552,159 +609,10 @@ export const MOCK_SAMPLE_REPORT: ValidationReport = {
       { parameter: "Academic/Research Contribution", description: "The product's potential to contribute to research and development in its field.", inference: "The development of the Hydrogen smart bottle could contribute to research in areas like thermal management, battery technology, and smart sensor integration.", score: "7/10", justification: "While the product's primary goal is commercial, it has the potential to contribute to academic research, which is a positive but secondary benefit.", suggestions: null }
     ]
   },
-  sources: [
-    { text: "Grand View Research: Reports on the global insulated drinkware and smart bottle markets.", url: "https://www.grandviewresearch.com/smart-home-market-report" },
-    { text: "U.S. Consumer Product Safety Commission: Public data on product recalls and safety incidents for consumer electronics.", url: "https://www.cpsc.gov/recalls" },
-    { text: "India Patent Office: Search for existing patents related to thermal drinkware and portable electronics.", url: "https://ipindia.gov.in/patents.htm" },
-    { text: "Government of India: 'Make in India' and startup ecosystem initiatives.", url: "https://www.makeinindia.com" },
-    { text: "U.S. Patent Office: US 10,XXX,XXX B2 - Thermally controlled portable beverage container", url: "https://uspto.gov/patent-search" },
-    { text: "Journal of Applied Physics: Research paper on miniaturized Peltier cooling systems", url: "https://aip.scitation.org/journal/jap" },
-    { text: "WIPO IP Portal: International patent search", url: "https://www.wipo.int/patents/en/" }
-  ],
   disclaimer: "This report is a comprehensive analysis based on current market data, competitor intelligence, and established business frameworks. It is intended to provide a high-level strategic overview and is not a substitute for detailed financial modeling, legal counsel, or engineering consultation. All scores and suggestions are based on a synthesis of available information and expert judgment. Final product success depends on meticulous execution, adaptability, and the ability to respond to dynamic market conditions."
 };
 
-// Main functional component for the report page
-export default function ReportPage() {
-  return (
-    <div className="min-h-screen bg-gray-50 font-sans text-gray-800 p-4 sm:p-8">
-      {/* Dynamic styles and fonts can be placed in a separate CSS file */}
-      <style>{`
-        body { font-family: 'Inter', sans-serif; }
-      `}</style>
-
-      <main className="container mx-auto max-w-6xl py-8">
-        <header className="bg-white p-8 rounded-3xl shadow-xl text-center mb-10 border border-gray-200">
-          <h1 className="text-4xl font-bold text-gray-900 leading-tight mb-2">{reportData.ideaName}</h1>
-          <p className="text-lg text-gray-600">Advanced Business Validation Report</p>
-          <div className="mt-6 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-8">
-            <div className="text-center">
-              <span className={`text-5xl font-extrabold ${reportData.overallScore >= 80 ? 'text-green-600' : reportData.overallScore >= 60 ? 'text-yellow-600' : 'text-red-600'}`}>
-                {reportData.overallScore}/100
-              </span>
-              <p className="text-sm text-gray-500 mt-1">Overall Viability Score</p>
-            </div>
-            <div className="h-16 w-px bg-gray-200 hidden sm:block"></div>
-            <div className="text-center max-w-sm">
-              <p className="text-lg font-semibold text-gray-700">{reportData.outcome}</p>
-              <p className="text-sm text-gray-500 mt-1">Outcome</p>
-            </div>
-          </div>
-        </header>
-
-        {/* Executive Summary */}
-        <Section title="1. Executive Summary">
-          <p className="text-lg leading-relaxed text-gray-700 whitespace-pre-wrap">{reportData.executiveSummary}</p>
-        </Section>
-        
-        {/* Strengths & Weaknesses */}
-        <Section title="3. Key Strengths & Weaknesses">
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
-              <h3 className="flex items-center text-2xl font-semibold text-green-600 mb-4">
-                <Check className="mr-2" size={24} /> Key Strengths
-              </h3>
-              <ul className="list-none space-y-3">
-                {reportData.keyStrengths.map((item, index) => (
-                  <li key={index} className="flex items-start text-gray-700">
-                    <Check size={18} className="text-green-500 mt-1 mr-2 flex-shrink-0" />
-                    <span className="text-base">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
-              <h3 className="flex items-center text-2xl font-semibold text-red-600 mb-4">
-                <X className="mr-2" size={24} /> Key Weaknesses
-              </h3>
-              <ul className="list-none space-y-3">
-                {reportData.keyWeaknesses.map((item, index) => (
-                  <li key={index} className="flex items-start text-gray-700">
-                    <X size={18} className="text-red-500 mt-1 mr-2 flex-shrink-0" />
-                    <span className="text-base">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </Section>
-        
-        {/* Critical Risks */}
-        <Section title="4. Critical Risks & Mitigation Strategies">
-          <div className="space-y-6">
-            {reportData.criticalRisks.map((risk, index) => (
-              <div key={index} className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
-                <h4 className="text-xl font-semibold text-gray-800 mb-2">{risk.title}</h4>
-                <p className="text-sm text-gray-700 mb-2">**How and Why:** {risk.description}</p>
-                <p className="text-sm text-gray-700">**Mitigation Strategy:** {risk.mitigation}</p>
-              </div>
-            ))}
-          </div>
-        </Section>
-
-        {/* AI Agent Analysis */}
-        <Section title="5. AI Agent: Intellectual Property & Research Analysis">
-          <AIAgentAnalysis data={reportData.aiAgentAnalysis} />
-        </Section>
-        
-        {/* Competitive Analysis */}
-        <Section title="6. Competitive Analysis">
-          <CompetitiveAnalysisTable competitors={reportData.competitiveAnalysis} />
-          <p className="text-lg leading-relaxed text-gray-700 mt-6">
-            **Inference:** Hydrogen's primary opportunity is to occupy the space between the passive insulation giants (Yeti/Hydro Flask) and the active heating niche player (Ember). Its dual functionality and portability give it a distinct advantage over all of them.
-          </p>
-        </Section>
-
-        {/* Detailed Pricing & Financials */}
-        <Section title="7. Detailed Pricing & Financials">
-          <h3 className="text-2xl font-semibold text-gray-800 mb-4">Cost of Goods Sold (COGS) & Margin Analysis</h3>
-          <p className="text-base leading-relaxed text-gray-700 mb-4">
-            This is a bottom-up derivation based on estimated component costs and industry-standard manufacturing margins.
-          </p>
-          <ul className="list-disc list-inside space-y-2 mb-6 text-gray-700">
-            {reportData.detailedPricing.cogsBreakdown.map((item, index) => (
-              <li key={index}>{item.item}: {item.cost}</li>
-            ))}
-            <li>{reportData.detailedPricing.manufacturingAndAssembly}</li>
-          </ul>
-          <p className="text-base leading-relaxed text-gray-700 font-bold mb-4">Estimated COGS (per unit): {reportData.detailedPricing.estimatedCogs}</p>
-          <h3 className="text-2xl font-semibold text-gray-800 mb-4">Retail Pricing Strategy</h3>
-          <p className="text-lg leading-relaxed text-gray-700 whitespace-pre-wrap">{reportData.detailedPricing.retailPricingStrategy}</p>
-        </Section>
-        
-        {/* Action Plan */}
-        <Section title="8. Prioritized Next Steps / Action Plan">
-          <div className="space-y-6">
-            <ActionPlanCategory title="Urgent (Next 1-3 Months)" items={reportData.actionPlan.urgent} />
-            <ActionPlanCategory title="High Priority (Next 3-6 Months)" items={reportData.actionPlan.highPriority} />
-            <ActionPlanCategory title="Mid Priority (Next 6-12 Months)" items={reportData.actionPlan.midPriority} />
-          </div>
-        </Section>
-
-        {/* Detailed Scoring */}
-        <Section title="9. Detailed Idea Validation & Scoring">
-          <DetailedScoring clusters={reportData.detailedValidationAndScoring} />
-        </Section>
-
-        {/* Consolidated Sources */}
-        <Section title="10. Consolidated Sources of Information">
-          <ul className="list-disc list-inside space-y-2 text-gray-700">
-            {reportData.sources.map((source, index) => (
-              <li key={index}>
-                <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                  {source.text}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </Section>
-
-        {/* Professional Disclaimer */}
-        <Section title="11. Professional Disclaimer">
-          <p className="text-sm leading-relaxed text-gray-600 whitespace-pre-wrap">{reportData.disclaimer}</p>
-        </Section>
-        
-      </main>
-    </div>
-  );
+// Main App component for rendering the report
+export default function App() {
+  return <ReportPage report={reportData} />;
 }
