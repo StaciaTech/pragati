@@ -248,207 +248,125 @@ export const INITIAL_CLUSTER_WEIGHTS = {
 };
 
 const MOCK_SAMPLE_REPORT: ValidationReport = {
-  ideaId: 'IDEA-001',
-  validationId: 'VALID-001-001',
-  reportId: 'REPID-001-001-20240721',
-  ideaName: 'AI-Powered Smart Farming',
-  ideaConcept: 'An intelligent system using AI to optimize crop yield and detect diseases early.',
-  overallScore: 76,
-  validationOutcome: 'Moderate',
-  recommendationText: 'Diamond in the Rough! There\'s solid potential here. Polish it up with the feedback and resubmit.',
-  submissionDate: '2024-07-21',
-  pptUrl: 'https://placehold.co/400x200/A0C4FF/1E2A38?text=Mock+PPT',
-  sections: {
-    executiveSummary: {
-      ideaName: 'AI-Powered Smart Farming',
-      concept: 'An intelligent system using AI to optimize crop yield and detect diseases early.',
-      overallScore: 76,
-      validationOutcome: 'Moderate',
-      recommendation: 'Diamond in the Rough! There\'s solid potential here. Polish it up with the feedback and resubmit.',
-      reportGeneratedOn: '2024-07-21',
+  ideaName: "Eco-Cycle: Smart Urban Composter",
+  overallScore: 84,
+  outcome: "High Potential with Actionable Opportunities.",
+  currency: "Indian Rupees (₹)",
+  exchangeRate: "1 USD = 83.5 INR",
+  executiveSummary: "The 'Eco-Cycle' smart urban composter is a highly promising venture, targeting the growing segment of environmentally conscious city residents. It addresses a significant pain point—the inconvenience and unpleasantness of traditional composting—with a technologically advanced and consumer-friendly solution. The market for smart home devices and sustainable products is expanding rapidly, providing a favorable environment for a product like Eco-Cycle. Key strengths include its strong problem-solution fit and the potential for a subscription-based revenue model. However, the idea faces challenges related to high initial production costs, the need for extensive user education, and a complex regulatory environment surrounding waste management. Strategic partnerships and a robust supply chain will be crucial for success.",
+  keyStrengths: [
+    "High Problem-Solution Fit: The product directly solves the primary barriers to urban composting: space, odor, and speed. This strong alignment with user needs gives it a compelling value proposition.",
+    "Subscription-Based Revenue Potential: The business model can be enhanced with recurring revenue from compostable waste bags, filters, or even a service to collect finished compost, increasing the customer's lifetime value.",
+    "Strong ESG & SDG Alignment: Eco-Cycle aligns perfectly with global sustainability goals, which is a powerful marketing message and can attract mission-driven investors and government support."
+  ],
+  keyWeaknesses: [
+    "High Initial Production Cost: The electronic components, sensors, and the durable, airtight housing required for the composter will result in a high Cost of Goods Sold (COGS), necessitating a premium price point.",
+    "User Education Barrier: Composting is a new behavior for many urban residents. The product's success depends on the ability to effectively educate users on what can and cannot be composted and how to use the device correctly.",
+    "Waste Management Regulatory Hurdles: The business model may need to navigate local municipal regulations regarding waste collection and processing, which can vary significantly from one city to another."
+  ],
+  criticalRisks: [
+    {
+      title: "High Price Point & Market Acceptance",
+      howWhy: "The high manufacturing cost of a smart device will translate to a premium retail price. Consumers may be hesitant to pay a significant amount for a product that is, at its core, a waste disposal unit, especially in a price-sensitive market.",
+      mitigation: "Position Eco-Cycle as a smart appliance that saves money on garbage disposal fees (where applicable) and provides a valuable resource (compost) for gardening. Focus on the long-term value and environmental benefits to justify the initial cost."
     },
-    pragatiAIServiceProcess: {
-      title: '2.0 Pragati AI Service Process',
-      description: 'The Pragati AI service is designed as a seamless, intuitive, and iterative journey for its users, leveraging AI at every critical juncture.',
-      sections: [
-        {
-          heading: '2.1 User Journey & AI Integration:',
-          content: 'The user journey begins with onboarding, where the AI uses NLP to refine the initial problem statement. It then synthesizes data for insights, offers personalized guidance, and learns from user feedback. A human-in-the-loop system allows for escalation on complex queries, ensuring quality and trust.'
-        }
-      ]
+    {
+      title: "Negative User Experience Due to Odor or Failure",
+      howWhy: "The primary value proposition is the elimination of odors. A single instance of product failure, such as a clogged filter or a faulty sensor, could lead to a foul odor, resulting in negative reviews and severe brand damage.",
+      mitigation: "Implement a robust quality assurance program with extensive testing for all components, especially the aeration and filtering systems. Develop a smart alert system within the app that notifies users of maintenance needs before a failure occurs."
     },
-    competitiveLandscape: {
-      title: '3.0 Competitive Landscape',
-      description: 'The market for academic and innovation support is diverse, comprising both traditional and emerging players. Pragati AI aims to carve a unique niche by blending AI\'s scalability with the depth of consultancy.',
-      sections: [
-        {
-          heading: '3.1 Key Competitor Categories:',
-          content: 'Key competitors include Traditional Human Consultancies (high cost, not scalable), Generic AI Tools (lack domain specificity), and Specialized EdTech Platforms (often focus on content, not personalized guidance). Pragati AI\'s advantage lies in its targeted, scalable, and data-driven consultancy model for the Indian context.'
-        },
-        {
-          heading: '3.2 Pragati AI\'s Competitive Advantage:',
-          content: 'The primary competitive advantage is the AI-driven, India-centric, holistic, and scalable approach that provides affordable, high-quality guidance on demand.'
-        }
-      ]
-    },
-    projectEvaluationFramework: {
-      title: '4.0 Project Evaluation Framework & Viability Assessment',
-      description: 'Our evaluation of AI-Powered Smart Farming employs a rigorous, multi-faceted scoring system to provide a comprehensive and quantifiable assessment of its viability.',
-      sections: [
-        {
-          heading: '4.1 Scoring Rubric',
-          content: 'Each sub-parameter is scored on a scale of 1 to 100.'
-        },
-        {
-          heading: '4.2 Weightage Structure',
-          subsections: [
-            {
-              subheading: 'A. Cluster Weightage (Total 100%)',
-              content: 'Cluster weights are assigned based on their strategic importance. For instance, Market & Commercial Opportunity holds the highest weightage at 25% because market validation is critical for success.'
-            },
-            {
-              subheading: 'B. Parameter Weightage',
-              content: 'Within each cluster, parameters are weighted. For example, in Core Idea & Innovation, Problem-Solution Fit is weighted highest at 45%.'
-            },
-            {
-              subheading: 'C. Sub-Parameter Weightage',
-              content: 'Each parameter is further broken down into weighted sub-parameters to allow for granular analysis.'
-            }
-          ]
-        },
-        {
-          heading: '4.3 Scoring Calculation Flow (Weighted Average)',
-          content: 'The overall viability score is a weighted average of all sub-parameter scores, scaled to a final 1-100 score, providing a holistic assessment.'
-        },
-        {
-          heading: '4.4 Validation Thresholds',
-          content: 'Scores from 85-100 are Approved, 50-84 are Moderate, and 0-49 are Rejected, each with a corresponding action plan.'
-        }
-      ]
-    },
-    detailedEvaluation: {
-      title: 'Detailed Viability Assessment',
-      description: 'Here is the granular breakdown of the scores for each sub-parameter.',
-      clusters: {
-        "Core Idea & Innovation": {
-          "Novelty & Uniqueness": {
-            "Originality": { assignedScore: 80, whatWentWell: "The use of AI for early disease detection is not entirely new, but the proposed model for Indian crop types shows significant improvement over existing generic solutions.", whatCanBeImproved: "Further clarify the unique aspects of the AI model compared to competitors.", assumptions: ["The AI model can be trained effectively on diverse Indian agricultural data."] },
-            "Differentiation": { assignedScore: 60, whatWentWell: "The scalability of the solution is a good differentiator.", whatCanBeImproved: "The key differentiator will be the accuracy and accessibility of the AI, which needs more emphasis.", assumptions: ["The service can be delivered at a cost-effective price point for Indian farmers."] }
-          },
-          "Problem-Solution Fit & Market Need": {
-            "Problem Clarity & Severity": { assignedScore: 90, whatWentWell: "Crop loss due to disease is a severe and well-documented problem in India, causing significant financial distress to farmers.", whatCanBeImproved: "No major improvements needed.", assumptions: [] },
-            "Target Audience Identification & Definition": { assignedScore: 80, whatWentWell: "The target audience (small to medium-scale farmers in specific regions) is well-defined.", whatCanBeImproved: "A more detailed go-to-market strategy for reaching them would be beneficial.", assumptions: ["Digital literacy among the target audience is sufficient for app usage."] },
-            "Customer Pain Points Validation": { assignedScore: 80, whatWentWell: "The pain points are clearly validated by numerous agricultural reports. The solution directly addresses the need for timely and accurate information.", whatCanBeImproved: "No major improvements needed.", assumptions: [] },
-            "Solution Efficacy": { assignedScore: 65, whatWentWell: "The potential efficacy is high.", whatCanBeImproved: "It depends heavily on the AI model's real-world accuracy, which is yet to be proven at scale.", assumptions: ["Sufficient high-quality, labeled image data is available for training."] },
-            "Customer Willingness to Pay": { assignedScore: 60, whatWentWell: "A subscription model is proposed.", whatCanBeImproved: "Farmers are traditionally price-sensitive. A freemium or subscription model needs to demonstrate clear ROI to gain traction.", assumptions: ["The economic benefits of using the app will outweigh its cost."] },
-            "Jobs-to-Be-Done (JTBD) Alignment": { assignedScore: 80, whatWentWell: "The solution aligns well with the farmer's core 'job' of protecting their yield and maximizing income.", whatCanBeImproved: "No major improvements needed.", assumptions: [] }
-          },
-          "User Experience (UX) & Usability Potential": {
-            "Intuitive Design": { assignedScore: 80, whatWentWell: "A simple, image-based interface has high potential for intuitive use, even with varying literacy levels.", whatCanBeImproved: "Consider offline capabilities.", assumptions: ["The app will be available in multiple regional languages."] },
-            "Accessibility Compliance": { assignedScore: 60, whatWentWell: "The concept is inclusive.", whatCanBeImproved: "Accessibility for users with disabilities has not been explicitly addressed but is a crucial consideration for a wide-reaching public service.", assumptions: [] }
-          }
-        },
-        "Market & Commercial Opportunity": {
-          "Market Validation": {
-            "Market Size (TAM)": { "assignedScore": 95, "whatWentWell": "The Indian agriculture market is vast, with millions of farmers. The Total Addressable Market is exceptionally large.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] },
-            "Competitive Intensity": { "assignedScore": 60, "whatWentWell": "The submission acknowledges competitors.", "whatCanBeImproved": "The agritech space has several well-funded players and government initiatives, making the competitive landscape moderately intense. A clearer strategy to outperform them is needed.", "assumptions": [] }
-          },
-          "Geographic Specificity (India)": {
-            "Regulatory Landscape": { "assignedScore": 80, "whatWentWell": "Government policies are generally supportive of agritech.", "whatCanBeImproved": "There are no major regulatory hurdles, but data privacy laws for farmer data must be followed closely.", "assumptions": [] },
-            "Infrastructure Readiness": { "assignedScore": 65, "whatWentWell": "Smartphone penetration is high.", "whatCanBeImproved": "Rural internet connectivity can be inconsistent, which might affect real-time AI analysis. An offline strategy is important.", "assumptions": ["The app can function in low-bandwidth or offline modes."] }
-          },
-          "Product-Market Fit": {
-            "User Engagement": { "assignedScore": 80, "whatWentWell": "If the AI provides accurate and timely advice, engagement potential is high as farming is a daily activity.", "whatCanBeImproved": "Gamification or community features could boost engagement further.", "assumptions": ["The app provides tangible, recurring value."] },
-            "Retention Potential": { "assignedScore": 80, "whatWentWell": "Retention will be high if the service proves reliable and leads to increased crop yield and income.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] }
-          }
-        },
-        "Execution & Operations": {
-          "Technical Feasibility": {
-            "Technology Maturity": { "assignedScore": 80, "whatWentWell": "Image recognition and machine learning are mature technologies.", "whatCanBeImproved": "The primary challenge is adapting them to specific Indian agricultural contexts.", "assumptions": ["The team has access to the required AI/ML expertise."] },
-            "Scalability & Performance": { "assignedScore": 80, "whatWentWell": "The cloud-based architecture is inherently scalable, capable of serving millions of users with proper design.", "whatCanBeImproved": "Cost management at scale needs to be considered.", "assumptions": ["Cloud infrastructure costs are managed effectively."] }
-          },
-          "Operational Viability": {
-            "Resource Availability": { "assignedScore": 60, "whatWentWell": "The plan acknowledges the need for data.", "whatCanBeImproved": "Access to high-quality, localized agricultural data for training is a significant challenge and a critical resource. A clear data acquisition strategy is needed.", "assumptions": ["Partnerships with agricultural research institutes can be formed."] },
-            "Process Efficiency": { "assignedScore": 90, "whatWentWell": "The AI-driven process is vastly more efficient than manual inspection or traditional extension services.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] }
-          },
-          "Scalability Potential": {
-            "Business Model Scalability": { "assignedScore": 80, "whatWentWell": "The business model is highly scalable, as serving an additional user has a low marginal cost.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] },
-            "Market Expansion Potential": { "assignedScore": 90, "whatWentWell": "The model can be expanded to different crops, regions, and even other countries with similar agricultural profiles.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] }
-          }
-        },
-        "Business Model & Strategy": {
-          "Financial Viability": {
-            "Revenue Stream Diversity": { "assignedScore": 65, "whatWentWell": "A subscription model is proposed.", "whatCanBeImproved": "The model relies primarily on a subscription model. Diversifying with data analytics for institutions or a marketplace for supplies could strengthen it.", "assumptions": [] },
-            "Profitability & Margins": { "assignedScore": 60, "whatWentWell": "The long-term vision is profitable.", "whatCanBeImproved": "Profitability depends on achieving a large scale of paid users to cover the initial R&D and ongoing cloud costs. Financial projections are needed.", "assumptions": [] }
-          },
-          "Defensibility": {
-            "Intellectual Property (IP)": { "assignedScore": 40, "whatWentWell": "N/A", "whatCanBeImproved": "The core AI algorithms may be hard to patent. Defensibility will likely come from proprietary data and brand trust rather than IP.", "assumptions": [] },
-            "Network Effects": { "assignedScore": 80, "whatWentWell": "Strong network effects are possible: more user data improves the AI, which attracts more users, creating a virtuous cycle.", "whatCanBeImproved": "No major improvements needed.", "assumptions": ["Users consent to their anonymized data being used for model improvement."] }
-          }
-        },
-        "Team & Organizational Health": {
-          "Founder-Fit": {
-            "Relevant Experience": { "assignedScore": 75, "whatWentWell": "The team's background in technology is strong.", "whatCanBeImproved": "More deep-domain agricultural expertise would be beneficial.", "assumptions": ["The team can hire or partner with agricultural experts."] },
-            "Complementary Skills": { "assignedScore": 60, "whatWentWell": "The team has strong tech skills.", "whatCanBeImproved": "The team is tech-heavy and would benefit from adding skills in rural marketing, sales, and agricultural policy.", "assumptions": [] }
-          },
-          "Culture/Values": {
-            "Mission Alignment": { "assignedScore": 90, "whatWentWell": "The team shows strong alignment with a mission to use technology for social good and empower farmers.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] },
-            "Diversity & Inclusion": { "assignedScore": 60, "whatWentWell": "This is acknowledged as important.", "whatCanBeImproved": "Ensuring the AI model is trained on data that is inclusive of all regions and farming communities is a critical challenge to address.", "assumptions": [] }
-          }
-        },
-        "External Environment & Compliance": {
-          "Regulatory (India)": {
-            "Data Privacy Compliance": { "assignedScore": 65, "whatWentWell": "Awareness of data privacy is mentioned.", "whatCanBeImproved": "Adherence to India's data privacy laws (DPDP Act) is crucial and requires careful implementation for handling farmer data.", "assumptions": ["Legal counsel will be sought for compliance."] },
-            "Sector-Specific Compliance": { "assignedScore": 80, "whatWentWell": "There are no major sector-specific regulations that would block this idea. Alignment with government digital agriculture initiatives is a plus.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] }
-          },
-          "Sustainability (ESG)": {
-            "Environmental Impact": { "assignedScore": 90, "whatWentWell": "The idea has a strong positive environmental impact by promoting targeted pesticide use and improving resource management.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] },
-            "Social Impact (SDGs)": { "assignedScore": 90, "whatWentWell": "Directly aligns with SDGs for Zero Hunger (SDG 2), and Industry, Innovation, and Infrastructure (SDG 9).", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] }
-          },
-          "Ecosystem Support (India)": {
-            "Government & Institutional Support": { "assignedScore": 80, "whatWentWell": "High potential for support from government initiatives like Startup India and agritech incubators.", "whatCanBeImproved": "No major improvements needed.", "assumptions": ["The team will actively seek this support."] },
-            "Investor & Partner Landscape": { "assignedScore": 80, "whatWentWell": "The Indian agritech sector is attracting significant investor interest, making the funding landscape favorable.", "whatCanBeImproved": "No major improvements needed.", "assumptions": ["The business model is attractive to VCs."] }
-          }
-        },
-        "Risk & Future Outlook": {
-          "Risk Assessment": {
-            "Technical Risks": { "assignedScore": 65, "whatWentWell": "Risks are identified.", "whatCanBeImproved": "The primary technical risk is the AI's accuracy and reliability across diverse real-world conditions. A mitigation plan is needed.", "assumptions": [] },
-            "Market Risks": { "assignedScore": 60, "whatWentWell": "Risks are identified.", "whatCanBeImproved": "Market risk includes user adoption challenges due to digital literacy and trust, and competition from other agritech players. A mitigation plan is needed.", "assumptions": [] },
-            "Operational Risks": { "assignedScore": 50, "whatWentWell": "Risks are identified.", "whatCanBeImproved": "Operational risks involve building a robust data pipeline and a support system for farmers. A mitigation plan is needed.", "assumptions": [] }
-          },
-          "Investor Attractiveness": {
-            "ROI Potential": { "assignedScore": 80, "whatWentWell": "High ROI potential if the model can achieve scale, given the large market size and scalable tech.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] },
-            "Exit Strategy Feasibility": { "assignedScore": 80, "whatWentWell": "A clear exit path exists through acquisition by larger agritech or agriculture input companies.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] }
-          },
-          "Academic/National Alignment": {
-            "Research Synergy": { "assignedScore": 85, "whatWentWell": "Strong potential for collaboration with agricultural universities for research and data.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] },
-            "National Priority Alignment": { "assignedScore": 90, "whatWentWell": "The idea aligns perfectly with national priorities of increasing agricultural productivity and farmer income.", "whatCanBeImproved": "No major improvements needed.", "assumptions": [] }
-          }
-        }
-      }
-    },
-    conclusion: {
-      title: '5.0 Conclusion',
-      content: 'AI-Powered Smart Farming presents a compelling vision for leveraging AI to serve the critical needs of India\'s agricultural sector. Its core idea demonstrates good originality and targets clear problems within a vast market. However, the project currently stands at a "MODERATE" viability level due to challenges in data acquisition, competitive intensity, and ensuring real-world AI efficacy. With a focused pilot program and strategic partnerships, it has strong potential to become a highly viable and impactful venture.'
-    },
-    recommendations: {
-      title: '6.0 Recommendations',
-      description: 'To elevate the project\'s viability, the following strategic recommendations are crucial:',
-      items: [
-        'Initiate a pilot program in partnership with a local agricultural university to gather high-quality, localized training data and validate the AI model\'s efficacy in a controlled environment.',
-        'Develop a tiered business model (e.g., freemium) to build a large user base while offering premium, value-added services to larger farms or FPOs to ensure financial sustainability.',
-        'Focus on building a strong brand and community around the app to create a moat, as the core technology may be difficult to defend with patents alone.'
-      ]
-    },
-    appendix: {
-      title: '7.0 Appendix / Glossary',
-      items: [
-        'TAM: Total Addressable Market',
-        'SDG: Sustainable Development Goals',
-        'FPO: Farmer Producer Organisation'
-      ]
+    {
+      title: "Supply Chain and Manufacturing Dependencies",
+      howWhy: "The product relies on a complex supply chain for specialized electronic components. Any disruption in this chain, due to geopolitical events or other factors, could lead to production delays and increased costs.",
+      mitigation: "Diversify the supplier base by sourcing components from multiple regions. Establish a clear contingency plan for a sudden change in component availability or cost."
     }
-  }
+  ],
+  competitiveAnalysis: [
+    {
+      competitor: "Lomi",
+      keyProducts: "Smart indoor composter",
+      priceRange: "₹35,000 - ₹50,000+",
+      strengths: "Well-established brand, strong marketing, effective odor control",
+      weaknesses: "Extremely high price point, high power consumption, requires proprietary pods"
+    },
+    {
+      competitor: "VegeBox",
+      keyProducts: "Hydroponic indoor garden",
+      priceRange: "₹10,000 - ₹20,000+",
+      strengths: "Targets the broader 'grow your own food' market, integrates with smart systems",
+      weaknesses: "Does not offer composting, focuses on the gardening aspect"
+    },
+    {
+      competitor: "Pela",
+      keyProducts: "Eco-friendly phone cases",
+      priceRange: "₹2,500 - ₹4,000+",
+      strengths: "Strong brand in the sustainability space, uses compostable materials",
+      weaknesses: "Not a composting device, but a brand that attracts the target audience"
+    }
+  ],
+  clusterData: [
+    {
+      title: "Cluster 1: Core Idea & Product",
+      parameters: [
+        { title: "Novelty & Uniqueness", subParameters: [{ title: "Originality", score: 90, confidence: "High", inference: "While other smart composters exist, a compact, IoT-enabled device tailored for the Indian urban market is a highly original and well-timed concept.", suggestions: "Focus on securing intellectual property for the internal aeration and filtering mechanism, which is a key differentiator." }, { title: "Differentiation", score: 85, confidence: "High", inference: "The product's main differentiator is its combination of a small footprint, smart functionality, and a potential for a lower price point compared to international competitors.", suggestions: "Emphasize the 'Made for India' aspect, highlighting features that are optimized for local waste types and climate." }] },
+        { title: "Problem-Solution Fit", subParameters: [{ title: "Problem Severity", score: 95, confidence: "High", inference: "The problem of kitchen waste management in small urban spaces is a universal and highly severe pain point, which the product directly addresses.", suggestions: "Conduct user interviews to identify other related pain points, such as pest control, to further refine the product." }, { title: "Solution Effectiveness", score: 90, confidence: "High", inference: "The active aeration and filtering technology should effectively accelerate the composting process and eliminate odors, providing a highly effective solution.", suggestions: "Develop a prototype and conduct extensive user testing to validate the solution's real-world effectiveness in various climates." }] },
+        { title: "UX/Usability Potential", subParameters: [{ title: "Intuitive Design", score: 85, confidence: "High", inference: "The product's success will depend on a simple, intuitive user interface for the device and a clear, educational companion app.", suggestions: "Prioritize a user-friendly app that provides clear instructions and feedback on the composting process." }, { title: "Accessibility Compliance", score: 75, confidence: "Medium", inference: "The product is designed to be accessible to a wide range of users, but specific features for individuals with disabilities will need to be intentionally designed.", suggestions: "Consider features like voice commands for the app and clear, tactile buttons on the device." }] }
+      ]
+    },
+    {
+      title: "Cluster 2: Market Opportunity",
+      parameters: [
+        { title: "Market Validation", subParameters: [{ title: "Market Size (TAM)", score: 88, confidence: "High", inference: "The global smart home and sustainable products markets are experiencing rapid growth, with the potential for a large addressable market in India's major cities.", suggestions: "Perform a detailed market analysis for the specific Indian urban demographic to better estimate the serviceable addressable market." }, { title: "Competitive Intensity", score: 70, confidence: "High", inference: "While direct competitors are few, the market is filled with indirect competitors and DIY solutions. The product needs to stand out with a clear value proposition.", suggestions: "Differentiate the product by highlighting its efficiency, odor control, and smart features." }] },
+        { title: "Geographic Specificity (India)", subParameters: [{ title: "Regulatory Landscape", score: 65, confidence: "High", inference: "The product will need to comply with local regulations on waste management and e-waste disposal, which can be complex and require local expertise.", suggestions: "Partner with a legal and regulatory expert to ensure compliance in all target cities." }, { title: "Infrastructure Readiness", score: 85, confidence: "High", inference: "The logistics and digital infrastructure in India's major cities are well-equipped to support a D2C model for a smart device.", suggestions: "Plan for potential logistics challenges in smaller cities and with last-mile delivery." }] },
+        { title: "Product-Market Fit", subParameters: [{ title: "User Engagement", score: 90, confidence: "High", inference: "The product provides a satisfying and rewarding experience, as users can see the waste reduction and compost creation in real-time through the app.", suggestions: "Integrate a gamification element into the app, such as a leaderboard for waste diverted from landfills, to boost user engagement." }, { title: "Retention Potential", score: 92, confidence: "High", inference: "The product's core utility is a daily need, which suggests strong long-term retention. A subscription-based model for filters and bags further enhances this potential.", suggestions: "Create a strong brand and community around the product to ensure long-term customer loyalty." }] }
+      ]
+    },
+    {
+      title: "Cluster 3: Execution",
+      parameters: [
+        { title: "Technical Feasibility", subParameters: [{ title: "Technology Maturity", score: 85, confidence: "High", inference: "The core technologies (sensors, microcontrollers, IoT connectivity) are mature. The primary challenge is integrating them into a reliable, compact, and odor-free device.", suggestions: "Conduct extensive R&D and prototyping to test the combined functionality and reliability of the device." }, { title: "Scalability & Performance", score: 88, confidence: "High", inference: "The product's hardware design will be critical for both scalability and performance. A robust design will allow for mass production, while poor design could lead to quality control issues.", suggestions: "Invest in a manufacturing partner with a proven track record in consumer electronics and smart home devices." }] },
+        { title: "Operational Viability", subParameters: [{ title: "Resource Availability", score: 80, confidence: "High", inference: "India has a deep talent pool in both hardware and software development. However, securing specialized talent for the composting process itself may require a focused search.", suggestions: "Explore partnerships with agricultural universities or waste management experts." }, { title: "Process Efficiency", score: 82, confidence: "High", inference: "A D2C model allows for tight control over the entire process, from manufacturing to customer support.", suggestions: "Map out the entire value chain and identify potential bottlenecks before scaling production." }] },
+        { title: "Scalability Potential", subParameters: [{ title: "Business Model Scalability", score: 95, confidence: "High", inference: "The business model is highly scalable. The core technology can be adapted to other products, such as larger community composters or smart bins for offices and restaurants.", suggestions: "Plan for future product iterations and service offerings from the beginning." }, { title: "Market Expansion Potential", score: 90, confidence: "High", inference: "The product's universal utility makes it highly suitable for international expansion.", suggestions: "Design the product with international standards in mind to facilitate future expansion." }] }
+      ]
+    },
+    {
+      title: "Cluster 4: Business Model",
+      parameters: [
+        { title: "Financial Viability", subParameters: [{ title: "Revenue Stream Diversity", score: 90, confidence: "High", inference: "The business can generate revenue from product sales, accessories, and a potential premium subscription model for the companion app.", suggestions: "Model the financial impact of each revenue stream to prioritize the most profitable ones." }, { title: "Profitability & Margins", score: 85, confidence: "High", inference: "The high cost of hardware may result in low margins initially, but these can improve with scale.", suggestions: "Focus on optimizing the supply chain and manufacturing process to reduce costs." }] },
+        { title: "Defensibility", subParameters: [{ title: "Intellectual Property (IP)", score: 90, confidence: "High", inference: "The unique aeration and filtering mechanism, along with the device's design, can be protected by patents and trademarks.", suggestions: "File for provisional patents early in the development cycle." }, { title: "Network Effects", score: 75, confidence: "Medium", inference: "The product itself has limited network effects, but a social element in the companion app could increase its value.", suggestions: "Explore features like leaderboards for waste reduction or a community forum for gardening tips to create a social network effect." }] }
+      ]
+    },
+    {
+      title: "Cluster 5: Team",
+      parameters: [
+        { title: "Founder-Fit", subParameters: [{ title: "Relevant Experience", score: 85, confidence: "High", inference: "The team's experience in smart home devices, IoT, and sustainability is a significant asset.", suggestions: "Leverage this experience to build a strong product and manage the supply chain effectively." }, { title: "Complementary Skills", score: 88, confidence: "High", inference: "The team is likely to have a good mix of technical and business skills, which is crucial for a hardware startup.", suggestions: "Conduct a skills gap analysis and hire for any missing key roles (e.g., marketing, finance) early on." }] },
+        { title: "Culture/Values", subParameters: [{ title: "Mission Alignment", score: 95, confidence: "High", inference: "A clear mission to promote sustainability and solve a real-world problem is a strong motivator for the team and a key factor for success.", suggestions: "Reinforce the mission and vision regularly to keep the team aligned and motivated." }, { title: "Diversity & Inclusion", score: 90, confidence: "High", inference: "Building a diverse and inclusive team is critical for innovation and a strong company culture.", suggestions: "Implement diversity and inclusion policies and training from the start." }] }
+      ]
+    },
+    {
+      title: "Cluster 6: Compliance",
+      parameters: [
+        { title: "Regulatory (India)", subParameters: [{ title: "Data Privacy Compliance", score: 85, confidence: "High", inference: "The product's companion app will collect user data, and the company must comply with India's Digital Personal Data Protection Act, 2023.", suggestions: "Engage with a legal expert to ensure compliance and draft a transparent privacy policy." }, { title: "Sector-Specific Compliance", score: 75, confidence: "High", inference: "The product must meet BIS standards for electronics and other sector-specific regulations, which can be a complex and time-consuming process.", suggestions: "Prioritize compliance testing and certification to avoid delays and legal issues." }] },
+        { title: "Sustainability (ESG)", subParameters: [{ title: "Environmental Impact", score: 95, confidence: "High", inference: "The product's entire value proposition is centered on reducing environmental impact by diverting waste from landfills. This is a core strength.", suggestions: "Use recycled materials and implement a take-back or recycling program for old composters." }, { title: "Social Impact (SDGs)", score: 95, confidence: "High", inference: "The product aligns with several SDGs, such as Responsible Consumption and Production (SDG 12) and Climate Action (SDG 13).", suggestions: "Actively promote the social and environmental benefits of the product and partner with sustainability organizations." }] },
+        { title: "Ecosystem Support (India)", subParameters: [{ title: "Government & Institutional Support", score: 85, confidence: "High", inference: "The Indian government offers various schemes and incubators for startups, which the project can leverage for funding and support.", suggestions: "Research and apply for relevant government grants and join a reputable startup incubator." }, { title: "Investor & Partner Landscape", score: 88, confidence: "High", inference: "The smart home and sustainability sectors are highly attractive to investors, and strategic partnerships can accelerate growth.", suggestions: "Prepare a compelling pitch deck and a detailed business plan to attract investors and partners." }] }
+      ]
+    },
+    {
+      title: "Cluster 7: Risk & Strategy",
+      parameters: [
+        { title: "Risk Assessment", subParameters: [{ title: "Technical Risks", score: 75, confidence: "High", inference: "The primary technical risks are the long-term reliability of the sensors and the effectiveness of the filtering system to prevent odors.", suggestions: "Allocate a significant portion of the budget to R&D and quality control." }, { title: "Market Risks", score: 70, confidence: "High", inference: "Market risks include competition, pricing pressure, and the potential for a new technology to disrupt the market.", suggestions: "Develop a flexible business strategy that can adapt to changing market conditions." }] },
+        { title: "Investor Attractiveness", subParameters: [{ title: "Valuation Potential", score: 90, confidence: "High", inference: "The unique product, large market, and defensible IP give the company a high valuation potential.", suggestions: "Focus on achieving key milestones to increase valuation at each funding round." }, { title: "Exit Strategy Viability", score: 85, confidence: "High", inference: "The company could be an attractive acquisition target for larger smart home or sustainability-focused companies.", suggestions: "Build a strong brand and a loyal customer base to increase attractiveness to potential acquirers." }] },
+        { title: "Academic/National Alignment", subParameters: [{ title: "National Policy Alignment (India)", score: 92, confidence: "High", inference: "The product aligns with national priorities such as Swachh Bharat Abhiyan (Clean India Mission) and circular economy initiatives.", suggestions: "Highlight this alignment in grant applications and pitches to investors." }, { title: "Academic/Research Contribution", score: 80, confidence: "Medium", inference: "The product can contribute to research on material science, waste management, and consumer behavior.", suggestions: "Collaborate with universities and research institutions to explore new technologies and applications." }] }
+      ]
+    },
+  ],
+  sources: [
+    "Global Smart Home Devices Market Report (2023-2028): [Source from imaginary research firm]",
+    "Competitor Analysis - Smart Composting Solutions: [Source from imaginary research firm]",
+    "Swachh Bharat Abhiyan Guidelines: [Source from Indian government]",
+    "General AI Knowledge: N/A"
+  ],
+  disclaimer: "This report is a comprehensive analysis based on current market data, competitor intelligence, and established business frameworks. It is intended to provide a high-level strategic overview and is not a substitute for detailed financial modeling, legal counsel, or engineering consultation. All scores and suggestions are based on a synthesis of available information and expert judgment. Final product success depends on meticulous execution, adaptability, and the ability to respond to dynamic market conditions.",
 };
 
 
@@ -488,7 +406,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Approved',
     dateSubmitted: '2024-01-15',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, ideaName: 'AI-Powered Smart Farming', overallScore: 88, validationOutcome: 'Approved', recommendationText: "Rocket Fuel! This idea is cleared for launch. Let's make it happen!"},
+    report: {...MOCK_SAMPLE_REPORT, ideaName: 'AI-Powered Smart Farming', overallScore: 88, outcome: 'Approved'},
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Scheduled',
@@ -510,7 +428,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Moderate',
     dateSubmitted: '2024-02-20',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, ideaId: 'IDEA-002', validationId: 'VALID-002-001', reportId: 'REPID-002-001-20240722', ideaName: 'Decentralized Education Platform', overallScore: 62 },
+    report: {...MOCK_SAMPLE_REPORT, ideaName: 'Decentralized Education Platform', overallScore: 62, outcome: 'Moderate'},
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Pending',
@@ -532,7 +450,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Rejected',
     dateSubmitted: '2024-03-10',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, ideaId: 'IDEA-003', validationId: 'VALID-003-001', reportId: 'REPID-003-001-20240723', ideaName: 'HealthTech Wearable for Seniors', overallScore: 42, validationOutcome: 'Rejected', recommendationText: "Back to the Lab! A great learning opportunity. Rethink the core concept and come back stronger."},
+    report: {...MOCK_SAMPLE_REPORT, ideaName: 'HealthTech Wearable for Seniors', overallScore: 42, outcome: 'Rejected'},
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Not Requested',
@@ -554,7 +472,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Approved',
     dateSubmitted: '2024-04-05',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, ideaId: 'IDEA-004', validationId: 'VALID-004-001', reportId: 'REPID-004-001-20240724', ideaName: 'Smart City Traffic Management', overallScore: 90, validationOutcome: 'Approved', recommendationText: "Rocket Fuel! This idea is cleared for launch. Let's make it happen!"},
+    report: {...MOCK_SAMPLE_REPORT, ideaName: 'Smart City Traffic Management', overallScore: 90, outcome: 'Approved'},
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Completed',
@@ -576,7 +494,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Approved',
     dateSubmitted: '2024-05-22',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, ideaId: 'IDEA-005', validationId: 'VALID-005-001', reportId: 'REPID-005-001-20240725', ideaName: 'Financial Advisor Bot', overallScore: 80, validationOutcome: 'Moderate'},
+    report: {...MOCK_SAMPLE_REPORT, ideaName: 'Financial Advisor Bot', overallScore: 80, outcome: 'Moderate'},
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Pending',
@@ -598,7 +516,7 @@ export let MOCK_IDEAS: Array<{
     status: 'Moderate',
     dateSubmitted: '2024-06-30',
     version: 'V1.0',
-    report: {...MOCK_SAMPLE_REPORT, ideaId: 'IDEA-006', validationId: 'VALID-006-001', reportId: 'REPID-006-001-20240726', ideaName: 'Grid Optimizer', overallScore: 70, validationOutcome: 'Moderate'},
+    report: {...MOCK_SAMPLE_REPORT, ideaName: 'Grid Optimizer', overallScore: 70, outcome: 'Moderate'},
     clusterWeights: INITIAL_CLUSTER_WEIGHTS,
     feedback: null,
     consultationStatus: 'Not Requested',

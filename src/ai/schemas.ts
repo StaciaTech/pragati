@@ -1,3 +1,4 @@
+
 /**
  * @fileOverview This file defines the shared Zod schemas and TypeScript types for AI flows.
  * Separating schemas into their own file avoids Next.js server action export errors.
@@ -67,67 +68,53 @@ export const DetailedEvaluationClustersSchema = z.object({
 export type DetailedEvaluationClusters = z.infer<typeof DetailedEvaluationClustersSchema>;
 
 
+const CriticalRiskSchema = z.object({
+    title: z.string(),
+    howWhy: z.string(),
+    mitigation: z.string(),
+});
+
+const CompetitorSchema = z.object({
+    competitor: z.string(),
+    keyProducts: z.string(),
+    priceRange: z.string(),
+    strengths: z.string(),
+    weaknesses: z.string(),
+});
+
+const SubParameterReportSchema = z.object({
+    title: z.string(),
+    score: z.number(),
+    confidence: z.string(),
+    inference: z.string(),
+    suggestions: z.string(),
+});
+
+const ParameterReportSchema = z.object({
+    title: z.string(),
+    subParameters: z.array(SubParameterReportSchema),
+});
+
+const ClusterReportSchema = z.object({
+    title: z.string(),
+    parameters: z.array(ParameterReportSchema),
+});
+
 // Main Report Output Schema
 export const ValidationReportSchema = z.object({
-  ideaId: z.string(),
-  validationId: z.string(),
-  reportId: z.string(),
   ideaName: z.string(),
-  ideaConcept: z.string(),
   overallScore: z.number(),
-  validationOutcome: z.string(),
-  recommendationText: z.string(),
-  submissionDate: z.string(),
-  pptUrl: z.string().optional(),
-  sections: z.object({
-    executiveSummary: z.object({
-      ideaName: z.string(),
-      concept: z.string(),
-      overallScore: z.number(),
-      validationOutcome: z.string(),
-      recommendation: z.string(),
-      reportGeneratedOn: z.string(),
-    }),
-    pragatiAIServiceProcess: z.object({
-      title: z.string(),
-      description: z.string(),
-      sections: z.array(z.object({ heading: z.string(), content: z.string() })),
-    }),
-    competitiveLandscape: z.object({
-      title: z.string(),
-      description: z.string(),
-      sections: z.array(z.object({ heading: z.string(), content: z.string() })),
-    }),
-    projectEvaluationFramework: z.object({
-      title: z.string(),
-      description: z.string(),
-      sections: z.array(
-        z.object({
-          heading: z.string(),
-          content: z.string().optional(),
-          subsections: z.array(z.object({ subheading: z.string(), content: z.string() })).optional(),
-        })
-      ),
-    }),
-    detailedEvaluation: z.object({
-      title: z.string(),
-      description: z.string(),
-      clusters: DetailedEvaluationClustersSchema,
-    }),
-    conclusion: z.object({
-      title: z.string(),
-      content: z.string(),
-    }),
-    recommendations: z.object({
-      title: z.string(),
-      description: z.string(),
-      items: z.array(z.string()),
-    }),
-    appendix: z.object({
-      title: z.string(),
-      items: z.array(z.string()),
-    }),
-  }),
+  outcome: z.string(),
+  currency: z.string(),
+  exchangeRate: z.string(),
+  executiveSummary: z.string(),
+  keyStrengths: z.array(z.string()),
+  keyWeaknesses: z.array(z.string()),
+  criticalRisks: z.array(CriticalRiskSchema),
+  competitiveAnalysis: z.array(CompetitorSchema),
+  clusterData: z.array(ClusterReportSchema),
+  sources: z.array(z.string()),
+  disclaimer: z.string(),
 });
 export type ValidationReport = z.infer<typeof ValidationReportSchema>;
 
