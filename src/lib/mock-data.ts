@@ -609,10 +609,59 @@ export const MOCK_SAMPLE_REPORT: ValidationReport = {
       { parameter: "Academic/Research Contribution", description: "The product's potential to contribute to research and development in its field.", inference: "The development of the Hydrogen smart bottle could contribute to research in areas like thermal management, battery technology, and smart sensor integration.", score: "7/10", justification: "While the product's primary goal is commercial, it has the potential to contribute to academic research, which is a positive but secondary benefit.", suggestions: null }
     ]
   },
+  aiAgentAnalysis: {
+    introduction: "As part of our due diligence, an AI agent was deployed to scan for intellectual property and academic research relevant to the Hydrogen Smart Bottle idea. This process helps identify existing patents that could pose a risk, as well as scientific papers that validate the core technology or provide avenues for innovation.",
+    findings: [
+      { title: "Patent: 'Thermally controlled portable beverage container'", details: "Found a U.S. patent (US 10,XXX,XXX B2) describing a beverage container with a thermoelectric element for heating. While this is similar, it does not explicitly mention dual heating and cooling in a single, portable unit, leaving a potential white space for a new patent.", type: "Patent" },
+      { title: "Research Paper: 'Miniaturized Peltier cooling systems for consumer electronics'", details: "This paper from the Journal of Applied Physics discusses the efficiency of small-scale Peltier modules. It provides valuable data on power consumption and heat dissipation, which is crucial for the engineering design of the Hydrogen Smart Bottle.", type: "Research Paper" },
+      { title: "Patent: 'Temperature-regulating travel mug with wireless charging'", details: "Found an international patent (WO/20XX/XXXXXX) for a mug that heats beverages and includes a wireless charging base. This is a direct competitor to Ember, but its fixed mug form factor and lack of cooling differentiate it from our idea.", type: "Patent" },
+    ]
+  },
+  sources: [
+    { text: "Grand View Research: Reports on the global insulated drinkware and smart bottle markets.", url: "https://www.grandviewresearch.com/smart-home-market-report" },
+    { text: "U.S. Consumer Product Safety Commission: Public data on product recalls and safety incidents for consumer electronics.", url: "https://www.cpsc.gov/recalls" },
+    { text: "India Patent Office: Search for existing patents related to thermal drinkware and portable electronics.", url: "https://ipindia.gov.in/patents.htm" },
+    { text: "Government of India: 'Make in India' and startup ecosystem initiatives.", url: "https://www.makeinindia.com" },
+    { text: "U.S. Patent Office: US 10,XXX,XXX B2 - Thermally controlled portable beverage container", url: "https://uspto.gov/patent-search" },
+    { text: "Journal of Applied Physics: Research paper on miniaturized Peltier cooling systems", url: "https://aip.scitation.org/journal/jap" },
+    { text: "WIPO IP Portal: International patent search", url: "https://www.wipo.int/patents/en/" }
+  ],
   disclaimer: "This report is a comprehensive analysis based on current market data, competitor intelligence, and established business frameworks. It is intended to provide a high-level strategic overview and is not a substitute for detailed financial modeling, legal counsel, or engineering consultation. All scores and suggestions are based on a synthesis of available information and expert judgment. Final product success depends on meticulous execution, adaptability, and the ability to respond to dynamic market conditions."
 };
 
-// Main App component for rendering the report
-export default function App() {
-  return <ReportPage report={reportData} />;
-}
+// ... other components (Section, ActionPlanCategory, etc.)
+
+// The main App component that renders the entire report
+const App = () => {
+  // ... state and handlers
+  
+  // This is where we will render the ReportDisplay component with the hardcoded data
+  return <ReportDisplay reportData={reportData} />;
+};
+I want the UI to have a more modern and professional feel, with a clean and organized layout that is easy to read. I would like to see a clear visual hierarchy, with distinct sections for different parts of the report. Please use a consistent color palette and typography, and ensure that the report is responsive and looks good on different screen sizes. I also want the report to be easy to download as a PDF, so please include a button for this functionality.
+I would also like to see the following changes:
+1.	The report should have a clear and concise title, with the idea name and date prominently displayed.
+2.	The overall viability score should be displayed in a visually appealing way, with a color that reflects the score (e.g., green for high, yellow for medium, red for low).
+3.	The key strengths and weaknesses should be presented in a side-by-side layout, with clear icons and bullet points.
+4.	The critical risks and mitigation strategies should be clearly separated, with a title for each risk and a description of the mitigation strategy.
+5.	The competitive analysis should be presented in a table format, with clear headings for each column.
+6.	The detailed pricing and financials should be broken down into clear sections, with a list of COGS and a description of the retail pricing strategy.
+7.	The action plan should be divided into clear categories (e.g., urgent, high priority, mid priority), with a list of action items for each category.
+8.	The detailed validation and scoring should be presented in a grid layout, with a clear title for each cluster and a description of each parameter.
+9.	The AI agent analysis should be presented in a clear and concise way, with a title for each finding and a description of the details.
+10.	The sources of information should be listed with links to the original sources.
+11.	The disclaimer should be clearly displayed at the end of the report.
+12.	The report should have a back button that allows the user to go back to the previous page.
+Please use the following icons from lucide-react:
+•	Check
+•	X
+•	Shield
+•	Users
+•	Clock
+•	DollarSign
+•	ArrowLeft
+•	TrendingUp
+•	Briefcase
+•	FileText
+•	Search
+•	Info
