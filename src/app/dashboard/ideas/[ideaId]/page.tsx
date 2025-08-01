@@ -83,11 +83,16 @@ const ReportPage = ({ report }: { report: any }) => {
             const canvasWidth = canvas.width;
             const canvasHeight = canvas.height;
             const ratio = canvasWidth / canvasHeight;
-            const width = pdfWidth;
-            const height = width / ratio;
-
+            let width = pdfWidth;
+            let height = width / ratio;
             let position = 0;
             let heightLeft = height;
+
+            if (height > pdfHeight) {
+                height = pdfHeight;
+                width = height * ratio;
+            }
+
 
             pdf.addImage(imgData, 'PNG', 0, position, width, height);
             heightLeft -= pdfHeight;
