@@ -629,39 +629,87 @@ export const MOCK_SAMPLE_REPORT: ValidationReport = {
   disclaimer: "This report is a comprehensive analysis based on current market data, competitor intelligence, and established business frameworks. It is intended to provide a high-level strategic overview and is not a substitute for detailed financial modeling, legal counsel, or engineering consultation. All scores and suggestions are based on a synthesis of available information and expert judgment. Final product success depends on meticulous execution, adaptability, and the ability to respond to dynamic market conditions."
 };
 
-// ... other components (Section, ActionPlanCategory, etc.)
+export const MOCK_IDEAS = [
+    {
+        id: 'IDEA-001',
+        title: 'AI-Powered Crop Disease Detection',
+        description: 'A mobile app that uses AI to detect crop diseases from images.',
+        collegeId: 'COL001',
+        collegeName: 'Pragati Institute of Technology',
+        domain: 'Agriculture',
+        innovatorId: 'INV001',
+        innovatorName: 'Jane Doe',
+        innovatorEmail: 'jane.doe@example.com',
+        status: 'Approved',
+        dateSubmitted: '2024-07-15',
+        version: 'V1.0',
+        report: null, // This will be populated below
+        clusterWeights: {},
+        feedback: null,
+        consultationStatus: 'Scheduled',
+        consultationDate: '2024-08-15',
+        consultationTime: '11:00 AM',
+        ttcAssigned: 'TTC001',
+    },
+    {
+        id: 'IDEA-002',
+        title: 'Blockchain-Based Voting System',
+        description: 'A secure and transparent voting system using blockchain.',
+        collegeId: 'COL001',
+        collegeName: 'Pragati Institute of Technology',
+        domain: 'FinTech',
+        innovatorId: 'INV002',
+        innovatorName: 'John Smith',
+        innovatorEmail: 'john.smith@example.com',
+        status: 'Moderate',
+        dateSubmitted: '2024-07-18',
+        version: 'V1.0',
+        report: null,
+        clusterWeights: {},
+        feedback: null,
+        consultationStatus: 'Pending',
+        consultationDate: '2024-08-20',
+        consultationTime: '02:00 PM',
+        ttcAssigned: 'TTC002',
+    },
+    {
+        id: 'IDEA-003',
+        title: 'Gamified Language Learning App',
+        description: 'An app that makes learning new languages fun and engaging.',
+        collegeId: 'COL002',
+        collegeName: 'Vanguard College of Engineering',
+        domain: 'EdTech',
+        innovatorId: 'INV003',
+        innovatorName: 'Alisha Khan',
+        innovatorEmail: 'alisha.khan@example.com',
+        status: 'Rejected',
+        dateSubmitted: '2024-07-20',
+        version: 'V1.0',
+        report: null,
+        clusterWeights: {},
+        feedback: null,
+        consultationStatus: 'Not Requested',
+        consultationDate: null,
+        consultationTime: null,
+        ttcAssigned: 'TTC003',
+    },
+];
 
-// The main App component that renders the entire report
-const App = () => {
-  // ... state and handlers
-  
-  // This is where we will render the ReportDisplay component with the hardcoded data
-  return <ReportDisplay reportData={reportData} />;
-};
-I want the UI to have a more modern and professional feel, with a clean and organized layout that is easy to read. I would like to see a clear visual hierarchy, with distinct sections for different parts of the report. Please use a consistent color palette and typography, and ensure that the report is responsive and looks good on different screen sizes. I also want the report to be easy to download as a PDF, so please include a button for this functionality.
-I would also like to see the following changes:
-1.	The report should have a clear and concise title, with the idea name and date prominently displayed.
-2.	The overall viability score should be displayed in a visually appealing way, with a color that reflects the score (e.g., green for high, yellow for medium, red for low).
-3.	The key strengths and weaknesses should be presented in a side-by-side layout, with clear icons and bullet points.
-4.	The critical risks and mitigation strategies should be clearly separated, with a title for each risk and a description of the mitigation strategy.
-5.	The competitive analysis should be presented in a table format, with clear headings for each column.
-6.	The detailed pricing and financials should be broken down into clear sections, with a list of COGS and a description of the retail pricing strategy.
-7.	The action plan should be divided into clear categories (e.g., urgent, high priority, mid priority), with a list of action items for each category.
-8.	The detailed validation and scoring should be presented in a grid layout, with a clear title for each cluster and a description of each parameter.
-9.	The AI agent analysis should be presented in a clear and concise way, with a title for each finding and a description of the details.
-10.	The sources of information should be listed with links to the original sources.
-11.	The disclaimer should be clearly displayed at the end of the report.
-12.	The report should have a back button that allows the user to go back to the previous page.
-Please use the following icons from lucide-react:
-•	Check
-•	X
-•	Shield
-•	Users
-•	Clock
-•	DollarSign
-•	ArrowLeft
-•	TrendingUp
-•	Briefcase
-•	FileText
-•	Search
-•	Info
+MOCK_IDEAS.forEach(idea => {
+    if (!idea.report) {
+        const randomScore = Math.floor(Math.random() * 50 + 50); // 50-99
+        let outcome;
+        if (randomScore >= 85) outcome = "Exemplary";
+        else if (randomScore >= 50) outcome = "Developing";
+        else outcome = "Needs Refinement";
+
+        idea.report = {
+            ...MOCK_SAMPLE_REPORT,
+            ideaName: idea.title,
+            preparedFor: idea.innovatorName,
+            date: idea.dateSubmitted,
+            overallScore: randomScore,
+            outcome: outcome,
+        };
+    }
+});
