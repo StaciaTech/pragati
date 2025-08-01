@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { MOCK_IDEAS } from '@/lib/mock-data';
@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { ROLES } from '@/lib/constants';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import type { ValidationReport } from '@/ai/schemas';
 
 
 // Reusable Section component for a clean layout
@@ -128,9 +129,10 @@ const AIAgentAnalysis = ({ data }: { data: any }) => (
 );
 
 // Main report component
-const ReportPage = ({ report }: { report: any }) => {
+const ReportPage = ({ report }: { report: ValidationReport }) => {
     const { toast } = useToast();
     const reportRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
 
     const handleDownloadPdf = () => {
         const input = reportRef.current;
@@ -188,7 +190,11 @@ const ReportPage = ({ report }: { report: any }) => {
 
   return (
     <div className="min-h-screen bg-background font-sans text-foreground p-4 sm:p-8">
-       <div className="flex justify-end mb-4">
+       <div className="flex justify-between items-center mb-4">
+        <Button variant="outline" onClick={() => router.back()}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+        </Button>
         <Button onClick={handleDownloadPdf}>
             <Download className="mr-2 h-4 w-4" />
             Export as PDF
@@ -341,4 +347,5 @@ export default function IdeaReportPageWrapper() {
     );
   }
 
-  return <
+  return <ReportPage report={idea.report} />;
+}
