@@ -6,49 +6,126 @@ import { useParams } from 'next/navigation';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { MOCK_IDEAS } from '@/lib/mock-data';
-import { Check, X, Shield, Users, Clock, Leaf, DollarSign, Target, Briefcase, TrendingUp, Search, Info, Loader2, Download } from 'lucide-react';
+import { Check, X, Shield, Users, Clock, Leaf, DollarSign, Target, Briefcase, TrendingUp, Search, Info, Loader2, Download, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ROLES } from '@/lib/constants';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 
-// Reusable component for a score card
-const ScoreCard = ({ title, score, confidence, inference, suggestions, icon }: { title: string, score: number, confidence: string, inference: string, suggestions: string, icon: React.ReactNode }) => (
-  <div className="bg-card p-6 rounded-2xl shadow-lg border">
-    <div className="flex items-center space-x-4 mb-4">
-      {icon}
-      <h4 className="text-xl font-semibold text-card-foreground flex-1">{title}</h4>
-      <div className="flex items-center space-x-2">
-        <span className={`text-2xl font-bold ${score >= 80 ? 'text-green-600' : score >= 60 ? 'text-yellow-600' : 'text-red-600'}`}>
-          {score}/100
-        </span>
-        <span className="text-sm px-2 py-1 bg-muted rounded-full font-medium text-muted-foreground border">
-          {confidence}
-        </span>
-      </div>
-    </div>
-    <div className="space-y-4 text-muted-foreground">
-      <div>
-        <p className="font-semibold text-foreground">Inference:</p>
-        <p className="text-sm mt-1">{inference}</p>
-      </div>
-      <div>
-        <p className="font-semibold text-foreground">Suggestions:</p>
-        <p className="text-sm mt-1">{suggestions}</p>
-      </div>
-    </div>
-  </div>
-);
-
-// Simple Section component for a clean layout
-const Section = ({ title, children }: { title: string, children: React.ReactNode }) => (
+// Reusable Section component for a clean layout
+const Section = ({ title, children, hasBorder = true }: { title: string, children: React.ReactNode, hasBorder?: boolean }) => (
   <section className="mb-10">
-    <h2 className="text-3xl font-bold text-foreground border-b-2 border-primary pb-2 mb-6">{title}</h2>
+    <h2 className={cn(
+        "text-3xl font-bold text-foreground pb-2 mb-6",
+        hasBorder && "border-b-2 border-primary"
+    )}>
+        {title}
+    </h2>
     <div>{children}</div>
   </section>
 );
 
+// A dedicated component for displaying action plan categories
+const ActionPlanCategory = ({ title, items }: { title: string, items: string[] }) => (
+  <div className="bg-card p-6 rounded-2xl shadow-lg border">
+    <h4 className="text-xl font-semibold text-card-foreground mb-4">{title}</h4>
+    <ul className="list-none space-y-3">
+      {items.map((item, index) => (
+        <li key={index} className="flex items-start text-muted-foreground">
+          <Clock size={18} className="text-primary mt-1 mr-2 flex-shrink-0" />
+          <span className="text-base">{item}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
+// New component for the Competitive Analysis Table
+const CompetitiveAnalysisTable = ({ competitors }: { competitors: any[] }) => (
+  <div className="overflow-x-auto bg-card p-6 rounded-2xl shadow-lg border">
+    <table className="min-w-full divide-y divide-border">
+      <thead className="bg-muted/50">
+        <tr>
+          {Object.keys(competitors[0]).map((key) => (
+            <th key={key} className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody className="bg-card divide-y divide-border">
+        {competitors.map((competitor, index) => (
+          <tr key={index}>
+            {Object.values(competitor).map((value: any, idx) => (
+              <td key={idx} className="px-6 py-4 whitespace-normal text-sm text-foreground">
+                {value}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+);
+
+// Updated component for the Detailed Validation and Scoring section with a grid layout
+const DetailedScoring = ({ clusters }: { clusters: any }) => (
+  <div className="space-y-12">
+    {Object.entries(clusters).map(([clusterTitle, parameters]: [string, any]) => (
+      <div key={clusterTitle}>
+        <h3 className="text-2xl font-bold text-foreground border-b-2 border-border pb-2 mb-6">{clusterTitle}</h3>
+        <div className="grid md:grid-cols-2 gap-6">
+          {parameters.map((param: any, index: number) => {
+            const scoreValue = parseInt(param.score.split('/')[0], 10);
+            const scoreColor = scoreValue >= 80 ? 'text-green-600' : scoreValue >= 60 ? 'text-yellow-600' : 'text-red-600';
+            const isHigh = scoreValue >= 80;
+
+            return (
+              <div key={index} className="bg-card p-6 rounded-2xl shadow-lg border">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="flex items-center text-xl font-semibold text-card-foreground">
+                    <Search size={18} className="text-muted-foreground mr-2" />
+                    {param.parameter}
+                  </h4>
+                  <div className="flex items-center space-x-2">
+                    <span className={`text-xl font-bold ${scoreColor}`}>{param.score}</span>
+                    {isHigh && (
+                      <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">High</span>
+                    )}
+                  </div>
+                </div>
+                {param.description && <p className="text-sm text-muted-foreground mb-2"><span className="font-semibold text-foreground">Description:</span> {param.description}</p>}
+                {param.inference && <p className="text-sm text-muted-foreground mb-2"><span className="font-semibold text-foreground">Inference:</span> {param.inference}</p>}
+                {param.justification && <p className="text-sm text-muted-foreground mb-2"><span className="font-semibold text-foreground">Justification:</span> {param.justification}</p>}
+                {param.suggestions && <p className="text-sm text-muted-foreground"><span className="font-semibold text-foreground">Suggestions:</span> {param.suggestions}</p>}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+// New component for AI Agent Analysis
+const AIAgentAnalysis = ({ data }: { data: any }) => (
+  <div className="bg-card p-6 rounded-2xl shadow-lg border">
+    <p className="text-base text-muted-foreground mb-4">{data.introduction}</p>
+    <div className="space-y-4">
+      {data.findings.map((finding: any, index: number) => (
+        <div key={index} className="p-4 bg-background rounded-lg border">
+          <div className="flex items-center mb-1">
+            <span className="bg-primary/10 text-primary text-xs font-medium px-2.5 py-0.5 rounded-full mr-2">{finding.type}</span>
+            <h5 className="text-lg font-semibold text-card-foreground">{finding.title}</h5>
+          </div>
+          <p className="text-sm text-muted-foreground">{finding.details}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+);
 
 // Main report component
 const ReportPage = ({ report }: { report: any }) => {
@@ -85,24 +162,13 @@ const ReportPage = ({ report }: { report: any }) => {
             const ratio = canvasWidth / canvasHeight;
             let width = pdfWidth;
             let height = width / ratio;
-            let position = 0;
-            let heightLeft = height;
 
             if (height > pdfHeight) {
                 height = pdfHeight;
                 width = height * ratio;
             }
 
-
-            pdf.addImage(imgData, 'PNG', 0, position, width, height);
-            heightLeft -= pdfHeight;
-
-            while (heightLeft > 0) {
-                position = heightLeft - height;
-                pdf.addPage();
-                pdf.addImage(imgData, 'PNG', 0, position, width, height);
-                heightLeft -= pdfHeight;
-            }
+            pdf.addImage(imgData, 'PNG', 0, 0, width, height);
             pdf.save(`${report.ideaName.replace(/\s+/g, '_')}_Report.pdf`);
              toast({
                 title: 'Download Complete',
@@ -118,83 +184,65 @@ const ReportPage = ({ report }: { report: any }) => {
         });
     };
 
-  // Helper to choose the right icon for each cluster
-  const getClusterIcon = (clusterTitle: string) => {
-    switch (clusterTitle) {
-      case 'Cluster 1: Core Idea & Product':
-        return <Leaf size={28} className="text-green-500" />;
-      case 'Cluster 2: Market Opportunity':
-        return <TrendingUp size={28} className="text-blue-500" />;
-      case 'Cluster 3: Execution':
-        return <Briefcase size={28} className="text-orange-500" />;
-      case 'Cluster 4: Business Model':
-        return <DollarSign size={28} className="text-teal-500" />;
-      case 'Cluster 5: Team':
-        return <Users size={28} className="text-purple-500" />;
-      case 'Cluster 6: Compliance':
-        return <Shield size={28} className="text-cyan-500" />;
-      case 'Cluster 7: Risk & Strategy':
-        return <Target size={28} className="text-red-500" />;
-      default:
-        return <Info size={28} className="text-gray-500" />;
-    }
-  };
-  
+    const scoreColor = report.overallScore >= 80 ? 'text-green-600' : report.overallScore >= 60 ? 'text-yellow-600' : 'text-red-600';
+
   return (
     <div className="min-h-screen bg-background font-sans text-foreground p-4 sm:p-8">
-      <div className="flex justify-end mb-4">
+       <div className="flex justify-end mb-4">
         <Button onClick={handleDownloadPdf}>
             <Download className="mr-2 h-4 w-4" />
             Export as PDF
         </Button>
       </div>
       <main ref={reportRef} className="container mx-auto max-w-6xl py-8 bg-background">
-        <header className="bg-card p-8 rounded-3xl shadow-xl text-center mb-10 border">
-          <h1 className="text-4xl font-bold text-foreground leading-tight mb-2">{report.ideaName}</h1>
-          <p className="text-lg text-muted-foreground">Advanced Business Validation Report</p>
-          <div className="mt-6 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-8">
+        <header className="bg-card p-8 rounded-3xl shadow-xl text-center mb-10 border relative">
+          <h1 className="text-4xl font-bold text-foreground leading-tight mb-2">Advanced Business Validation Report</h1>
+          <p className="text-lg font-semibold text-muted-foreground mb-1">{report.ideaName}</p>
+          <p className="text-sm text-muted-foreground/80">Prepared for: {report.preparedFor} | Date: {report.date}</p>
+        </header>
+
+        <Section title="1. Executive Summary">
+          <p className="text-lg leading-relaxed text-muted-foreground whitespace-pre-wrap">{report.executiveSummary}</p>
+        </Section>
+
+        <Section title="2. Overall Viability Snapshot" hasBorder={false}>
+          <div className="bg-card p-8 rounded-3xl shadow-lg border text-center flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-8">
             <div className="text-center">
-              <span className="text-5xl font-extrabold text-primary">{report.overallScore}/100</span>
+              <span className={`text-5xl font-extrabold ${scoreColor}`}>{report.overallScore}/100</span>
               <p className="text-sm text-muted-foreground mt-1">Overall Viability Score</p>
             </div>
             <div className="h-16 w-px bg-border hidden sm:block"></div>
-            <div className="text-center">
+            <div className="text-center max-w-sm">
               <p className="text-lg font-semibold text-foreground">{report.outcome}</p>
               <p className="text-sm text-muted-foreground mt-1">Outcome</p>
             </div>
           </div>
-        </header>
-
-        {/* Executive Summary */}
-        <Section title="Executive Summary">
-          <p className="text-lg leading-relaxed text-muted-foreground">{report.executiveSummary}</p>
         </Section>
-        
-        {/* Strengths & Weaknesses */}
-        <Section title="Key Strengths & Weaknesses">
+
+        <Section title="3. Key Strengths & Weaknesses">
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-card p-6 rounded-2xl shadow-lg border">
               <h3 className="flex items-center text-2xl font-semibold text-green-600 mb-4">
-                <Check className="mr-2" size={24} /> Strengths
+                <Check size={24} className="mr-2" /> Key Strengths
               </h3>
               <ul className="list-none space-y-3">
-                {report.keyStrengths.map((item: string, index: number) => (
+                {report.keyStrengths.map((strength: string, index: number) => (
                   <li key={index} className="flex items-start text-muted-foreground">
                     <Check size={18} className="text-green-500 mt-1 mr-2 flex-shrink-0" />
-                    <span className="text-base">{item}</span>
+                    <span className="text-base">{strength}</span>
                   </li>
                 ))}
               </ul>
             </div>
             <div className="bg-card p-6 rounded-2xl shadow-lg border">
               <h3 className="flex items-center text-2xl font-semibold text-red-600 mb-4">
-                <X className="mr-2" size={24} /> Weaknesses
+                <X size={24} className="mr-2" /> Key Weaknesses
               </h3>
               <ul className="list-none space-y-3">
-                {report.keyWeaknesses.map((item: string, index: number) => (
+                {report.keyWeaknesses.map((weakness: string, index: number) => (
                   <li key={index} className="flex items-start text-muted-foreground">
                     <X size={18} className="text-red-500 mt-1 mr-2 flex-shrink-0" />
-                    <span className="text-base">{item}</span>
+                    <span className="text-base">{weakness}</span>
                   </li>
                 ))}
               </ul>
@@ -202,109 +250,77 @@ const ReportPage = ({ report }: { report: any }) => {
           </div>
         </Section>
 
-        {/* Critical Risks */}
-        <Section title="Critical Risks & Mitigation Strategies">
+        <Section title="4. Critical Risks & Mitigation Strategies">
           <div className="space-y-6">
-            {report.criticalRisks.map((risk: {title: string, howWhy: string, mitigation: string}, index: number) => (
+            {report.criticalRisks.map((risk: any, index: number) => (
               <div key={index} className="bg-card p-6 rounded-2xl shadow-lg border">
-                <h4 className="text-xl font-semibold text-foreground mb-2">{risk.title}</h4>
-                <p className="text-sm text-muted-foreground mb-2"><span className="font-bold">How and Why:</span> {risk.howWhy}</p>
-                <p className="text-sm text-muted-foreground"><span className="font-bold">Mitigation Strategy:</span> {risk.mitigation}</p>
+                <h4 className="text-xl font-semibold text-card-foreground mb-2">{risk.title}</h4>
+                <p className="text-sm text-muted-foreground mb-2"><span className="font-semibold text-foreground">How and Why:</span> {risk.description}</p>
+                <p className="text-sm text-muted-foreground"><span className="font-semibold text-foreground">Mitigation Strategy:</span> {risk.mitigation}</p>
               </div>
             ))}
           </div>
         </Section>
 
-        {/* Competitive Analysis */}
-        <Section title="Competitive Analysis">
-          <div className="bg-card p-6 rounded-2xl shadow-lg border overflow-x-auto">
-            <table className="min-w-full divide-y divide-border">
-              <thead className="bg-muted/50">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Competitor
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Key Products
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Price Range
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Strengths
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Weaknesses
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-card divide-y divide-border">
-                {report.competitiveAnalysis.map((competitor: any, index: number) => (
-                  <tr key={index}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">{competitor.competitor}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{competitor.keyProducts}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{competitor.priceRange}</td>
-                    <td className="px-6 py-4 text-sm text-muted-foreground">{competitor.strengths}</td>
-                    <td className="px-6 py-4 text-sm text-muted-foreground">{competitor.weaknesses}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <Section title="5. AI Agent: Intellectual Property & Research Analysis">
+          <AIAgentAnalysis data={report.aiAgentAnalysis} />
+        </Section>
+        
+        <Section title="6. Competitive Analysis">
+          <CompetitiveAnalysisTable competitors={report.competitiveAnalysis} />
+          <p className="text-lg leading-relaxed text-muted-foreground mt-6">
+            <span className="font-semibold text-foreground">Inference:</span> Hydrogen's primary opportunity is to occupy the space between the passive insulation giants (Yeti/Hydro Flask) and the active heating niche player (Ember). Its dual functionality and portability give it a distinct advantage over all of them.
+          </p>
         </Section>
 
-        {/* Detailed Cluster Analysis */}
-        <Section title="Detailed Idea Validation & Scoring">
-          <div className="space-y-12">
-            {report.clusterData.map((cluster: any, clusterIndex: number) => (
-              <div key={clusterIndex} className="bg-card p-8 rounded-3xl shadow-xl border">
-                <h3 className="flex items-center text-3xl font-bold text-foreground mb-6">
-                  {getClusterIcon(cluster.title)}
-                  <span className="ml-3">{cluster.title}</span>
-                </h3>
-                <div className="space-y-8">
-                  {cluster.parameters.map((param: any, paramIndex: number) => (
-                    <div key={paramIndex} className="bg-background p-6 rounded-2xl border">
-                      <h4 className="text-xl font-semibold text-foreground mb-4">{param.title}</h4>
-                      <div className="grid md:grid-cols-2 gap-6">
-                        {param.subParameters.map((subParam: any, subParamIndex: number) => (
-                          <ScoreCard
-                            key={subParamIndex}
-                            title={subParam.title}
-                            score={subParam.score}
-                            confidence={subParam.confidence}
-                            inference={subParam.inference}
-                            suggestions={subParam.suggestions}
-                            icon={<Search size={20} className="text-muted-foreground" />}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+        <Section title="7. Detailed Pricing & Financials">
+          <h3 className="text-2xl font-semibold text-foreground mb-4">Cost of Goods Sold (COGS) & Margin Analysis</h3>
+          <p className="text-base leading-relaxed text-muted-foreground mb-4">
+            This is a bottom-up derivation based on estimated component costs and industry-standard manufacturing margins.
+          </p>
+          <ul className="list-disc list-inside space-y-2 mb-6 text-muted-foreground">
+            {report.detailedPricing.cogsBreakdown.map((item: any, index: number) => (
+              <li key={index}>{item.item}: {item.cost}</li>
             ))}
+            <li>{report.detailedPricing.manufacturingAndAssembly}</li>
+          </ul>
+          <p className="text-base leading-relaxed text-foreground font-bold mb-4">Estimated COGS (per unit): {report.detailedPricing.estimatedCogs}</p>
+          <h3 className="text-2xl font-semibold text-foreground mb-4">Retail Pricing Strategy</h3>
+          <p className="text-lg leading-relaxed text-muted-foreground whitespace-pre-wrap">{report.detailedPricing.retailPricingStrategy}</p>
+        </Section>
+        
+        <Section title="8. Prioritized Next Steps / Action Plan">
+          <div className="space-y-6">
+            <ActionPlanCategory title="Urgent (Next 1-3 Months)" items={report.actionPlan.urgent} />
+            <ActionPlanCategory title="High Priority (Next 3-6 Months)" items={report.actionPlan.highPriority} />
+            <ActionPlanCategory title="Mid Priority (Next 6-12 Months)" items={report.actionPlan.midPriority} />
           </div>
         </Section>
+        
+        <Section title="9. Detailed Idea Validation & Scoring">
+          <DetailedScoring clusters={report.detailedValidationAndScoring} />
+        </Section>
 
-        {/* Consolidated Sources */}
-        <Section title="Consolidated Sources of Information">
+        <Section title="10. Consolidated Sources of Information">
           <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            {report.sources.map((source: string, index: number) => (
-              <li key={index} className="text-base">{source}</li>
+            {report.sources.map((source: any, index: number) => (
+              <li key={index}>
+                <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  {source.text}
+                </a>
+              </li>
             ))}
           </ul>
         </Section>
 
-        {/* Professional Disclaimer */}
-        <Section title="Professional Disclaimer">
-          <p className="text-sm leading-relaxed text-muted-foreground">{report.disclaimer}</p>
+        <Section title="11. Professional Disclaimer">
+          <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap">{report.disclaimer}</p>
         </Section>
-        
       </main>
     </div>
   );
 };
+
 
 export default function IdeaReportPageWrapper() {
   const { ideaId } = useParams() as { ideaId: string };
@@ -325,5 +341,4 @@ export default function IdeaReportPageWrapper() {
     );
   }
 
-  return <ReportPage report={idea.report} />;
-}
+  return <

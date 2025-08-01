@@ -67,53 +67,92 @@ export const DetailedEvaluationClustersSchema = z.object({
 });
 export type DetailedEvaluationClusters = z.infer<typeof DetailedEvaluationClustersSchema>;
 
-
 const CriticalRiskSchema = z.object({
     title: z.string(),
-    howWhy: z.string(),
+    description: z.string(),
     mitigation: z.string(),
 });
 
 const CompetitorSchema = z.object({
     competitor: z.string(),
-    keyProducts: z.string(),
+    products: z.string(),
+    features: z.string(),
     priceRange: z.string(),
     strengths: z.string(),
     weaknesses: z.string(),
 });
 
-const SubParameterReportSchema = z.object({
+const CogsItemSchema = z.object({
+    item: z.string(),
+    cost: z.string(),
+});
+
+const DetailedPricingSchema = z.object({
+    cogsBreakdown: z.array(CogsItemSchema),
+    manufacturingAndAssembly: z.string(),
+    estimatedCogs: z.string(),
+    retailPricingStrategy: z.string(),
+});
+
+const ActionPlanSchema = z.object({
+    urgent: z.array(z.string()),
+    highPriority: z.array(z.string()),
+    midPriority: z.array(z.string()),
+});
+
+const AIAgentFindingSchema = z.object({
     title: z.string(),
-    score: z.number(),
-    confidence: z.string(),
+    details: z.string(),
+    type: z.string(),
+});
+
+const AIAgentAnalysisSchema = z.object({
+    introduction: z.string(),
+    findings: z.array(AIAgentFindingSchema),
+});
+
+const DetailedValidationParameterSchema = z.object({
+    parameter: z.string(),
+    description: z.string(),
     inference: z.string(),
-    suggestions: z.string(),
+    score: z.string(),
+    justification: z.string(),
+    suggestions: z.string().nullable(),
 });
 
-const ParameterReportSchema = z.object({
-    title: z.string(),
-    subParameters: z.array(SubParameterReportSchema),
+const DetailedValidationAndScoringSchema = z.object({
+    "Core Idea & Product": z.array(DetailedValidationParameterSchema),
+    "Market & Customers": z.array(DetailedValidationParameterSchema),
+    "Execution": z.array(DetailedValidationParameterSchema),
+    "Business Model": z.array(DetailedValidationParameterSchema),
+    "Team": z.array(DetailedValidationParameterSchema),
+    "Compliance": z.array(DetailedValidationParameterSchema),
+    "Risk & Strategy": z.array(DetailedValidationParameterSchema),
 });
 
-const ClusterReportSchema = z.object({
-    title: z.string(),
-    parameters: z.array(ParameterReportSchema),
+const SourceSchema = z.object({
+    text: z.string(),
+    url: z.string(),
 });
+
 
 // Main Report Output Schema
 export const ValidationReportSchema = z.object({
   ideaName: z.string(),
+  preparedFor: z.string(),
+  date: z.string(),
   overallScore: z.number(),
   outcome: z.string(),
-  currency: z.string(),
-  exchangeRate: z.string(),
   executiveSummary: z.string(),
   keyStrengths: z.array(z.string()),
   keyWeaknesses: z.array(z.string()),
   criticalRisks: z.array(CriticalRiskSchema),
   competitiveAnalysis: z.array(CompetitorSchema),
-  clusterData: z.array(ClusterReportSchema),
-  sources: z.array(z.string()),
+  detailedPricing: DetailedPricingSchema,
+  actionPlan: ActionPlanSchema,
+  detailedValidationAndScoring: DetailedValidationAndScoringSchema,
+  aiAgentAnalysis: AIAgentAnalysisSchema,
+  sources: z.array(SourceSchema),
   disclaimer: z.string(),
 });
 export type ValidationReport = z.infer<typeof ValidationReportSchema>;
@@ -139,4 +178,4 @@ export const GenerateEvaluationInputSchema = GenerateValidationReportInputSchema
 export type GenerateEvaluationInput = z.infer<typeof GenerateEvaluationInputSchema>;
 
 export const GenerateEvaluationOutputSchema = z.record(z.any());
-export type GenerateEvaluationOutput = z.infer<typeof GenerateEvaluationOutputSchema>;
+export type GenerateEvaluationOutput = z.infer<typeof GenerateEvaluation
