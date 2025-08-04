@@ -16,6 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import type { ValidationReport } from '@/ai/schemas';
 import { motion } from 'framer-motion';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
 const ReportPage = ({ idea }: { idea: (typeof MOCK_IDEAS)[0] }) => {
@@ -28,20 +29,6 @@ const ReportPage = ({ idea }: { idea: (typeof MOCK_IDEAS)[0] }) => {
     if (!report) {
       return <div>Report not available</div>
     }
-
-    const [tooltip, setTooltip] = useState({ visible: false, content: '', position: { top: 0, left: 0 } });
-
-    const showTooltip = (event: React.MouseEvent, content: string) => {
-      setTooltip({
-        visible: true,
-        content,
-        position: { top: event.clientY + 10, left: event.clientX + 10 }
-      });
-    };
-  
-    const hideTooltip = () => {
-      setTooltip({ ...tooltip, visible: false });
-    };
 
     const handleDownloadPdf = () => {
         const input = reportRef.current;
@@ -116,13 +103,18 @@ const ReportPage = ({ idea }: { idea: (typeof MOCK_IDEAS)[0] }) => {
       <div className="flex justify-between items-start mb-4">
         <h4 className="flex items-center text-lg font-semibold text-gray-900">
           {subParam.parameter_name}
-          <div
-            className="ml-2 text-gray-400 hover:text-indigo-600 cursor-help"
-            onMouseEnter={(e) => showTooltip(e, subParam.description)}
-            onMouseLeave={hideTooltip}
-          >
-            <Info size={16} />
-          </div>
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <div className="ml-2 text-gray-400 hover:text-indigo-600 cursor-help">
+                            <Info size={16} />
+                        </div>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                        <p>{subParam.description}</p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
         </h4>
         <div className="flex-shrink-0">
           {typeof subParam.score === 'number' ? (
@@ -260,14 +252,6 @@ const ReportPage = ({ idea }: { idea: (typeof MOCK_IDEAS)[0] }) => {
         </div>
 
         <div ref={reportRef} className="bg-gray-50 p-4 md:p-8 space-y-12">
-            {tooltip.visible && (
-            <div
-                className="fixed z-50 p-3 bg-gray-800 text-white text-sm rounded-lg shadow-xl max-w-sm whitespace-pre-wrap"
-                style={{ top: tooltip.position.top, left: tooltip.position.left, transform: 'translateY(-110%)' }}
-            >
-                {tooltip.content}
-            </div>
-            )}
             <div className="text-center">
             <motion.h1 
                 initial={{ opacity: 0 }}
@@ -468,7 +452,7 @@ export default function IdeaReportPageWrapper() {
             {idea ? "The report for this idea is not yet available." : "Idea not found."}
         </p>
          <Button asChild className="mt-6">
-            <a href={`/dashboard/ideas?role=${ROLES.INNOVATOR}`}>Go to My Ideas</a>
+            <Link href={`/dashboard/ideas?role=${ROLES.INNOVATOR}`}>Go to My Ideas</Link>
         </Button>
       </div>
     );
