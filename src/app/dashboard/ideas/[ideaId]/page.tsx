@@ -8,7 +8,7 @@ import html2canvas from 'html2canvas';
 import { MOCK_IDEAS } from '@/lib/mock-data';
 import { 
   Check, X, Shield, Users, Clock, DollarSign, Target, Briefcase, TrendingUp, Search, Info, Loader2, Download, ArrowLeft,
-  FileText, Lightbulb, TrendingDown, Layers, Rocket, Factory, AlignJustify, Handshake, Sun, Globe, Zap, Award, Star, Activity, HardHat, GitFork, Link2, Sprout, Building, PieChart, BriefcaseMedical, Landmark, Leaf
+  FileText, Lightbulb, TrendingDown, Layers, Rocket, Factory, AlignJustify, Handshake, Sun, Globe, Zap, Award, Star, Activity, HardHat, GitFork, Link2, Sprout, Building, PieChart, BriefcaseMedical, Landmark, Leaf, User
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ROLES } from '@/lib/constants';
@@ -44,8 +44,8 @@ const DetailedScoringBlock = ({ parameter }: { parameter: any }) => {
       return (
         <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 shadow-sm mb-6">
           <h4 className="flex items-center text-lg font-bold text-gray-800 mb-4">
-            {parameter.icon && <span className="mr-2">{parameter.icon}</span>}
-            {parameter.parameter_name}
+            {getIcon(parameter.icon)}
+            <span className="ml-2">{parameter.parameter_name}</span>
           </h4>
           <div className="pl-4 border-l border-gray-300 space-y-4">
             {parameter.sub_parameters.map((subParam: any, index: number) => (
@@ -523,3 +523,5 @@ export default function IdeaReportPageWrapper() {
 
   return <ReportPage idea={idea} />;
 }
+
+    
