@@ -462,383 +462,128 @@ export const MOCK_NOTIFICATIONS = {
 };
 
 export const MOCK_SAMPLE_REPORT: any = {
-    ideaName: "Economical AI Project Management Tool",
-    input: {
-      user_idea: "Ai project management tools for startup at economical cost with AI feature.",
-      ai_understanding: "The user's core idea is to develop a B2B SaaS platform specifically for startups. The key value propositions are its affordable price point ('economical') and the integration of artificial intelligence features to differentiate it from existing solutions."
-    },
-    preparedFor: "Innovator Name",
-    date: "August 4, 2025",
-    overallScore: 8.7,
+  ideaName: "Economical AI Project Management Tool",
+  preparedFor: "Innovator Name",
+  date: "August 4, 2025",
+  overallScore: 8.7,
+  input: {
+    user_idea: "Ai project management tools for startup at economical cost with AI feature.",
+    ai_understanding: "The user's core idea is to develop a B2B SaaS platform specifically for startups. The key value propositions are its affordable price point ('economical') and the integration of artificial intelligence features to differentiate it from existing solutions."
+  },
+  executiveSummary: {
     outcome: "High Potential. The idea has a strong, defensible niche in a large and growing market. Success hinges on a robust execution strategy, particularly in a highly competitive landscape.",
-    executiveSummary: "The 'Economical AI Project Management Tool' addresses a critical gap in the market for startups and small businesses. By leveraging AI for automation and insights at an accessible price point, it creates a differentiated offering that moves beyond basic task management. The overall viability score of 8.7/10 indicates high potential. Key opportunities lie in a massive, underserved target market, while the primary challenges involve competing with established players and maintaining profitability with a low-cost model. A key risk is the operational cost of providing powerful AI features at a low price. The path to success requires a clear focus on a stellar user experience and a highly scalable, automated operational model.",
-    detailedValidationAndScoring: [
+    summary: "The 'Economical AI Project Management Tool' addresses a critical gap in the market for startups and small businesses. By leveraging AI for automation and insights at an accessible price point, it creates a differentiated offering that moves beyond basic task management. The overall viability score of 8.7/10 indicates high potential. Key opportunities lie in a massive, underserved target market, while the primary challenges involve competing with established players and maintaining profitability with a low-cost model. A key risk is the operational cost of providing powerful AI features at a low price. The path to success requires a clear focus on a stellar user experience and a highly scalable, automated operational model."
+  },
+  keyStrengthsWeaknesses: {
+    strengths: [
+      { title: "Strong Value Proposition", description: "The combination of affordability and AI features fills a clear market gap." },
+      { title: "Scalable SaaS Model", description: "The business model allows for rapid growth with controlled costs." },
+      { title: "Target Market Growth", description: "The global and Indian startup ecosystems are expanding rapidly, providing a large customer base." }
+    ],
+    weaknesses: [
+      { title: "High Competition", description: "The market is crowded with well-funded and established players like Jira and Asana." },
+      { title: "Operational Costs", description: "Maintaining powerful AI features at a low price point poses a significant challenge to profitability." },
+      { title: "Brand Recognition", description: "As a new entrant, building trust and brand loyalty will be a key hurdle." }
+    ]
+  },
+  criticalRisksAndMitigation: [
+    {
+      risk: "Intense Competition",
+      description: "The project management software market is mature and saturated with well-established players.",
+      impact: "Medium to High",
+      mitigation: "Focus on a niche (e.g., startups), differentiate with a unique 'economical + AI' value proposition, and build a strong community to create brand loyalty."
+    },
+    {
+      risk: "Operational Costs of AI",
+      description: "Providing powerful AI features at a low price point can lead to high operational costs (e.g., GPU usage, API licenses) that erode profitability.",
+      impact: "High",
+      mitigation: "Optimize AI models for efficiency, use cost-effective cloud solutions, and carefully manage usage-based costs. Consider a tiered AI feature model where advanced features are exclusive to higher-priced plans."
+    },
+    {
+      risk: "User Experience Debt",
+      description: "The pressure to ship quickly to compete can lead to a subpar user experience and technical debt.",
+      impact: "Medium",
+      mitigation: "Adopt an MVP-first strategy with a clear focus on core, high-value features. Implement continuous user feedback loops and allocate dedicated time for refactoring and bug fixes in every sprint."
+    }
+  ],
+  competitiveAnalysis: {
+    user_provided_competitors: "Jira, Asana, Trello.",
+    ai_inference: "The user's identified competitors (Jira, Asana, Trello) are accurate and represent the primary threats. The AI's analysis confirms that the user's proposed 'economical and AI-driven' USP is a valid strategy to compete against these established players.",
+    competitors: [
       {
-        parameter_name: "Core Idea",
-        description: "Assesses the fundamental concept, including its novelty, problem-solution fit, and usability potential.",
-        sub_parameters: [
-          {
-            parameter_name: "1.1. Novelty & Uniqueness",
-            description: "Evaluates how new and distinct the idea is compared to existing market solutions.",
-            score: 8.5,
-            inference: "The combination of an 'economical' price point and advanced AI features creates a defensible niche, a blue ocean strategy in a saturated market of either expensive enterprise tools or free, basic tools.",
-            recommendations: ["Focus marketing efforts on this dual value proposition to attract the target audience.", "Invest in strong, proprietary branding that emphasizes both intelligence and affordability."],
-            risk_level: "Low",
-            sources_used: []
-          },
-          {
-            parameter_name: "1.2. Problem-Solution Fit",
-            description: "Examines the degree to which the idea solves a real and significant problem for the target audience.",
-            score: 9.0,
-            inference: "The solution directly addresses a clear problem: startups struggle to find powerful, yet affordable, project management tools that meet their dynamic needs. This ensures a strong product-market fit.",
-            recommendations: ["Engage in continuous feedback loops with early-adopter startups to ensure the solution evolves with their needs.", "Develop a feedback system directly within the app to quickly gather user insights on new features."],
-            risk_level: "Low",
-            sources_used: []
-          },
-          {
-            parameter_name: "1.3. UX/Usability Potential",
-            description: "Analyzes the potential for the product to have an intuitive, user-friendly design with a low learning curve.",
-            score: 8.0,
-            inference: "For a tool targeting small teams, a minimal learning curve is crucial. The AI features must simplify workflows, not add complexity, to ensure widespread adoption.",
-            recommendations: ["Conduct extensive user testing with a diverse group of non-technical founders and team members.", "Prioritize a clean, minimalist UI with clear visual cues and an intuitive onboarding tutorial."],
-            risk_level: "Medium",
-            sources_used: []
-          }
-        ]
+        name: "Jira",
+        features: "Task tracking, agile project management, workflow automation.",
+        price_range: "Starts free, then ~$700/user/month.",
+        strengths: "Market leader for software development teams, highly customizable, strong integrations.",
+        weaknesses: "Can be complex and expensive for startups, steep learning curve."
       },
       {
-        parameter_name: "Market Opportunity",
-        description: "Analyzes the size of the target market, geographical relevance, and potential for product-market fit.",
-        sub_parameters: [
-          {
-            parameter_name: "2.1. Market Validation (TAM, SAM, SOM)",
-            description: "Defines the Total Addressable Market, Serviceable Addressable Market, and Serviceable Obtainable Market to gauge the scale of the opportunity.",
-            score: 9.5,
-            inference: "The Total Addressable Market (TAM) for project management software is vast, estimated at over $6.5 billion globally, growing at a CAGR of 11.2% (Source: Statista). The Serviceable Addressable Market (SAM) is the B2B SaaS market for small to medium businesses. The Serviceable Obtainable Market (SOM) is the specific niche of AI-powered, economical tools for early-stage startups, which is a rapidly growing segment, especially in regions like India.",
-            recommendations: ["Target the most lucrative geographic markets first, such as India, which has a booming startup ecosystem.", "Focus on specific industry verticals initially (e.g., tech startups, creative agencies) to gain a foothold."],
-            risk_level: "Low",
-            sources_used: [{ description: "Statista Report: Project Management Software Market Size", url: "https://www.statista.com/outlook/dmo/enterprise-software/project-management-software/worldwide" }]
-          },
-          {
-            parameter_name: "2.2. Geographic Specificity (India)",
-            description: "Assesses the relevance and potential of the idea within a specific geographical context, in this case, India.",
-            score: 9.5,
-            inference: "India's thriving startup ecosystem and high rate of digital adoption present a massive opportunity. The market is also highly cost-sensitive, making an 'economical' offering particularly appealing and giving it a distinct advantage.",
-            recommendations: ["Localize the product by offering support for key Indian languages and integrating with local payment gateways.", "Partner with Indian startup incubators and accelerators to gain early traction and credibility."],
-            risk_level: "Low",
-            sources_used: [{ description: "Startup India: Official Government of India Initiative", url: "https://www.startupindia.gov.in/" }]
-          },
-          {
-            parameter_name: "2.3. Product-Market Fit",
-            description: "Evaluates the degree to which a product satisfies a strong market demand.",
-            score: 9.0,
-            inference: "Early signals indicate a strong potential for product-market fit due to the clear alignment of features with the needs of the target audience. The core value proposition of 'powerful AI at an affordable price' is compelling and solves a tangible problem.",
-            recommendations: ["Launch a Minimum Viable Product (MVP) and use user feedback to iteratively refine the feature set.", "Focus on a few key, high-impact AI features in the beginning and perfect them before adding more."],
-            risk_level: "Low",
-            sources_used: []
-          }
-        ]
+        name: "Asana",
+        features: "Project tracking, goal setting, visual timelines, workflow builder.",
+        price_range: "Starts free, then ~$900/user/month.",
+        strengths: "Excellent user interface, flexible for various team types, strong collaboration features.",
+        weaknesses: "Expensive premium tiers, lacks deep AI automation compared to future-proof tools."
       },
       {
-        parameter_name: "Execution",
-        description: "Focuses on the practical aspects of bringing the idea to life, including technical feasibility, operational viability, and scalability.",
-        sub_parameters: [
-          {
-            parameter_name: "3.1. Technical Feasibility",
-            description: "Assesses whether the technology required to build the product is achievable and realistic.",
-            score: 7.5,
-            inference: "The core machine learning technology is feasible, but implementing features like real-time task automation and intelligent team allocation poses significant technical challenges. It requires a sophisticated and scalable infrastructure to handle complex data and computations efficiently.",
-            recommendations: ["Start with a single, highly effective AI feature in the MVP, such as 'AI-powered deadline prediction'.", "Utilize cloud-native, scalable architecture from the outset to avoid future performance bottlenecks."],
-            risk_level: "High",
-            sources_used: []
-          },
-          {
-            parameter_name: "3.2. Operational Viability",
-            description: "Examines the ease and efficiency of managing the day-to-day operations of the business.",
-            score: 8.0,
-            inference: "The freemium model and SaaS nature of the product make it operationally viable. Most operations can be automated, allowing a small team to manage a large user base.",
-            recommendations: ["According to a report by NASSCOM, the Indian SaaS industry's success is rooted in its ability to build highly automated platforms, allowing for scalability without a proportional increase in operational costs. We recommend using AI to automate customer support responses for common queries, freeing up the team to handle more complex issues. This lean operational model is essential for profitability at a low price point.", "Develop a comprehensive knowledge base and use an AI-powered chatbot for first-line customer support."],
-            risk_level: "Medium",
-            sources_used: [{ description: "NASSCOM Report: Indian SaaS Industry Landscape", url: "https://nasscom.in/knowledge-center/publications/indian-saas-industry-landscape-2023" }]
-          },
-          {
-            parameter_name: "3.3. Scalability & Performance",
-            description: "Evaluates the product's ability to handle growth in users and data without performance issues.",
-            score: 8.0,
-            inference: "The underlying SaaS architecture must be built for rapid scalability to support a large number of users without performance degradation, especially as AI features become more resource-intensive. This is a major engineering hurdle.",
-            recommendations: ["Plan for a phased rollout to manage infrastructure load.", "Prioritize scalability from day one by using a microservices architecture and serverless computing."],
-            risk_level: "Medium",
-            sources_used: []
-          }
-        ]
-      },
-      {
-        parameter_name: "Business Model",
-        description: "Analyzes the revenue model, financial viability, and strategies for making the business defensible.",
-        sub_parameters: [
-          {
-            parameter_name: "4.1. Financial Viability",
-            description: "Assesses the potential for the business to be profitable and sustainable.",
-            score: 8.5,
-            inference: "The subscription-based (SaaS) business model is highly viable. The low price point is a key differentiator and can be offset by a high volume of users, with potential for tiered pricing to attract both small and growing startups.",
-            recommendations: ["Test different pricing models early to find the optimal balance between user acquisition and revenue generation.", "Carefully analyze customer acquisition cost (CAC) and lifetime value (LTV) to ensure the business model is profitable at scale."],
-            risk_level: "Low",
-            sources_used: []
-          },
-          {
-            parameter_name: "4.2. Defensibility",
-            description: "Evaluates the factors that would prevent competitors from easily replicating the product and business.",
-            score: 8.0,
-            inference: "Defensibility comes from the proprietary AI models and the network effects of user data improving the tool's intelligence over time. A strong brand and community will also be a moat.",
-            recommendations: ["Focus on building a strong community around the product to increase user loyalty and create a barrier to entry for new competitors.", "File for a patent for the unique AI algorithms or a specific feature to protect the intellectual property."],
-            risk_level: "Low",
-            sources_used: []
-          }
-        ]
-      },
-      {
-        parameter_name: "Team",
-        description: "Evaluates the founding team's capabilities, expertise, and the company culture required for success.",
-        sub_parameters: [
-          {
-            parameter_name: "5.1. Founder-Fit",
-            description: "Assesses the team's background and expertise in relation to the needs of the idea.",
-            score: 8.5,
-            inference: "An ideal founding team would possess a blend of expertise in AI/ML, software engineering, and product management, with a deep understanding of the startup ecosystem.",
-            recommendations: ["If the core team lacks a key skill, bring on a co-founder or strategic advisor to fill that gap.", "Ensure the founding team has a clear understanding of the target audience's pain points and a strong vision for the product."],
-            risk_level: "Low",
-            sources_used: []
-          },
-          {
-            parameter_name: "5.2. Culture/Values",
-            description: "Evaluates whether the company's culture and values align with the needs of the product and its target market.",
-            score: 9.0,
-            inference: "A company culture focused on efficiency, innovation, and customer-centricity is essential to build a product that is both powerful and user-friendly for startups.",
-            recommendations: ["Prioritize a culture of lean development and rapid iteration to stay agile in a competitive market.", "Establish clear company values from day one and integrate them into all hiring and operational decisions."],
-            risk_level: "Low",
-            sources_used: []
-          }
-        ]
-      },
-      {
-        parameter_name: "Compliance",
-        description: "Examines the legal, ethical, and regulatory aspects of the business idea.",
-        sub_parameters: [
-          {
-            parameter_name: "6.1. Regulatory (India)",
-            description: "Assesses the legal and regulatory requirements for operating in the specified geography.",
-            score: 7.0,
-            inference: "Handling of proprietary business data requires strict compliance with data protection laws. Any data breaches could severely damage the brand's reputation and lead to legal repercussions.",
-            recommendations: ["Implement robust data security measures and consult with legal experts on data privacy compliance in India.", "Clearly communicate the privacy policy and data handling procedures to users."],
-            risk_level: "High",
-            sources_used: []
-          },
-          {
-            parameter_name: "6.2. Sustainability (ESG)",
-            description: "Evaluates the environmental, social, and governance impact of the idea.",
-            score: 8.5,
-            inference: "The product's social impact is high, as it empowers small businesses to be more productive and competitive. The environmental impact is minimal, which is a positive attribute.",
-            recommendations: ["Consider adding features that help teams optimize workflows and reduce digital waste.", "Highlight the positive social impact in marketing and communications."],
-            risk_level: "Low",
-            sources_used: []
-          },
-          {
-            parameter_name: "6.3. Ecosystem Support (India)",
-            description: "Assesses how well the idea aligns with national and local startup ecosystems and support initiatives.",
-            score: 9.0,
-            inference: "The idea aligns perfectly with India's national push for 'Startup India' and 'Digital India.' This provides access to a strong support network of government initiatives, incubators, and investors.",
-            recommendations: ["Leverage government schemes and partnerships to gain visibility and credibility within the startup ecosystem.", "Actively participate in startup incubators to network with potential partners and investors."],
-            risk_level: "Low",
-            sources_used: []
-          }
-        ]
-      },
-      {
-        parameter_name: "Risk & Strategy",
-        description: "Provides a holistic view of potential risks, investment attractiveness, and strategic alignment.",
-        sub_parameters: [
-          {
-            parameter_name: "7.1. Risk Assessment",
-            description: "Identifies and evaluates the primary internal and external risks to the business.",
-            score: 7.0,
-            inference: "Key risks include intense competition from established players with massive funding, the technical challenge of building a reliable AI, and the operational risk of a low-margin business model requiring high user volume.",
-            recommendations: ["Develop a clear strategy to differentiate from competitors beyond just price, focusing on unique AI features and a superior user experience.", "Prioritize technical and legal risk mitigation in the initial phases of development."],
-            risk_level: "High",
-            sources_used: []
-          },
-          {
-            parameter_name: "7.2. Investor Attractiveness",
-            description: "Assesses the appeal of the idea to potential investors based on market size, defensibility, and growth potential.",
-            score: 9.0,
-            inference: "The idea is highly attractive to investors due to the large market size, a clear pain point, and a strong defensible technology proposition. The low price point, while a risk, can be a major selling point for high user acquisition.",
-            recommendations: ["Prepare a detailed financial model and pitch deck that clearly demonstrates the path to profitability and scalability.", "Network with investors specializing in the SaaS and B2B tech space."],
-            risk_level: "Low",
-            sources_used: []
-          },
-          {
-            parameter_name: "7.3. Academic/National Alignment",
-            description: "Evaluates the synergy between the idea and broader academic or national strategic goals.",
-            score: 9.0,
-            inference: "The idea's alignment with national policies for digital entrepreneurship and innovation is very strong, which can open doors for government grants and strategic partnerships.",
-            recommendations: ["Explore partnerships with academic institutions for AI research to gain a competitive advantage and enhance the app's scientific backing.", "Highlight national policy alignment in all communications and grant applications."],
-            risk_level: "Low",
-            sources_used: []
-          }
-        ]
+        name: "Trello",
+        features: "Kanban boards, checklists, integrations.",
+        price_range: "Starts free, then ~$450/user/month.",
+        strengths: "Intuitive and simple to use, great for visual thinkers and small projects.",
+        weaknesses: "Lacks advanced features for scaling teams, not AI-focused."
       }
     ],
-    keyStrengthsWeaknesses: {
-      strengths: [
-        {
-          title: "Disruptive Value Proposition",
-          description: "The dual focus on AI-powered features and an economical price point carves out a new market segment. It targets startups that are currently underserved by either expensive enterprise tools or free, basic solutions.",
-          data_source: "AI analysis of current market landscape."
-        },
-        {
-          title: "Massive & Growing Market",
-          description: "The global project management software market is projected to reach $13.2 billion by 2030 (Source: Statista). The target segment of startups, particularly in India, is one of the fastest-growing sectors globally.",
-          data_source: "Statista, NASSCOM"
-        },
-        {
-          title: "Strong National Alignment",
-          description: "The idea aligns perfectly with key government initiatives like 'Startup India' and 'Digital India.' This provides opportunities for strategic partnerships, government grants, and a favorable regulatory environment.",
-          data_source: "Startup India, Digital India initiatives."
-        },
-      ],
-      weaknesses: [
-        {
-          title: "Intense Competitive Pressure",
-          description: "The market is dominated by well-funded giants like Jira, Asana, and Trello. While the product is economical, it must offer a significantly superior user experience and feature set to convince users to switch from established, often free, alternatives.",
-          data_source: "Competitive analysis of existing project management tools."
-        },
-        {
-          title: "High Operational Costs",
-          description: "Offering a powerful AI tool at an economical price point is a major challenge. The operational costs for maintaining a scalable, high-performance AI infrastructure can be substantial, impacting profitability.",
-          data_source: "AI analysis of SaaS infrastructure and operational costs."
-        },
-        {
-          title: "Feature Parity Expectations",
-          description: "Users often expect a wide range of features found in established tools (e.g., Gantt charts, complex reporting) even in a new product. Balancing an economical price with a comprehensive feature set is a difficult trade-off.",
-          data_source: "User feedback analysis from similar products."
-        },
-      ],
-    },
-    criticalRisksMitigation: {
-      risks: [
-        {
-          risk: "Low Price Point & Profitability",
-          how_why: "The core value proposition of being 'economical' is also a major risk. A low price could lead to a low Average Revenue Per User (ARPU), making it difficult to cover operational costs, fund future R&D, and achieve a sustainable profit margin. Without a massive user base, the business model could fail.",
-          mitigation_strategies: [
-            "Implement a freemium model with a clear path to monetization through high-value, AI-driven features.",
-            "Introduce a tiered pricing structure that offers more advanced features and higher usage limits for growing startups.",
-            "Focus on automation to keep operational costs to a minimum."
-          ]
-        },
-        {
-          risk: "Product Durability & Reliability Failure",
-          how_why: "For an AI tool, any instance of the AI providing an inaccurate or unhelpful suggestion could lead to a loss of trust and user churn. A major bug or data loss could be catastrophic for a new brand, especially since it deals with critical business data.",
-          mitigation_strategies: [
-            "Invest in rigorous Quality Assurance (QA) and testing protocols for all AI and core functionalities.",
-            "Offer a clear Service Level Agreement (SLA) for enterprise clients to build confidence.",
-            "Implement a robust backup and data recovery system to protect user data."
-          ]
-        },
-      ]
-    },
-    competitiveAnalysis: {
-      competitors: [
-        {
-          name: "Jira",
-          products: "Jira Software",
-          features: "Advanced issue tracking, scrum/kanban boards, extensive integrations.",
-          price_range: "₹650 - ₹1,800+ per user/month",
-          strengths: "Market leader, extensive features, strong ecosystem.",
-          weaknesses: "Complex, steep learning curve, expensive for startups.",
-        },
-        {
-          name: "Asana",
-          products: "Asana platform",
-          features: "Task management, project timelines, workflow automation.",
-          price_range: "₹850 - ₹2,000+ per user/month",
-          strengths: "Intuitive UI, good for collaboration, strong brand.",
-          weaknesses: "Can be expensive, limited AI features in free tier.",
-        },
-        {
-          name: "Trello",
-          products: "Trello boards",
-          features: "Kanban boards, simple task cards, integrations.",
-          price_range: "Free - ₹1,000+ per user/month",
-          strengths: "Extremely easy to use, visual, strong free tier.",
-          weaknesses: "Lacks advanced features and AI, not for complex projects.",
-        },
-      ],
-      inference: "The AI Project Management Tool's primary opportunity is to occupy the space between the feature-rich, expensive tools (Jira, Asana) and the simple, feature-lacking free tools (Trello). Its dual value proposition of powerful AI and an economical price point gives it a distinct advantage over all of them. It needs to offer Trello's simplicity with some of Jira's power, all at an Asana-like price for its premium tier."
-    },
-    detailedPricingFinancials: {
-      cogs_margin: {
-        estimated_costs: "This is a bottom-up derivation based on an estimated operational cost per user per month. The primary costs are server compute for AI models and data storage.",
-        cost_breakdown: [
-          { item: "AI Compute & GPU usage", cost: "₹150" },
-          { item: "Cloud Hosting & Storage", cost: "₹75" },
-          { item: "Third-party APIs & Licenses", cost: "₹50" },
-        ],
-        estimated_cogs_per_user: "₹275",
-        retail_pricing_strategy: "A freemium model is recommended to acquire users, with a premium tier that offers advanced AI features. To be profitable, a gross margin of at least 60% is required on the premium tier.",
-        pricing_calculation: "Target Gross Margin: 60%. Premium Price = COGS / (1 - Gross Margin) -> ₹275 / (1 - 0.60) = ₹687.5",
-        final_recommendation: "Target a monthly premium price of ₹699 per user. This price point allows for a healthy gross margin and is significantly more affordable than competitors like Jira and Asana."
-      },
-    },
-    actionPlan: {
-      urgent: [
-        "Finalize the core AI feature set for the MVP: Identify the single most impactful AI feature (e.g., 'AI-powered task summarization') to build first.",
-        "Develop a clickable prototype and gather early feedback from a target group of 10-20 startups.",
-        "Select a cloud provider and set up a scalable, microservices-based architecture."
-      ],
-      highPriority: [
-        "Launch a beta version of the MVP to a wider audience to validate product-market fit.",
-        "Develop a cohesive brand story, create professional marketing assets, and launch a landing page to begin collecting email sign-ups.",
-        "Begin filing for key IP protections for the unique AI algorithms."
-      ],
-      midPriority: [
-        "Develop and launch a tiered pricing model based on user feedback from the beta program.",
-        "Establish a robust customer support infrastructure, including an AI-powered chatbot.",
-        "Launch the first full-scale version of the product with a marketing campaign targeting the Indian startup ecosystem."
-      ]
-    },
-    researchPaperAnalysis: {
-      title: "AI and Project Management: IP and Research Landscape",
-      analysis: "A search of academic and patent databases reveals that 'AI in project management' is a rapidly evolving field. Key research areas include 'AI-driven resource allocation', 'predictive analytics for project timelines', and 'automated risk assessment'. While general concepts are well-documented, specific implementations and algorithms, especially for lightweight, economical tools, are still ripe for patenting. A patent search on keywords like 'AI project management for startups' did not reveal any direct competitors with a similar value proposition, which presents a significant IP opportunity.",
-      links: [
-        { text: "Predictive Analytics for Project Management: A Literature Review", url: "https://example.com/predictive-analytics-paper" },
-        { text: "Patent search results for 'AI project management'", url: "https://example.com/patent-search-results" }
-      ]
-    },
-    problemsAnalysis: {
-      title: "Current Problems in the Startup Project Management Space",
-      analysis: "Research on startup forums and product review sites reveals several recurring problems with current project management tools:",
-      problems: [
-        {
-          problem: "Existing tools are either too expensive or lack essential features.",
-          source: "User reviews on Capterra, G2, and various Reddit threads. Startups often feel forced to choose between a costly subscription for a feature-rich tool they can't fully utilize, or a free tool that lacks the power they need as they grow."
-        },
-        {
-          problem: "Steep learning curves and complex setup processes.",
-          source: "Feedback on tools like Jira frequently mentions the complexity of setup and the time it takes for a new team member to become proficient."
-        },
-        {
-          problem: "Lack of a unified view and actionable insights.",
-          source: "Many teams report spending too much time manually tracking progress and creating reports. They are looking for tools that can provide intelligent, data-driven insights to help them make better decisions automatically."
-        }
-      ],
-    },
-    sources: [
-      { text: "Statista Report: Project Management Software Market Size", url: "https://www.statista.com/outlook/dmo/enterprise-software/project-management-software/worldwide" },
-      { text: "Startup India: Official Government of India Initiative", url: "https://www.startupindia.gov.in/" },
-      { text: "NASSCOM Report: Indian SaaS Industry Landscape", url: "https://nasscom.in/knowledge-center/publications/indian-saas-industry-landscape-2023" },
-      { text: "Gartner Research: AI in Project Management", url: "https://www.gartner.com/en/articles/ai-in-project-management" },
-      { text: "Capterra/G2 reviews of popular project management software", url: "" },
+    recommendations: [
+      "Beyond just price, clearly articulate how the AI features provide a superior experience compared to the competitors.",
+      "Build a comparison table on the website to highlight the value proposition against competitors."
+    ]
+  },
+  detailedPricingAndFinancials: {
+    user_provided_pricing_model: "Freemium with a tiered subscription model.",
+    user_provided_estimated_price: "₹500 per user/month for the premium tier.",
+    ai_pricing_inference: "The user's suggested freemium model with a tiered subscription is a viable strategy. Our analysis confirms a price point around ₹700/month is competitive and allows for a healthy gross margin. The user's provided price of ₹500 is a good starting point but may need to be slightly adjusted to ensure profitability.",
+    recommended_pricing_model: "Freemium with a Tiered Subscription for premium features.",
+    estimated_premium_price: 699.00,
+    estimated_cogs_per_user: 275,
+    cost_breakdown: [
+      { item: "AI Compute & GPU usage", cost: 150 },
+      { item: "Cloud Hosting & Storage", cost: 75 },
+      { item: "Third-party APIs & Licenses", cost: 50 },
     ],
-    disclaimer: `This report is an automated assessment and does not constitute professional business, legal, or financial advice. The analysis is based on information available at the time of generation and is intended for informational and illustrative purposes only. All scores and recommendations are indicative and should be independently validated.`,
+    suggestions: [
+      "Test different pricing models early to find the optimal balance between user acquisition and revenue generation.",
+      "Carefully analyze customer acquisition cost (CAC) and lifetime value (LTV) to ensure the business model is profitable at scale."
+    ]
+  },
+  actionPlan: {
+    urgent: [
+      "Conduct a detailed market segmentation study to pinpoint the most lucrative sub-niche of startups.",
+      "Develop a minimum viable product (MVP) with a core set of AI features for a closed beta with 10-20 startups.",
+      "Define key performance indicators (KPIs) and a clear go-to-market strategy for the initial launch."
+    ],
+    highPriority: [
+      "Finalize the pricing tiers and model based on beta test feedback and competitor analysis.",
+      "Begin building a brand identity and content marketing strategy targeting the startup community.",
+      "Explore partnerships with startup incubators and accelerators to gain early access to customers."
+    ],
+    midPriority: [
+      "Scale the marketing and sales efforts to reach a broader audience.",
+      "Develop a robust customer support and feedback loop system.",
+      "Begin planning for international expansion based on early traction."
+    ]
+  },
+  detailedIdeaValidationAndScoring: [],
+  swotAnalysis: {
+    strengths: [],
+    weaknesses: [],
+    opportunities: [],
+    threats: []
+  },
+  ipAndResearchPaperAnalysis: {
+    ip_summary: "",
+    papers: []
+  },
+  sources: [],
+  disclaimer: ""
 };
 
 export const MOCK_IDEAS = [

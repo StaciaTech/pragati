@@ -220,278 +220,302 @@ const ReportPage = ({ idea }: { idea: (typeof MOCK_IDEAS)[0] }) => {
             </motion.header>
 
             {/* 1. Input & AI Understanding */}
-            <Section title="1. Input & AI Understanding" icon={<Zap className="text-yellow-500" />}>
-            <div className="space-y-4">
-                <div>
-                <p className="font-semibold text-gray-700">User's Idea:</p>
-                <p className="mt-1 text-gray-600 italic">"{report.input.user_idea}"</p>
+            {report.input && (
+                <Section title="1. Input & AI Understanding" icon={<Zap className="text-yellow-500" />}>
+                <div className="space-y-4">
+                    <div>
+                    <p className="font-semibold text-gray-700">User's Idea:</p>
+                    <p className="mt-1 text-gray-600 italic">"{report.input.user_idea}"</p>
+                    </div>
+                    <div>
+                    <p className="font-semibold text-gray-700">AI's Interpretation:</p>
+                    <p className="mt-1 text-gray-600">{report.input.ai_understanding}</p>
+                    </div>
                 </div>
-                <div>
-                <p className="font-semibold text-gray-700">AI's Interpretation:</p>
-                <p className="mt-1 text-gray-600">{report.input.ai_understanding}</p>
-                </div>
-            </div>
-            </Section>
+                </Section>
+            )}
 
             {/* 2. Executive Summary */}
-            <Section title="2. Executive Summary" icon={<AlignJustify className="text-blue-500" />}>
-            <p className="text-lg font-semibold text-gray-700 mb-2">Outcome: <span className="font-bold text-green-600">{report.executiveSummary.outcome}</span></p>
-            <p className="text-gray-600 leading-relaxed">{report.executiveSummary.summary}</p>
-            </Section>
+            {report.executiveSummary && (
+                <Section title="2. Executive Summary" icon={<AlignJustify className="text-blue-500" />}>
+                <p className="text-lg font-semibold text-gray-700 mb-2">Outcome: <span className="font-bold text-green-600">{report.executiveSummary.outcome}</span></p>
+                <p className="text-gray-600 leading-relaxed">{report.executiveSummary.summary}</p>
+                </Section>
+            )}
             
             {/* 3. Key Strengths & Weaknesses */}
-            <Section title="3. Key Strengths & Weaknesses" icon={<Layers className="text-indigo-500" />}>
-            <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
-                <p className="font-bold text-lg text-green-700 mb-2 flex items-center"><Check className="mr-2" />Strengths</p>
-                <ul className="space-y-2 text-green-700">
-                    {report.keyStrengthsWeaknesses.strengths.map((item, index) => (
-                    <li key={index}>
-                        <p className="font-semibold">{item.title}</p>
-                        <p className="text-sm">{item.description}</p>
-                    </li>
-                    ))}
-                </ul>
+            {report.keyStrengthsWeaknesses && (
+                <Section title="3. Key Strengths & Weaknesses" icon={<Layers className="text-indigo-500" />}>
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                    <p className="font-bold text-lg text-green-700 mb-2 flex items-center"><Check className="mr-2" />Strengths</p>
+                    <ul className="space-y-2 text-green-700">
+                        {report.keyStrengthsWeaknesses.strengths.map((item, index) => (
+                        <li key={index}>
+                            <p className="font-semibold">{item.title}</p>
+                            <p className="text-sm">{item.description}</p>
+                        </li>
+                        ))}
+                    </ul>
+                    </div>
+                    <div className="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
+                    <p className="font-bold text-lg text-red-700 mb-2 flex items-center"><X className="mr-2" />Weaknesses</p>
+                    <ul className="space-y-2 text-red-700">
+                        {report.keyStrengthsWeaknesses.weaknesses.map((item, index) => (
+                        <li key={index}>
+                            <p className="font-semibold">{item.title}</p>
+                            <p className="text-sm">{item.description}</p>
+                        </li>
+                        ))}
+                    </ul>
+                    </div>
                 </div>
-                <div className="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
-                <p className="font-bold text-lg text-red-700 mb-2 flex items-center"><X className="mr-2" />Weaknesses</p>
-                <ul className="space-y-2 text-red-700">
-                    {report.keyStrengthsWeaknesses.weaknesses.map((item, index) => (
-                    <li key={index}>
-                        <p className="font-semibold">{item.title}</p>
-                        <p className="text-sm">{item.description}</p>
-                    </li>
-                    ))}
-                </ul>
-                </div>
-            </div>
-            </Section>
+                </Section>
+            )}
 
             {/* 4. Critical Risks & Mitigation Strategies */}
-            <Section title="4. Critical Risks & Mitigation Strategies" icon={<Shield className="text-red-500" />}>
-            <div className="space-y-4">
-                {report.criticalRisksAndMitigation.map((risk, index) => (
-                <div key={index} className="p-4 bg-gray-100 rounded-lg">
-                    <p className="font-bold text-lg text-gray-800 mb-1">{risk.risk}</p>
-                    <p className="text-gray-600 text-sm mb-2">{risk.description}</p>
-                    <div className="flex flex-col md:flex-row md:space-x-4">
-                    <p className="text-sm text-gray-500"><span className="font-semibold text-gray-700">Impact:</span> {risk.impact}</p>
-                    <p className="text-sm text-gray-500"><span className="font-semibold text-gray-700">Mitigation:</span> {risk.mitigation}</p>
-                    </div>
-                </div>
-                ))}
-            </div>
-            </Section>
+            {report.criticalRisksAndMitigation && Array.isArray(report.criticalRisksAndMitigation) && (
+              <Section title="4. Critical Risks & Mitigation Strategies" icon={<Shield className="text-red-500" />}>
+              <div className="space-y-4">
+                  {report.criticalRisksAndMitigation.map((risk, index) => (
+                  <div key={index} className="p-4 bg-gray-100 rounded-lg">
+                      <p className="font-bold text-lg text-gray-800 mb-1">{risk.risk}</p>
+                      <p className="text-gray-600 text-sm mb-2">{risk.description}</p>
+                      <div className="flex flex-col md:flex-row md:space-x-4">
+                      <p className="text-sm text-gray-500"><span className="font-semibold text-gray-700">Impact:</span> {risk.impact}</p>
+                      <p className="text-sm text-gray-500"><span className="font-semibold text-gray-700">Mitigation:</span> {risk.mitigation}</p>
+                      </div>
+                  </div>
+                  ))}
+              </div>
+              </Section>
+            )}
             
             {/* 5. Competitive Analysis */}
-            <Section title="5. Competitive Analysis" icon={<TrendingUp className="text-green-500" />}>
-            <div className="space-y-4">
-                <div>
-                <p className="font-semibold text-gray-700">User Provided Competitors:</p>
-                <p className="mt-1 text-gray-600">{report.competitiveAnalysis.user_provided_competitors}</p>
-                </div>
-                <div>
-                <p className="font-semibold text-gray-700">AI's Inference:</p>
-                <p className="mt-1 text-gray-600">{report.competitiveAnalysis.ai_inference}</p>
-                </div>
-                <div className="mt-4">
-                <p className="font-semibold text-gray-700">Competitors' Breakdown:</p>
-                <div className="grid md:grid-cols-3 gap-4 mt-2">
-                    {report.competitiveAnalysis.competitors.map((comp, index) => (
-                    <div key={index} className="bg-white p-4 rounded-lg shadow-inner">
-                        <p className="font-bold text-md text-gray-800 mb-1">{comp.name}</p>
-                        <p className="text-sm text-gray-600"><span className="font-semibold">Features:</span> {comp.features}</p>
-                        <p className="text-sm text-gray-600"><span className="font-semibold">Price:</span> {comp.price_range}</p>
-                        <p className="text-sm text-gray-600 mt-2"><span className="font-semibold">Strengths:</span> {comp.strengths}</p>
-                        <p className="text-sm text-gray-600"><span className="font-semibold">Weaknesses:</span> {comp.weaknesses}</p>
+            {report.competitiveAnalysis && (
+                <Section title="5. Competitive Analysis" icon={<TrendingUp className="text-green-500" />}>
+                <div className="space-y-4">
+                    <div>
+                    <p className="font-semibold text-gray-700">User Provided Competitors:</p>
+                    <p className="mt-1 text-gray-600">{report.competitiveAnalysis.user_provided_competitors}</p>
                     </div>
-                    ))}
+                    <div>
+                    <p className="font-semibold text-gray-700">AI's Inference:</p>
+                    <p className="mt-1 text-gray-600">{report.competitiveAnalysis.ai_inference}</p>
+                    </div>
+                    <div className="mt-4">
+                    <p className="font-semibold text-gray-700">Competitors' Breakdown:</p>
+                    <div className="grid md:grid-cols-3 gap-4 mt-2">
+                        {report.competitiveAnalysis.competitors.map((comp, index) => (
+                        <div key={index} className="bg-white p-4 rounded-lg shadow-inner">
+                            <p className="font-bold text-md text-gray-800 mb-1">{comp.name}</p>
+                            <p className="text-sm text-gray-600"><span className="font-semibold">Features:</span> {comp.features}</p>
+                            <p className="text-sm text-gray-600"><span className="font-semibold">Price:</span> {comp.price_range}</p>
+                            <p className="text-sm text-gray-600 mt-2"><span className="font-semibold">Strengths:</span> {comp.strengths}</p>
+                            <p className="text-sm text-gray-600"><span className="font-semibold">Weaknesses:</span> {comp.weaknesses}</p>
+                        </div>
+                        ))}
+                    </div>
+                    </div>
+                    <div className="mt-4">
+                    <p className="font-semibold text-gray-700">Recommendations:</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-600">
+                        {report.competitiveAnalysis.recommendations.map((rec, index) => (
+                        <li key={index}>{rec}</li>
+                        ))}
+                    </ul>
+                    </div>
                 </div>
-                </div>
-                <div className="mt-4">
-                <p className="font-semibold text-gray-700">Recommendations:</p>
-                <ul className="list-disc list-inside space-y-1 text-gray-600">
-                    {report.competitiveAnalysis.recommendations.map((rec, index) => (
-                    <li key={index}>{rec}</li>
-                    ))}
-                </ul>
-                </div>
-            </div>
-            </Section>
+                </Section>
+            )}
             
             {/* 6. Detailed Pricing & Financials */}
-            <Section title="6. Detailed Pricing & Financials" icon={<DollarSign className="text-green-500" />}>
-            <div className="space-y-4">
-                <div>
-                <p className="font-semibold text-gray-700">User Provided Pricing Model:</p>
-                <p className="mt-1 text-gray-600">{report.detailedPricingAndFinancials.user_provided_pricing_model}</p>
-                </div>
-                <div>
-                <p className="font-semibold text-gray-700">User Provided Estimated Price:</p>
-                <p className="mt-1 text-gray-600">{report.detailedPricingAndFinancials.user_provided_estimated_price}</p>
-                </div>
-                <div>
-                <p className="font-semibold text-gray-700">AI's Pricing Inference:</p>
-                <p className="mt-1 text-gray-600">{report.detailedPricingAndFinancials.ai_pricing_inference}</p>
-                </div>
-                <div className="grid md:grid-cols-2 gap-4 bg-gray-100 p-4 rounded-lg">
-                <div>
-                    <p className="font-semibold text-gray-700">Recommended Pricing Model:</p>
-                    <p className="mt-1 text-gray-600">{report.detailedPricingAndFinancials.recommended_pricing_model}</p>
-                </div>
-                <div>
-                    <p className="font-semibold text-gray-700">Estimated Premium Price:</p>
-                    <p className="mt-1 text-gray-600">₹{report.detailedPricingAndFinancials.estimated_premium_price.toFixed(2)} / user / month</p>
-                </div>
-                <div>
-                    <p className="font-semibold text-gray-700">Estimated COGS per User:</p>
-                    <p className="mt-1 text-gray-600">₹{report.detailedPricingAndFinancials.estimated_cogs_per_user.toFixed(2)} / user / month</p>
-                </div>
-                <div>
-                    <p className="font-semibold text-gray-700">Cost Breakdown:</p>
-                    <ul className="list-disc list-inside text-gray-600">
-                    {report.detailedPricingAndFinancials.cost_breakdown.map((cost, index) => (
-                        <li key={index}>{cost.item}: ₹{cost.cost.toFixed(2)}</li>
-                    ))}
+            {report.detailedPricingAndFinancials && (
+                <Section title="6. Detailed Pricing & Financials" icon={<DollarSign className="text-green-500" />}>
+                <div className="space-y-4">
+                    <div>
+                    <p className="font-semibold text-gray-700">User Provided Pricing Model:</p>
+                    <p className="mt-1 text-gray-600">{report.detailedPricingAndFinancials.user_provided_pricing_model}</p>
+                    </div>
+                    <div>
+                    <p className="font-semibold text-gray-700">User Provided Estimated Price:</p>
+                    <p className="mt-1 text-gray-600">{report.detailedPricingAndFinancials.user_provided_estimated_price}</p>
+                    </div>
+                    <div>
+                    <p className="font-semibold text-gray-700">AI's Pricing Inference:</p>
+                    <p className="mt-1 text-gray-600">{report.detailedPricingAndFinancials.ai_pricing_inference}</p>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-4 bg-gray-100 p-4 rounded-lg">
+                    <div>
+                        <p className="font-semibold text-gray-700">Recommended Pricing Model:</p>
+                        <p className="mt-1 text-gray-600">{report.detailedPricingAndFinancials.recommended_pricing_model}</p>
+                    </div>
+                    <div>
+                        <p className="font-semibold text-gray-700">Estimated Premium Price:</p>
+                        <p className="mt-1 text-gray-600">₹{report.detailedPricingAndFinancials.estimated_premium_price.toFixed(2)} / user / month</p>
+                    </div>
+                    <div>
+                        <p className="font-semibold text-gray-700">Estimated COGS per User:</p>
+                        <p className="mt-1 text-gray-600">₹{report.detailedPricingAndFinancials.estimated_cogs_per_user.toFixed(2)} / user / month</p>
+                    </div>
+                    <div>
+                        <p className="font-semibold text-gray-700">Cost Breakdown:</p>
+                        <ul className="list-disc list-inside text-gray-600">
+                        {report.detailedPricingAndFinancials.cost_breakdown.map((cost, index) => (
+                            <li key={index}>{cost.item}: ₹{cost.cost.toFixed(2)}</li>
+                        ))}
+                        </ul>
+                    </div>
+                    </div>
+                    <div className="mt-4">
+                    <p className="font-semibold text-gray-700">Suggestions:</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-600">
+                        {report.detailedPricingAndFinancials.suggestions.map((sug, index) => (
+                        <li key={index}>{sug}</li>
+                        ))}
                     </ul>
+                    </div>
                 </div>
-                </div>
-                <div className="mt-4">
-                <p className="font-semibold text-gray-700">Suggestions:</p>
-                <ul className="list-disc list-inside space-y-1 text-gray-600">
-                    {report.detailedPricingAndFinancials.suggestions.map((sug, index) => (
-                    <li key={index}>{sug}</li>
-                    ))}
-                </ul>
-                </div>
-            </div>
-            </Section>
+                </Section>
+            )}
             
             {/* 7. Prioritized Next Steps / Action Plan */}
-            <Section title="7. Prioritized Next Steps / Action Plan" icon={<Rocket className="text-purple-500" />}>
-            <div className="space-y-6">
-                <div>
-                <p className="font-bold text-gray-700 mb-2">Urgent:</p>
-                <ul className="list-disc list-inside space-y-1 text-gray-600">
-                    {report.actionPlan.urgent.map((step, index) => <li key={index}>{step}</li>)}
-                </ul>
+            {report.actionPlan && (
+                <Section title="7. Prioritized Next Steps / Action Plan" icon={<Rocket className="text-purple-500" />}>
+                <div className="space-y-6">
+                    <div>
+                    <p className="font-bold text-gray-700 mb-2">Urgent:</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-600">
+                        {report.actionPlan.urgent.map((step, index) => <li key={index}>{step}</li>)}
+                    </ul>
+                    </div>
+                    <div>
+                    <p className="font-bold text-gray-700 mb-2">High Priority:</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-600">
+                        {report.actionPlan.highPriority.map((step, index) => <li key={index}>{step}</li>)}
+                    </ul>
+                    </div>
+                    <div>
+                    <p className="font-bold text-gray-700 mb-2">Mid Priority:</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-600">
+                        {report.actionPlan.midPriority.map((step, index) => <li key={index}>{step}</li>)}
+                    </ul>
+                    </div>
                 </div>
-                <div>
-                <p className="font-bold text-gray-700 mb-2">High Priority:</p>
-                <ul className="list-disc list-inside space-y-1 text-gray-600">
-                    {report.actionPlan.highPriority.map((step, index) => <li key={index}>{step}</li>)}
-                </ul>
-                </div>
-                <div>
-                <p className="font-bold text-gray-700 mb-2">Mid Priority:</p>
-                <ul className="list-disc list-inside space-y-1 text-gray-600">
-                    {report.actionPlan.midPriority.map((step, index) => <li key={index}>{step}</li>)}
-                </ul>
-                </div>
-            </div>
-            </Section>
+                </Section>
+            )}
 
             {/* 8. Detailed Idea Validation & Scoring */}
-            <Section title="8. Detailed Idea Validation & Scoring" icon={<Star className="text-yellow-500" />}>
-            {report.detailedIdeaValidationAndScoring.map((param, index) => (
-                <div key={index} className="my-6">
-                <h3 className="text-2xl font-bold flex items-center text-gray-800">
-                    {param.icon}
-                    <span className="ml-2">{param.parameter_name}</span>
-                </h3>
-                <div className="pl-6 mt-4 space-y-6">
-                    {renderSubParameters(param.sub_parameters)}
-                </div>
-                </div>
-            ))}
-            </Section>
+            {report.detailedIdeaValidationAndScoring && (
+              <Section title="8. Detailed Idea Validation & Scoring" icon={<Star className="text-yellow-500" />}>
+              {report.detailedIdeaValidationAndScoring.map((param, index) => (
+                  <div key={index} className="my-6">
+                  <h3 className="text-2xl font-bold flex items-center text-gray-800">
+                      {param.icon}
+                      <span className="ml-2">{param.parameter_name}</span>
+                  </h3>
+                  <div className="pl-6 mt-4 space-y-6">
+                      {renderSubParameters(param.sub_parameters)}
+                  </div>
+                  </div>
+              ))}
+              </Section>
+            )}
             
             {/* 9. SWOT Analysis */}
-            <Section title="9. SWOT Analysis" icon={<Handshake className="text-teal-500" />}>
-            <div className="grid md:grid-cols-2 gap-6">
-                <div className="p-4 bg-green-50 rounded-lg border-l-4 border-green-400">
-                <h3 className="font-bold text-lg text-green-700 flex items-center mb-2"><Check className="mr-2" />Strengths</h3>
-                <ul className="space-y-2">
-                    {report.swotAnalysis.strengths.map((item, index) => (
-                    <li key={index} className="text-sm">
-                        <p className="font-semibold text-green-800">{item.title}</p>
-                        <p className="text-xs text-green-700">{item.description}</p>
-                    </li>
-                    ))}
-                </ul>
-                </div>
-                <div className="p-4 bg-red-50 rounded-lg border-l-4 border-red-400">
-                <h3 className="font-bold text-lg text-red-700 flex items-center mb-2"><X className="mr-2" />Weaknesses</h3>
-                <ul className="space-y-2">
-                    {report.swotAnalysis.weaknesses.map((item, index) => (
-                    <li key={index} className="text-sm">
-                        <p className="font-semibold text-red-800">{item.title}</p>
-                        <p className="text-xs text-red-700">{item.description}</p>
-                    </li>
-                    ))}
-                </ul>
-                </div>
-                <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
-                <h3 className="font-bold text-lg text-blue-700 flex items-center mb-2"><TrendingUp className="mr-2" />Opportunities</h3>
-                <ul className="space-y-2">
-                    {report.swotAnalysis.opportunities.map((item, index) => (
-                    <li key={index} className="text-sm">
-                        <p className="font-semibold text-blue-800">{item.title}</p>
-                        <p className="text-xs text-blue-700">{item.description}</p>
-                    </li>
-                    ))}
-                </ul>
-                </div>
-                <div className="p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
-                <h3 className="font-bold text-lg text-yellow-700 flex items-center mb-2"><TrendingDown className="mr-2" />Threats</h3>
-                <ul className="space-y-2">
-                    {report.swotAnalysis.threats.map((item, index) => (
-                    <li key={index} className="text-sm">
-                        <p className="font-semibold text-yellow-800">{item.title}</p>
-                        <p className="text-xs text-yellow-700">{item.description}</p>
-                    </li>
-                    ))}
-                </ul>
-                </div>
-            </div>
-            </Section>
+            {report.swotAnalysis && (
+              <Section title="9. SWOT Analysis" icon={<Handshake className="text-teal-500" />}>
+              <div className="grid md:grid-cols-2 gap-6">
+                  <div className="p-4 bg-green-50 rounded-lg border-l-4 border-green-400">
+                  <h3 className="font-bold text-lg text-green-700 flex items-center mb-2"><Check className="mr-2" />Strengths</h3>
+                  <ul className="space-y-2">
+                      {report.swotAnalysis.strengths.map((item, index) => (
+                      <li key={index} className="text-sm">
+                          <p className="font-semibold text-green-800">{item.title}</p>
+                          <p className="text-xs text-green-700">{item.description}</p>
+                      </li>
+                      ))}
+                  </ul>
+                  </div>
+                  <div className="p-4 bg-red-50 rounded-lg border-l-4 border-red-400">
+                  <h3 className="font-bold text-lg text-red-700 flex items-center mb-2"><X className="mr-2" />Weaknesses</h3>
+                  <ul className="space-y-2">
+                      {report.swotAnalysis.weaknesses.map((item, index) => (
+                      <li key={index} className="text-sm">
+                          <p className="font-semibold text-red-800">{item.title}</p>
+                          <p className="text-xs text-red-700">{item.description}</p>
+                      </li>
+                      ))}
+                  </ul>
+                  </div>
+                  <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                  <h3 className="font-bold text-lg text-blue-700 flex items-center mb-2"><TrendingUp className="mr-2" />Opportunities</h3>
+                  <ul className="space-y-2">
+                      {report.swotAnalysis.opportunities.map((item, index) => (
+                      <li key={index} className="text-sm">
+                          <p className="font-semibold text-blue-800">{item.title}</p>
+                          <p className="text-xs text-blue-700">{item.description}</p>
+                      </li>
+                      ))}
+                  </ul>
+                  </div>
+                  <div className="p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
+                  <h3 className="font-bold text-lg text-yellow-700 flex items-center mb-2"><TrendingDown className="mr-2" />Threats</h3>
+                  <ul className="space-y-2">
+                      {report.swotAnalysis.threats.map((item, index) => (
+                      <li key={index} className="text-sm">
+                          <p className="font-semibold text-yellow-800">{item.title}</p>
+                          <p className="text-xs text-yellow-700">{item.description}</p>
+                      </li>
+                      ))}
+                  </ul>
+                  </div>
+              </div>
+              </Section>
+            )}
 
             {/* 10. IP & Research Paper Analysis */}
-            <Section title="10. IP & Research Paper Analysis" icon={<Award className="text-orange-500" />}>
-            <p className="text-gray-600 mb-4">{report.ipAndResearchPaperAnalysis.ip_summary}</p>
-            <p className="font-semibold text-gray-700">Relevant Research Papers:</p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700">
-                {report.ipAndResearchPaperAnalysis.papers.map((paper, index) => (
-                <li key={index}>
-                    <a href={paper.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                    {paper.title}
-                    </a>
-                </li>
-                ))}
-            </ul>
-            </Section>
+            {report.ipAndResearchPaperAnalysis && (
+                <Section title="10. IP & Research Paper Analysis" icon={<Award className="text-orange-500" />}>
+                <p className="text-gray-600 mb-4">{report.ipAndResearchPaperAnalysis.ip_summary}</p>
+                <p className="font-semibold text-gray-700">Relevant Research Papers:</p>
+                <ul className="list-disc list-inside space-y-2 text-gray-700">
+                    {report.ipAndResearchPaperAnalysis.papers.map((paper, index) => (
+                    <li key={index}>
+                        <a href={paper.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                        {paper.title}
+                        </a>
+                    </li>
+                    ))}
+                </ul>
+                </Section>
+            )}
 
             {/* 11. Consolidated Sources of Information */}
-            <Section title="11. Consolidated Sources of Information" icon={<Globe className="text-cyan-500" />}>
-            <ul className="list-disc list-inside space-y-2 text-gray-700">
-                {report.sources.map((source, index) => (
-                <li key={index}>
-                    {source.url ? (
-                    <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                        {source.text}
-                    </a>
-                    ) : (
-                    <p>{source.text}</p>
-                    )}
-                </li>
-                ))}
-            </ul>
-            </Section>
+            {report.sources && (
+                <Section title="11. Consolidated Sources of Information" icon={<Globe className="text-cyan-500" />}>
+                <ul className="list-disc list-inside space-y-2 text-gray-700">
+                    {report.sources.map((source, index) => (
+                    <li key={index}>
+                        {source.url ? (
+                        <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                            {source.text}
+                        </a>
+                        ) : (
+                        <p>{source.text}</p>
+                        )}
+                    </li>
+                    ))}
+                </ul>
+                </Section>
+            )}
 
             {/* 12. Professional Disclaimer Section */}
-            <Section title="12. Professional Disclaimer" icon={<Info className="text-gray-500" />}>
-            <p className="text-sm leading-relaxed text-gray-600 whitespace-pre-wrap">{report.disclaimer}</p>
-            </Section>
+            {report.disclaimer && (
+                <Section title="12. Professional Disclaimer" icon={<Info className="text-gray-500" />}>
+                <p className="text-sm leading-relaxed text-gray-600 whitespace-pre-wrap">{report.disclaimer}</p>
+                </Section>
+            )}
         </div>
       </div>
     </div>
