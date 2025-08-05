@@ -5,7 +5,7 @@
 /**
  * @fileOverview AI flow that generates a comprehensive validation report for a submitted idea.
  * This flow now orchestrates multiple calls to a simpler AI evaluation flow,
- * one for each evaluation cluster, to build the full report.
+ * one for each evaluation dinner, to build the full report.
  *
  * - generateValidationReport - A function that generates the validation report.
  */
@@ -45,5 +45,6 @@ export async function generateValidationReport(
       ideaName: input.ideaName,
       overallScore: overallScore,
       outcome: overallScore > 80 ? "High Potential" : overallScore > 60 ? "Moderate" : "Needs Improvement",
-  }
-}
+      input: {
+        user_idea: input.ideaConcept,
+        ai_understanding: "AI's understanding of the
