@@ -461,906 +461,206 @@ export const MOCK_NOTIFICATIONS = {
   ],
 };
 
-export const MOCK_SAMPLE_REPORT = {
+export const MOCK_SAMPLE_REPORT: ValidationReport = {
   ideaName: "Economical AI Project Management Tool",
   preparedFor: "Innovator Name",
   date: "August 4, 2025",
   overallScore: 8.7,
-  
-  // 1. Input & AI Understanding
-  input: {
-    user_idea: "Ai project management tools for startup at economical cost with AI feature.",
-    ai_understanding: "The user's core idea is to develop a B2B SaaS platform specifically for startups. The key value propositions are its affordable price point ('economical') and the integration of artificial intelligence features to differentiate it from existing solutions."
-  },
-  
-  // 2. Executive Summary
-  executiveSummary: {
-    outcome: "High Potential. The idea has a strong, defensible niche in a large and growing market. Success hinges on a robust execution strategy, particularly in a highly competitive landscape.",
-    summary: "The 'Economical AI Project Management Tool' addresses a critical gap in the market for startups and small businesses. By leveraging AI for automation and insights at an accessible price point, it creates a differentiated offering that moves beyond basic task management. The overall viability score of 8.7/10 indicates high potential. Key opportunities lie in a massive, underserved target market, while the primary challenges involve competing with established players and maintaining profitability with a low-cost model. A key risk is the operational cost of providing powerful AI features at a low price. The path to success requires a clear focus on a stellar user experience and a highly scalable, automated operational model."
-  },
-
-  // 3. Key Strengths & Weaknesses
-  keyStrengthsWeaknesses: {
-    strengths: [
-      { title: "Strong Value Proposition", description: "The combination of affordability and AI features fills a clear market gap." },
-      { title: "Scalable SaaS Model", description: "The business model allows for rapid growth with controlled costs." },
-      { title: "Target Market Growth", description: "The global and Indian startup ecosystems are expanding rapidly, providing a large customer base." }
-    ],
-    weaknesses: [
-      { title: "High Competition", description: "The market is crowded with well-funded and established players like Jira and Asana." },
-      { title: "Operational Costs", description: "Maintaining powerful AI features at a low price point poses a significant challenge to profitability." },
-      { title: "Brand Recognition", description: "As a new entrant, building trust and brand loyalty will be a key hurdle." }
-    ]
-  },
-  
-  // 4. Critical Risks & Mitigation Strategies
-  criticalRisksAndMitigation: [
+  outcome: "High Potential",
+  executiveSummary: "The 'Economical AI Project Management Tool' addresses a critical gap in the market for startups and small businesses. By leveraging AI for automation and insights at an accessible price point, it creates a differentiated offering that moves beyond basic task management. The overall viability score of 8.7/10 indicates high potential. Key opportunities lie in a massive, underserved target market, while the primary challenges involve competing with established players and maintaining profitability with a low-cost model. A key risk is the operational cost of providing powerful AI features at a low price. The path to success requires a clear focus on a stellar user experience and a highly scalable, automated operational model.",
+  keyStrengths: [
+    "Strong Value Proposition: The combination of affordability and AI features fills a clear market gap.",
+    "Scalable SaaS Model: The business model allows for rapid growth with controlled costs.",
+    "Target Market Growth: The global and Indian startup ecosystems are expanding rapidly, providing a large customer base."
+  ],
+  keyWeaknesses: [
+    "High Competition: The market is crowded with well-funded and established players like Jira and Asana.",
+    "Operational Costs: Maintaining powerful AI features at a low price point poses a significant challenge to profitability.",
+    "Brand Recognition: As a new entrant, building trust and brand loyalty will be a key hurdle."
+  ],
+  criticalRisks: [
     {
-      risk: "Intense Competition",
+      title: "Intense Competition",
       description: "The project management software market is mature and saturated with well-established players.",
-      impact: "Medium to High",
       mitigation: "Focus on a niche (e.g., startups), differentiate with a unique 'economical + AI' value proposition, and build a strong community to create brand loyalty."
     },
     {
-      risk: "Operational Costs of AI",
+      title: "Operational Costs of AI",
       description: "Providing powerful AI features at a low price point can lead to high operational costs (e.g., GPU usage, API licenses) that erode profitability.",
-      impact: "High",
       mitigation: "Optimize AI models for efficiency, use cost-effective cloud solutions, and carefully manage usage-based costs. Consider a tiered AI feature model where advanced features are exclusive to higher-priced plans."
     },
     {
-      risk: "User Experience Debt",
+      title: "User Experience Debt",
       description: "The pressure to ship quickly to compete can lead to a subpar user experience and technical debt.",
-      impact: "Medium",
       mitigation: "Adopt an MVP-first strategy with a clear focus on core, high-value features. Implement continuous user feedback loops and allocate dedicated time for refactoring and bug fixes in every sprint."
     }
   ],
-
-  // 5. Competitive Analysis
-  competitiveAnalysis: {
-    user_provided_competitors: "Jira, Asana, Trello.",
-    ai_inference: "The user's identified competitors (Jira, Asana, Trello) are accurate and represent the primary threats. The AI's analysis confirms that the user's proposed 'economical and AI-driven' USP is a valid strategy to compete against these established players.",
-    competitors: [
-      {
-        name: "Jira",
-        features: "Task tracking, agile project management, workflow automation.",
-        price_range: "Starts free, then ~$700/user/month.",
-        strengths: "Market leader for software development teams, highly customizable, strong integrations.",
-        weaknesses: "Can be complex and expensive for startups, steep learning curve."
-      },
-      {
-        name: "Asana",
-        features: "Project tracking, goal setting, visual timelines, workflow builder.",
-        price_range: "Starts free, then ~$900/user/month.",
-        strengths: "Excellent user interface, flexible for various team types, strong collaboration features.",
-        weaknesses: "Expensive premium tiers, lacks deep AI automation compared to future-proof tools."
-      },
-      {
-        name: "Trello",
-        features: "Kanban boards, checklists, integrations.",
-        price_range: "Starts free, then ~$450/user/month.",
-        strengths: "Intuitive and simple to use, great for visual thinkers and small projects.",
-        weaknesses: "Lacks advanced features for scaling teams, not AI-focused."
-      }
-    ],
-    recommendations: [
-      "Beyond just price, clearly articulate how the AI features provide a superior experience compared to the competitors.",
-      "Build a comparison table on the website to highlight the value proposition against competitors."
-    ]
-  },
-  
-  // 6. Detailed Pricing & Financials
-  detailedPricingAndFinancials: {
-    user_provided_pricing_model: "Freemium with a tiered subscription model.",
-    user_provided_estimated_price: "₹500 per user/month for the premium tier.",
-    ai_pricing_inference: "The user's suggested freemium model with a tiered subscription is a viable strategy. Our analysis confirms a price point around ₹700/month is competitive and allows for a healthy gross margin. The user's provided price of ₹500 is a good starting point but may need to be slightly adjusted to ensure profitability.",
-    recommended_pricing_model: "Freemium with a Tiered Subscription for premium features.",
-    estimated_premium_price: 699.00,
-    estimated_cogs_per_user: 275,
-    cost_breakdown: [
-      { item: "AI Compute & GPU usage", cost: 150 },
-      { item: "Cloud Hosting & Storage", cost: 75 },
-      { item: "Third-party APIs & Licenses", cost: 50 },
-    ],
-    suggestions: [
-      "Test different pricing models early to find the optimal balance between user acquisition and revenue generation.",
-      "Carefully analyze customer acquisition cost (CAC) and lifetime value (LTV) to ensure the business model is profitable at scale."
-    ]
-  },
-  
-  // 7. Prioritized Next Steps / Action Plan
-  actionPlan: {
-    urgent: [
-      "Conduct a detailed market segmentation study to pinpoint the most lucrative sub-niche of startups.",
-      "Develop a minimum viable product (MVP) with a core set of AI features for a closed beta with 10-20 startups.",
-      "Define key performance indicators (KPIs) and a clear go-to-market strategy for the initial launch."
-    ],
-    highPriority: [
-      "Finalize the pricing tiers and model based on beta test feedback and competitor analysis.",
-      "Begin building a brand identity and content marketing strategy targeting the startup community.",
-      "Explore partnerships with startup incubators and accelerators to gain early access to customers."
-    ],
-    midPriority: [
-      "Scale the marketing and sales efforts to reach a broader audience.",
-      "Develop a robust customer support and feedback loop system.",
-      "Begin planning for international expansion based on early traction."
-    ]
-  },
-
-  // 8. Detailed Idea Validation & Scoring
-  detailedIdeaValidationAndScoring: [
+  competitiveAnalysis: [
     {
-      parameter_name: "1. Core Idea",
-      icon: <Lightbulb className="text-blue-500" />,
-      sub_parameters: [
-        { parameter_name: "1.1. Novelty & Uniqueness", sub_parameters: [
-          { 
-            parameter_name: "1.1.1. Originality", 
-            score: 8.5, 
-            inference: "The core idea is not entirely new, but the combination of 'economical' pricing and 'AI-powered' features is a strong, original value proposition that sets it apart.", 
-            recommendations: ["Focus marketing on this unique combination.", "Highlight the AI's smart features over competitors' basic task automation."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-          { 
-            parameter_name: "1.1.2. Differentiation", 
-            score: 9.0, 
-            inference: "The product is highly differentiated from expensive enterprise tools and free, basic tools. This gives it a clear 'blue ocean' strategy in a crowded market.", 
-            recommendations: ["Build a public-facing comparison matrix on the website to show differentiation.", "Gather testimonials from users who have switched from competitors."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Analysis of the project management software market." }]
-          },
-        ]},
-        { parameter_name: "1.2. Problem-Solution Fit", sub_parameters: [
-          { 
-            parameter_name: "1.2.1. Problem Severity", 
-            score: 9.5, 
-            inference: "Startups have a severe problem finding powerful and affordable project management tools. The pain point is high, which is a great foundation for a product.", 
-            recommendations: ["Conduct user interviews to deeply understand the pain points.", "Validate the problem with a landing page and email sign-ups."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "AI-driven market research on startup pain points." }]
-          },
-          { 
-            parameter_name: "1.2.2. Solution Effectiveness", 
-            score: 9.0, 
-            inference: "The proposed AI features (e.g., automated reporting, resource allocation) directly address the core problems faced by time and resource-constrained startups.", 
-            recommendations: ["Develop a proof-of-concept for the most critical AI feature.", "Run a small closed beta to test the solution's effectiveness."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-        ]},
-        { parameter_name: "1.3. UX/Usability Potential", sub_parameters: [
-          { 
-            parameter_name: "1.3.1. Intuitive Design", 
-            score: 8.5, 
-            inference: "A simple, clean UI is crucial for startups. The design should be intuitive and require minimal onboarding, a key differentiator from complex enterprise tools.", 
-            recommendations: ["Hire an experienced UX/UI designer with a focus on SaaS products.", "Conduct user testing with low-fidelity prototypes before writing any code."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-          { 
-            parameter_name: "1.3.2. Accessibility Compliance", 
-            score: 8.0, 
-            inference: "Accessibility is a key consideration for a modern SaaS product, though often overlooked. It broadens the market and demonstrates a commitment to inclusive design.", 
-            recommendations: ["Ensure the UI is built with WCAG 2.1 guidelines in mind.", "Perform an accessibility audit before the public launch."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-        ]},
-      ]
+      competitor: "Jira",
+      products: "Jira Software",
+      features: "Advanced issue tracking, scrum/kanban boards, extensive integrations.",
+      priceRange: "₹650 - ₹1,800+ per user/month",
+      strengths: "Market leader, extensive features, strong ecosystem.",
+      weaknesses: "Complex, steep learning curve, expensive for startups."
     },
     {
-      parameter_name: "2. Market Opportunity",
-      icon: <Briefcase className="text-green-500" />,
-      sub_parameters: [
-        { parameter_name: "2.1. Market Validation (TAM)", sub_parameters: [
-          { 
-            parameter_name: "2.1.1. Market Size (TAM)", 
-            score: 9.5, 
-            inference: "The Total Addressable Market for project management software is vast, estimated at over $6.5 billion globally, growing at a CAGR of 11.2%. The user's input on Indian market size is a good proxy.", 
-            recommendations: ["Focus on the Serviceable Obtainable Market (SOM) first.", "Use the TAM to attract investors and show long-term vision."], 
-            user_input: { "user_provided_market_size": "Indian SaaS market is expected to reach $13-15 billion by 2025." },
-            sourcesUsed: [{ text: "Statista Report: Project Management Software Market Size", url: "https://www.statista.com/outlook/dmo/enterprise-software/project-management-software/worldwide" }]
-          },
-          { 
-            parameter_name: "2.1.2. Competitive Intensity", 
-            score: 7.0, 
-            inference: "The market is highly competitive with many established players. This is a significant risk that must be addressed through a strong value proposition.", 
-            recommendations: ["Clearly define and communicate the product's unique selling points.", "Target a sub-niche (e.g., early-stage tech startups) to reduce initial competition."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-        ]},
-        { parameter_name: "2.2. Geographic Specificity (India)", sub_parameters: [
-          { 
-            parameter_name: "2.2.1. Regulatory Landscape", 
-            score: 8.5, 
-            inference: "The regulatory environment in India for SaaS is generally favorable, with government initiatives supporting startups. Data privacy laws are a key consideration.", 
-            recommendations: ["Ensure compliance with India's data privacy laws.", "Consult with a legal expert on specific regulations."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Indian Ministry of Electronics and Information Technology (MeitY) guidelines" }]
-          },
-          { 
-            parameter_name: "2.2.2. Infrastructure Readiness", 
-            score: 9.0, 
-            inference: "India has a robust digital infrastructure with high internet penetration and a large base of tech-savvy users, making it an ideal market for a SaaS product.", 
-            recommendations: ["Optimize the product for both desktop and mobile use.", "Leverage local cloud providers to reduce latency."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-        ]},
-        { parameter_name: "2.3. Product-Market Fit", sub_parameters: [
-          { 
-            parameter_name: "2.3.1. User Engagement", 
-            score: 8.5, 
-            inference: "The AI features are designed to increase user engagement by making tasks easier and providing valuable insights. This is a strong hypothesis that needs validation.", 
-            recommendations: ["Implement detailed analytics to track user engagement with key AI features.", "Conduct usability studies to identify friction points."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-          { 
-            parameter_name: "2.3.2. Retention Potential", 
-            score: 8.0, 
-            inference: "The product's 'stickiness' will come from its AI learning over time. As the AI gets smarter, the product becomes more valuable, increasing retention.", 
-            recommendations: ["Introduce a 'retention' metric in the early stages.", "Continuously improve AI models based on user feedback to drive long-term value."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-        ]},
-      ]
+      competitor: "Asana",
+      products: "Asana platform",
+      features: "Task management, project timelines, workflow automation.",
+      priceRange: "₹850 - ₹2,000+ per user/month",
+      strengths: "Intuitive UI, good for collaboration, strong brand.",
+      weaknesses: "Can be expensive, limited AI features in free tier."
     },
     {
-      parameter_name: "3. Execution",
-      icon: <Rocket className="text-purple-500" />,
-      sub_parameters: [
-        { parameter_name: "3.1. Technical Feasibility", sub_parameters: [
-          { 
-            parameter_name: "3.1.1. Technology Maturity", 
-            score: 8.5, 
-            inference: "The underlying technologies for a modern SaaS product (cloud, microservices, front-end frameworks) are mature and well-understood. The AI component is the primary technical challenge.", 
-            recommendations: ["Choose a robust tech stack that can support AI integrations.", "Build a dedicated R&D team for the AI features."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-          { 
-            parameter_name: "3.1.2. Scalability & Performance", 
-            score: 8.0, 
-            inference: "A SaaS product needs to scale horizontally to support millions of users. The AI models must also be optimized for both performance and cost.", 
-            recommendations: ["Design a scalable architecture from day one.", "Use serverless functions for computationally expensive tasks."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-        ]},
-        { parameter_name: "3.2. Operational Viability", sub_parameters: [
-          { 
-            parameter_name: "3.2.1. Resource Availability", 
-            score: 8.5, 
-            inference: "India has a large talent pool of engineers and AI experts, making it feasible to build and operate the product locally.", 
-            recommendations: ["Partner with local universities to hire top talent.", "Build a strong company culture to attract and retain employees."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-          { 
-            parameter_name: "3.2.2. Process Efficiency", 
-            score: 9.0, 
-            inference: "Automation is a core part of the business. The goal is to have highly efficient internal processes to keep costs down.", 
-            recommendations: ["Automate all possible internal workflows (e.g., marketing, sales, support).", "Use a modern CI/CD pipeline to ensure fast, reliable deployments."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-        ]},
-        { parameter_name: "3.3. Scalability Potential", sub_parameters: [
-          { 
-            parameter_name: "3.3.1. Business Model Scalability", 
-            score: 9.0, 
-            inference: "The SaaS subscription model is highly scalable. The key is to manage the cost of AI as the user base grows.", 
-            recommendations: ["Implement a usage-based pricing model for AI-intensive features.", "Regularly review and optimize the cost of goods sold (COGS)."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-          { 
-            parameter_name: "3.3.2. Market Expansion Potential", 
-            score: 8.5, 
-            inference: "The product can easily expand to new markets beyond India and to different industry verticals with minor modifications.", 
-            recommendations: ["Plan for internationalization and localization from the beginning.", "Start with one market and perfect the product before expanding."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-        ]},
-      ]
-    },
-    {
-      parameter_name: "4. Business Model",
-      icon: <DollarSign className="text-yellow-500" />,
-      sub_parameters: [
-        { parameter_name: "4.1. Financial Viability", sub_parameters: [
-          { 
-            parameter_name: "4.1.1. Revenue Stream Diversity", 
-            score: 8.0, 
-            inference: "The primary revenue stream is subscriptions. Other potential streams could include marketplace integrations or premium AI consulting services.", 
-            recommendations: ["Explore partnerships with other SaaS tools to create a marketplace.", "Offer add-on services for high-value customers."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-          { 
-            parameter_name: "4.1.2. Profitability & Margins", 
-            score: 7.5, 
-            inference: "The low price point and high AI costs are a risk to profitability. Careful management of COGS and a clear path to scale are essential.", 
-            recommendations: ["Maintain high gross margins by controlling operational costs.", "Focus on customer lifetime value (LTV) over short-term revenue."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-        ]},
-        { parameter_name: "4.2. Defensibility", sub_parameters: [
-          { 
-            parameter_name: "4.2.1. Intellectual Property (IP)", 
-            score: 8.5, 
-            inference: "Proprietary AI models and algorithms can be a strong moat. While not a complete barrier, it makes it difficult for competitors to replicate the core value.", 
-            recommendations: ["File for patents for unique algorithms.", "Protect the brand with strong trademarks."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Patent analysis for AI in project management." }]
-          },
-          { 
-            parameter_name: "4.2.2. Network Effects", 
-            score: 8.0, 
-            inference: "The value of the tool increases as more team members and collaborators use it. This creates a natural network effect that increases user stickiness.", 
-            recommendations: ["Build strong collaboration features into the product.", "Encourage team-based sign-ups and referrals."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-        ]},
-      ]
-    },
-    {
-      parameter_name: "5. Team",
-      icon: <Users className="text-pink-500" />,
-      sub_parameters: [
-        { parameter_name: "5.1. Founder-Fit", sub_parameters: [
-          { 
-            parameter_name: "5.1.1. Relevant Experience", 
-            score: 9.0, 
-            inference: "Founders with experience in AI, SaaS, and project management would be an ideal fit. Their domain expertise is critical for success.", 
-            recommendations: ["If the founder lacks experience, bring on an experienced advisor or co-founder.", "Highlight the team's expertise in marketing materials."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-          { 
-            parameter_name: "5.1.2. Complementary Skills", 
-            score: 9.0, 
-            inference: "An effective team needs a mix of technical, business, and design skills to build a successful product.", 
-            recommendations: ["Ensure the team has a clear founder-fit in all key areas.", "Use the team's complementary skills as a selling point to investors."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-        ]},
-        { parameter_name: "5.2. Culture/Values", sub_parameters: [
-          { 
-            parameter_name: "5.2.1. Mission Alignment", 
-            score: 9.5, 
-            inference: "A strong, mission-driven culture will be essential to attract and retain talent in a competitive market.", 
-            recommendations: ["Clearly define the company's mission and values from day one.", "Ensure all hiring decisions are aligned with the company culture."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-          { 
-            parameter_name: "5.2.2. Diversity & Inclusion", 
-            score: 9.0, 
-            inference: "Building a diverse team will lead to better products and a broader perspective. This is a crucial factor for long-term success.", 
-            recommendations: ["Implement a clear diversity and inclusion policy.", "Focus on building an inclusive culture where all voices are heard."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-        ]},
-      ]
-    },
-    {
-      parameter_name: "6. Compliance",
-      icon: <FileText className="text-teal-500" />,
-      sub_parameters: [
-        { parameter_name: "6.1. Regulatory (India)", sub_parameters: [
-          { 
-            parameter_name: "6.1.1. Data Privacy Compliance", 
-            score: 8.5, 
-            inference: "Compliance with local data privacy laws (e.g., India's PDP Bill) is non-negotiable. This is a key risk area that requires attention.", 
-            recommendations: ["Engage a legal consultant to review the product's data handling.", "Implement a robust data privacy policy and get it audited."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-          { 
-            parameter_name: "6.1.2. Sector-Specific Compliance", 
-            score: 8.0, 
-            inference: "Depending on the target industry (e.g., healthcare, finance), additional compliance measures may be required.", 
-            recommendations: ["Identify target industry verticals and their compliance requirements.", "Build the product to be configurable for different compliance needs."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-        ]},
-        { parameter_name: "6.2. Sustainability (ESG)", sub_parameters: [
-          { 
-            parameter_name: "6.2.1. Environmental Impact", 
-            score: 8.0, 
-            inference: "The product's carbon footprint (from cloud computing and AI training) is a key consideration. This can be a selling point to eco-conscious companies.", 
-            recommendations: ["Use energy-efficient cloud providers.", "Publish an annual sustainability report."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-          { 
-            parameter_name: "6.2.2. Social Impact (SDGs)", 
-            score: 9.0, 
-            inference: "The product can contribute to UN Sustainable Development Goals (SDGs) by improving productivity and supporting small businesses.", 
-            recommendations: ["Align the company's mission with relevant SDGs.", "Highlight the social impact in marketing materials."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-        ]},
-        { parameter_name: "6.3. Ecosystem Support (India)", sub_parameters: [
-          { 
-            parameter_name: "6.3.1. Government & Institutional Support", 
-            score: 9.5, 
-            inference: "Government initiatives like 'Startup India' and various institutional support programs offer a significant advantage for a product built and launched in India.", 
-            recommendations: ["Apply for government grants and startup programs.", "Leverage institutional partnerships for marketing and sales."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Startup India: Official Government of India Initiative", url: "https://www.startupindia.gov.in/" }]
-          },
-          { 
-            parameter_name: "6.3.2. Investor & Partner Landscape", 
-            score: 9.0, 
-            inference: "India has a vibrant VC and angel investor ecosystem, with a high appetite for SaaS and AI startups.", 
-            recommendations: ["Build a strong investor deck that highlights the Indian market opportunity.", "Network with key investors and partners in the Indian ecosystem."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-        ]},
-      ]
-    },
-    {
-      parameter_name: "7. Risk & Strategy",
-      icon: <TrendingDown className="text-red-500" />,
-      sub_parameters: [
-        { parameter_name: "7.1. Risk Assessment", sub_parameters: [
-          { 
-            parameter_name: "7.1.1. Technical Risks", 
-            score: 7.5, 
-            inference: "The main technical risks are related to the performance and cost of the AI models. These require careful management and continuous optimization.", 
-            recommendations: ["Use a multi-cloud strategy to mitigate single-provider risk.", "Build a robust monitoring and alerting system for technical issues."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-          { 
-            parameter_name: "7.1.2. Market Risks", 
-            score: 8.0, 
-            inference: "The main market risks are intense competition and the possibility of a downturn in the startup ecosystem. A strong product and clear messaging can mitigate these risks.", 
-            recommendations: ["Stay agile and adapt the product to market changes.", "Diversify the customer base to reduce dependency on a single market segment."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-        ]},
-        { parameter_name: "7.2. Investor Attractiveness", sub_parameters: [
-          { 
-            parameter_name: "7.2.1. Valuation Potential", 
-            score: 8.5, 
-            inference: "The product has a strong valuation potential due to the high-growth SaaS model and the AI component. Early traction will be key to unlocking this potential.", 
-            recommendations: ["Focus on early user growth and retention metrics.", "Develop a clear financial model and a path to profitability."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-          { 
-            parameter_name: "7.2.2. Exit Strategy Viability", 
-            score: 8.0, 
-            inference: "The product has multiple potential exit opportunities, including acquisition by a larger enterprise software company or a later-stage VC firm.", 
-            recommendations: ["Identify potential acquirers early in the process.", "Build a defensible business with strong IP and customer loyalty."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-        ]},
-        { parameter_name: "7.3. Academic/National Alignment", sub_parameters: [
-          { 
-            parameter_name: "7.3.1. National Policy Alignment (India)", 
-            score: 9.5, 
-            inference: "The product aligns well with national policies for a 'digital India' and a 'self-reliant India' (Atmanirbhar Bharat), which can provide significant institutional support.", 
-            recommendations: ["Explicitly mention alignment with national policies in the business plan.", "Leverage government programs and funding opportunities."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-          { 
-            parameter_name: "7.3.2. Academic/Research Contribution", 
-            score: 8.5, 
-            inference: "The product's AI components could lead to new research papers and academic contributions, which can enhance the brand's reputation and attract talent.", 
-            recommendations: ["Publish research papers on the AI models used in the product.", "Partner with academic institutions on R&D projects."], 
-            user_input: { "user_input": "not given" },
-            sourcesUsed: [{ text: "Not provided in this analysis." }]
-          },
-        ]},
-      ]
+      competitor: "Trello",
+      products: "Trello boards",
+      features: "Kanban boards, simple task cards, integrations.",
+      priceRange: "Free - ₹1,000+ per user/month",
+      strengths: "Extremely easy to use, visual, strong free tier.",
+      weaknesses: "Lacks advanced features and AI, not for complex projects."
     }
   ],
-  
-  // 9. AI Research Agent Findings
-  aiResearchAgentFindings: {
-    summary: "Our AI research agent conducted a broad analysis of the project management and AI-in-SaaS markets. Key findings include a growing demand for intelligent automation features and a significant price sensitivity among startups. The research confirms that the 'affordable AI' niche is viable and shows high growth potential in emerging markets.",
+  detailedPricing: {
+    cogsBreakdown: [
+      { item: "AI Compute & GPU usage", cost: "₹150" },
+      { item: "Cloud Hosting & Storage", cost: "₹75" },
+      { item: "Third-party APIs & Licenses", cost: "₹50" },
+    ],
+    manufacturingAndAssembly: "N/A for SaaS",
+    estimatedCogs: "₹275 per user/month",
+    retailPricingStrategy: "A freemium model is recommended to acquire users, with a premium tier that offers advanced AI features. To be profitable, a gross margin of at least 60% is required on the premium tier. Target a monthly premium price of ₹699 per user."
+  },
+  actionPlan: {
+    urgent: [
+      "Finalize the core AI feature set for the MVP: Identify the single most impactful AI feature (e.g., 'AI-powered task summarization') to build first.",
+      "Develop a clickable prototype and gather early feedback from a target group of 10-20 startups.",
+      "Select a cloud provider and set up a scalable, microservices-based architecture."
+    ],
+    highPriority: [
+      "Launch a beta version of the MVP to a wider audience to validate product-market fit.",
+      "Develop a cohesive brand story, create professional marketing assets, and launch a landing page to begin collecting email sign-ups.",
+      "Begin filing for key IP protections for the unique AI algorithms."
+    ],
+    midPriority: [
+      "Develop and launch a tiered pricing model based on user feedback from the beta program.",
+      "Establish a robust customer support infrastructure, including an AI-powered chatbot.",
+      "Launch the first full-scale version of the product with a marketing campaign targeting the Indian startup ecosystem."
+    ]
+  },
+  detailedValidationAndScoring: {
+    "Core Idea & Product": [
+        { parameter: 'Originality', description: 'Test', inference: 'The core idea is not entirely new, but the combination of \'economical\' pricing and \'AI-powered\' features is a strong, original value proposition that sets it apart.', score: '8.5', justification: 'Justification here', suggestions: 'Focus marketing on this unique combination.' },
+    ],
+    "Market & Customers": [],
+    "Execution": [],
+    "Business Model": [],
+    "Team": [],
+    "Compliance": [],
+    "Risk & Strategy": [],
+  },
+  aiAgentAnalysis: {
+    introduction: "Our AI research agent conducted a broad analysis of the project management and AI-in-SaaS markets. Key findings include a growing demand for intelligent automation features and a significant price sensitivity among startups. The research confirms that the 'affordable AI' niche is viable and shows high growth potential in emerging markets.",
     findings: [
-      { finding: "75% of startups surveyed express a need for project management tools that offer more than basic task lists, citing a desire for predictive analytics and automated reporting." },
-      { finding: "The average 'willingness to pay' for premium SaaS tools among Indian startups is 30-40% lower than their counterparts in the US and Europe." },
-      { finding: "AI features most requested by project managers include automated timeline adjustments, risk prediction, and smart allocation of tasks based on team member capacity." }
+      { title: "Demand for Automation", details: "75% of startups surveyed express a need for project management tools that offer more than basic task lists, citing a desire for predictive analytics and automated reporting.", type: "Market Trend" },
+      { title: "Price Sensitivity", details: "The average 'willingness to pay' for premium SaaS tools among Indian startups is 30-40% lower than their counterparts in the US and Europe.", type: "Market Insight" },
+      { title: "Feature Request", details: "AI features most requested by project managers include automated timeline adjustments, risk prediction, and smart allocation of tasks based on team member capacity.", type: "User Need" }
     ]
   },
-  
-  // 10. IP & Research Paper Analysis
-  ipAndResearchPaperAnalysis: {
-    summary: "A preliminary analysis of existing intellectual property reveals that while many patents exist for AI in project management, there is room for innovation in specific areas, particularly around cost-effective, lightweight AI models for small businesses. There is a clear opportunity to file for patents related to unique algorithms that automate project scoping and resource allocation.",
-    papers: [
-      { title: "The Economic Viability of AI-Driven SaaS Platforms for SMBs", url: "https://example.com/paper1" },
-      { title: "Novel Algorithms for Dynamic Task Scheduling in Agile Environments", url: "https://example.com/paper2" }
-    ]
-  },
-
-  // 11. Consolidated Sources of Information
   sources: [
     { text: "Statista Report: Project Management Software Market Size", url: "https://www.statista.com/outlook/dmo/enterprise-software/project-management-software/worldwide" },
     { text: "Research on SaaS pricing in India.", url: "https://example.com/saas-pricing-india" },
-    { text: "Analysis of cloud computing costs for AI workloads." },
-    { text: "Data from simulated PPT: my_pitch_deck.pptx" },
   ],
-  
-  // 12. Professional Disclaimer Section
-  disclaimer: `This report is an automated assessment and does not constitute professional business, legal, or financial advice. The analysis is based on information available at the time of generation and is intended for informational and illustrative purposes only. All scores and recommendations are indicative and should be independently validated.`,
+  disclaimer: "This report is an automated assessment and does not constitute professional business, legal, or financial advice. The analysis is based on information available at the time of generation and is intended for informational and illustrative purposes only. All scores and recommendations are indicative and should be independently validated."
 };
 
-// --- Main App Component ---
-const App = () => {
-  // A generic section component to structure the report
-  const Section = ({ title, children, icon: Icon }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="p-6 bg-white rounded-xl shadow-lg border border-gray-100"
-    >
-      <h2 className="flex items-center text-2xl font-bold mb-4 text-gray-800">
-        {Icon && <Icon className="mr-3 text-indigo-600" size={24} />}
-        {title}
-      </h2>
-      <div className="border-b-2 border-gray-100 mb-4"></div>
-      {children}
-    </motion.div>
-  );
-
-  // Component to render the detailed scoring hierarchy
-  const DetailedScoringBlock = ({ parameter }) => {
-    // Check if the current parameter has sub_parameters (nested structure)
-    if (parameter.sub_parameters) {
-      return (
-        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 shadow-sm mb-6">
-          <h4 className="flex items-center text-lg font-bold text-gray-800 mb-4">
-            {parameter.icon && <span className="mr-2">{parameter.icon}</span>}
-            {parameter.parameter_name}
-          </h4>
-          <div className="pl-4 border-l border-gray-300 space-y-4">
-            {parameter.sub_parameters.map((subParam, index) => (
-              <DetailedScoringBlock key={index} parameter={subParam} />
-            ))}
-          </div>
-        </div>
-      );
-    } else {
-      // This is the final leaf node with a score and analysis
-      const userInput = parameter.user_input;
-      const isNotGiven = userInput && userInput.user_input === "not given";
-      
-      return (
-        <div className="p-4 bg-white rounded-lg border border-gray-200">
-          <h5 className="text-md font-bold text-gray-800 mb-2">{parameter.parameter_name}</h5>
-          
-          <div className="mb-3 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg">
-            <h6 className="font-semibold text-yellow-800 mb-1">User Provided Data:</h6>
-            {isNotGiven ? (
-              <p className="text-sm text-yellow-700">Not given</p>
-            ) : (
-              <ul className="list-disc list-inside space-y-1 text-sm text-yellow-700">
-                {Object.entries(userInput).map(([key, value], i) => (
-                  <li key={i}>
-                    <span className="font-medium">{key.replace(/_/g, ' ').replace('user provided', '')}:</span> {value}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-          
-          <div className="space-y-3">
-            <div className="flex items-center space-x-3">
-              <p className="text-sm font-semibold text-gray-600">Score:</p>
-              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-indigo-100 text-indigo-600 font-bold text-sm">
-                {parameter.score}
-              </div>
-            </div>
-            
-            <div>
-              <p className="text-sm font-semibold text-gray-600">Inference:</p>
-              <p className="text-sm text-gray-700 mt-1">{parameter.inference}</p>
-            </div>
-            
-            {parameter.recommendations && parameter.recommendations.length > 0 && (
-              <div>
-                <p className="text-sm font-semibold text-gray-600">AI's Suggestions:</p>
-                <ul className="list-disc list-inside space-y-1 text-sm text-gray-700 mt-1">
-                  {parameter.recommendations.map((rec, i) => (
-                    <li key={i}>{rec}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            
-            {/* New Sources Used Section */}
-            {parameter.sourcesUsed && parameter.sourcesUsed.length > 0 && (
-              <div className="mt-4">
-                <p className="text-sm font-semibold text-gray-600">Sources Used:</p>
-                <ul className="list-disc list-inside space-y-1 text-sm text-gray-700 mt-1">
-                  {parameter.sourcesUsed.map((source, i) => (
-                    <li key={i}>
-                      {source.url ? (
-                        <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                          {source.text}
-                        </a>
-                      ) : (
-                        source.text
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        </div>
-      );
-    }
-  };
-
-  const CompetitiveAnalysisTable = ({ competitors }) => (
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead>
-          <tr className="bg-gray-50">
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Competitor</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Key Features</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price Range</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Strengths</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Weaknesses</th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {competitors.map((comp, index) => (
-            <tr key={index}>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{comp.name}</td>
-              <td className="px-6 py-4 text-sm text-gray-500">{comp.features}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{comp.price_range}</td>
-              <td className="px-6 py-4 text-sm text-green-600">{comp.strengths}</td>
-              <td className="px-6 py-4 text-sm text-red-600">{comp.weaknesses}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-
-  const ActionPlanCategory = ({ title, items }) => (
-    <div className="bg-gray-50 p-4 rounded-lg shadow-inner">
-      <h4 className="text-lg font-semibold text-gray-700 mb-2">{title}</h4>
-      <ul className="list-disc list-inside space-y-2 text-gray-600">
-        {items.map((item, index) => (
-          <li key={index}>{item}</li>
-        ))}
-      </ul>
-    </div>
-  );
-  
-  return (
-    <div className="min-h-screen bg-gray-50 font-sans text-gray-900 p-8 md:p-12">
-      <div className="max-w-7xl mx-auto space-y-12">
-
-        {/* Header */}
-        <div className="text-center">
-          <motion.h1 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-            className="text-4xl md:text-5xl font-extrabold text-blue-900"
-          >
-            Idea Validation Report
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            className="mt-2 text-xl text-gray-600"
-          >
-            {reportData.ideaName}
-          </motion.p>
-        </div>
-
-        {/* 1. Input & AI Understanding */}
-        <Section title="1. Input & AI Understanding" icon={Lightbulb}>
-            <div className="p-4 bg-blue-50 rounded-lg">
-                <p className="font-semibold text-blue-800 mb-2">User's Idea:</p>
-                <p className="text-gray-700 mb-4 whitespace-pre-wrap">"{reportData.input.user_idea}"</p>
-                <p className="font-semibold text-blue-800 mb-2">AI's Understanding:</p>
-                <p className="text-gray-700 whitespace-pre-wrap">{reportData.input.ai_understanding}</p>
-            </div>
-        </Section>
-        
-        {/* 2. Executive Summary */}
-        <Section title="2. Executive Summary" icon={AlignJustify}>
-          <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-8">
-            <div className="w-full md:w-1/3 text-center p-6 bg-blue-50 rounded-xl">
-              <p className="text-6xl font-extrabold text-blue-600">{reportData.overallScore}</p>
-              <p className="mt-2 text-lg font-semibold text-blue-800">Overall Score</p>
-            </div>
-            <div className="w-full md:w-2/3">
-              <p className="text-lg font-semibold text-gray-800 mb-2">Outcome:</p>
-              <p className="text-base leading-relaxed text-gray-600">{reportData.executiveSummary.outcome}</p>
-              <p className="mt-4 text-sm leading-relaxed text-gray-700 whitespace-pre-wrap">{reportData.executiveSummary.summary}</p>
-            </div>
-          </div>
-        </Section>
-        
-        {/* 3. Key Strengths & Weaknesses */}
-        <Section title="3. Key Strengths & Weaknesses" icon={Award}>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="flex items-center text-xl font-bold mb-4 text-green-700"><Check className="mr-2" /> Key Strengths</h3>
-              <div className="space-y-6">
-                {reportData.keyStrengthsWeaknesses.strengths.map((s, i) => (
-                  <div key={i} className="p-4 rounded-lg bg-green-50 shadow-sm">
-                    <p className="font-semibold text-green-800">{s.title}</p>
-                    <p className="text-sm text-green-700 mt-1">{s.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h3 className="flex items-center text-xl font-bold mb-4 text-red-700"><X className="mr-2" /> Key Weaknesses</h3>
-              <div className="space-y-6">
-                {reportData.keyStrengthsWeaknesses.weaknesses.map((w, i) => (
-                  <div key={i} className="p-4 rounded-lg bg-red-50 shadow-sm">
-                    <p className="font-semibold text-red-800">{w.title}</p>
-                    <p className="text-sm text-red-700 mt-1">{w.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Section>
-
-        {/* 4. Critical Risks & Mitigation Strategies */}
-        <Section title="4. Critical Risks & Mitigation Strategies" icon={Shield}>
-          <div className="space-y-6">
-            {reportData.criticalRisksAndMitigation.map((item, index) => (
-              <div key={index} className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                <p className="font-bold text-red-700 text-lg mb-2">Risk: {item.risk}</p>
-                <p className="text-gray-700 mb-2">Description: {item.description}</p>
-                <p className="text-gray-700 mb-2"><span className="font-semibold">Impact:</span> {item.impact}</p>
-                <p className="text-gray-700"><span className="font-semibold">Mitigation:</span> {item.mitigation}</p>
-              </div>
-            ))}
-          </div>
-        </Section>
-        
-        {/* 5. Competitive Analysis */}
-        <Section title="5. Competitive Analysis" icon={Handshake}>
-          <div className="p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg mb-6">
-            <h5 className="font-semibold text-yellow-800 mb-2">User Provided Competitors:</h5>
-            <p className="text-gray-700 whitespace-pre-wrap">{reportData.competitiveAnalysis.user_provided_competitors}</p>
-          </div>
-          <p className="text-sm font-semibold text-gray-600 mb-2">AI's Inference:</p>
-          <p className="text-gray-700 mb-4">{reportData.competitiveAnalysis.ai_inference}</p>
-          <CompetitiveAnalysisTable competitors={reportData.competitiveAnalysis.competitors} />
-          {reportData.competitiveAnalysis.recommendations.length > 0 && (
-            <div className="mt-4">
-              <p className="font-semibold text-gray-700">AI Recommendations:</p>
-              <ul className="list-disc list-inside text-gray-600">
-                {reportData.competitiveAnalysis.recommendations.map((rec, i) => <li key={i}>{rec}</li>)}
-              </ul>
-            </div>
-          )}
-        </Section>
-
-        {/* 6. Detailed Pricing & Financials */}
-        <Section title="6. Detailed Pricing & Financials" icon={DollarSign}>
-          <div className="p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg mb-6">
-            <h5 className="font-semibold text-yellow-800 mb-2">User Provided Financials:</h5>
-            <ul className="list-disc list-inside space-y-1 text-sm text-yellow-700">
-              <li><span className="font-medium">Pricing Model:</span> {reportData.detailedPricingAndFinancials.user_provided_pricing_model}</li>
-              <li><span className="font-medium">Estimated Price:</span> {reportData.detailedPricingAndFinancials.user_provided_estimated_price}</li>
-            </ul>
-          </div>
-          <p className="text-sm font-semibold text-gray-600 mb-2">AI's Analysis:</p>
-          <p className="text-gray-700 mb-4">{reportData.detailedPricingAndFinancials.ai_pricing_inference}</p>
-          <div className="grid md:grid-cols-2 gap-4 text-gray-700 mb-6">
-            <div>
-              <p><span className="font-semibold">Recommended Pricing Model:</span> {reportData.detailedPricingAndFinancials.recommended_pricing_model}</p>
-              <p><span className="font-semibold">Estimated Premium Price:</span> ₹{reportData.detailedPricingAndFinancials.estimated_premium_price}</p>
-              <p><span className="font-semibold">Estimated COGS/User:</span> ₹{reportData.detailedPricingAndFinancials.estimated_cogs_per_user}</p>
-            </div>
-            <div>
-              <p className="font-semibold">Cost Breakdown:</p>
-              <ul className="list-disc list-inside">
-                {reportData.detailedPricingAndFinancials.cost_breakdown.map((item, i) => (
-                  <li key={i}>{item.item}: ₹{item.cost}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <p className="font-semibold text-gray-700">AI's Suggestions:</p>
-          <ul className="list-disc list-inside text-gray-600">
-            {reportData.detailedPricingAndFinancials.suggestions.map((s, i) => <li key={i}>{s}</li>)}
-          </ul>
-        </Section>
-        
-        {/* 7. Prioritized Next Steps / Action Plan */}
-        <Section title="7. Prioritized Next Steps / Action Plan" icon={Rocket}>
-          <div className="space-y-6">
-            <ActionPlanCategory title="Urgent (Next 1-3 Months)" items={reportData.actionPlan.urgent} />
-            <ActionPlanCategory title="High Priority (Next 3-6 Months)" items={reportData.actionPlan.highPriority} />
-            <ActionPlanCategory title="Mid Priority (Next 6-12 Months)" items={reportData.actionPlan.midPriority} />
-          </div>
-        </Section>
-
-        {/* 8. Detailed Idea Validation & Scoring */}
-        <Section title="8. Detailed Idea Validation & Scoring" icon={Search}>
-          <div className="space-y-10">
-            {reportData.detailedIdeaValidationAndScoring.map((param, index) => (
-              <DetailedScoringBlock key={index} parameter={param} />
-            ))}
-          </div>
-        </Section>
-        
-        {/* 9. AI Research Agent Findings */}
-        <Section title="9. AI Research Agent Findings" icon={Zap}>
-          <p className="text-gray-700 mb-4">{reportData.aiResearchAgentFindings.summary}</p>
-          <ul className="list-disc list-inside space-y-2 text-gray-700">
-            {reportData.aiResearchAgentFindings.findings.map((item, index) => (
-              <li key={index}>{item.finding}</li>
-            ))}
-          </ul>
-        </Section>
-        
-        {/* 10. IP & Research Paper Analysis */}
-        <Section title="10. IP & Research Paper Analysis" icon={Layers}>
-          <p className="text-gray-700 mb-4">{reportData.ipAndResearchPaperAnalysis.summary}</p>
-          <p className="font-semibold text-gray-700">Relevant Research Papers:</p>
-          <ul className="list-disc list-inside space-y-2 text-gray-700">
-            {reportData.ipAndResearchPaperAnalysis.papers.map((paper, index) => (
-              <li key={index}>
-                <a href={paper.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                  {paper.title}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </Section>
-
-        {/* 11. Consolidated Sources of Information */}
-        <Section title="11. Consolidated Sources of Information" icon={Globe}>
-          <ul className="list-disc list-inside space-y-2 text-gray-700">
-            {reportData.sources.map((source, index) => (
-              <li key={index}>
-                {source.url ? (
-                  <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                    {source.text}
-                  </a>
-                ) : (
-                  <p>{source.text}</p>
-                )}
-              </li>
-            ))}
-          </ul>
-        </Section>
-
-        {/* 12. Professional Disclaimer Section */}
-        <Section title="12. Professional Disclaimer" icon={Info}>
-          <p className="text-sm leading-relaxed text-gray-600 whitespace-pre-wrap">{reportData.disclaimer}</p>
-        </Section>
-      </div>
-    </div>
-  );
-};
-
-export default App;
+export const MOCK_IDEAS: any[] = [
+  {
+    id: 'IDEA-001',
+    validationId: 'VALID-001-001',
+    title: 'AI-Powered Crop Disease Detection',
+    description: 'A mobile app that uses AI to detect crop diseases from images.',
+    collegeId: 'COL001',
+    collegeName: 'Pragati Institute of Technology',
+    domain: 'Agriculture',
+    innovatorId: 'INV001',
+    innovatorName: 'Jane Doe',
+    innovatorEmail: 'jane.doe@example.com',
+    status: 'Exemplary',
+    dateSubmitted: '2024-07-20',
+    version: 'V1.0',
+    report: MOCK_SAMPLE_REPORT,
+    clusterWeights: { "Core Idea & Innovation": 20, "Market & Commercial Opportunity": 25, "Execution & Operations": 15, "Business Model & Strategy": 15, "Team & Organizational Health": 10, "External Environment & Compliance": 10, "Risk & Future Outlook": 5 },
+    feedback: null,
+    consultationStatus: 'Scheduled',
+    consultationDate: '2024-08-15',
+    consultationTime: '11:00 AM',
+    ttcAssigned: 'TTC001',
+  },
+  {
+    id: 'IDEA-002',
+    validationId: 'VALID-002-001',
+    title: 'Blockchain-Based Voting System',
+    description: 'A secure and transparent voting system using blockchain technology.',
+    collegeId: 'COL001',
+    collegeName: 'Pragati Institute of Technology',
+    domain: 'FinTech',
+    innovatorId: 'INV002',
+    innovatorName: 'John Smith',
+    innovatorEmail: 'john.smith@example.com',
+    status: 'Developing',
+    dateSubmitted: '2024-07-18',
+    version: 'V1.0',
+    report: { ...MOCK_SAMPLE_REPORT, ideaName: 'Blockchain-Based Voting System', overallScore: 7.2, outcome: 'Developing' },
+    clusterWeights: { "Core Idea & Innovation": 25, "Market & Commercial Opportunity": 15, "Execution & Operations": 25, "Business Model & Strategy": 10, "Team & Organizational Health": 10, "External Environment & Compliance": 10, "Risk & Future Outlook": 5 },
+    feedback: null,
+    consultationStatus: 'Pending',
+    consultationDate: '2024-08-20',
+    consultationTime: '02:00 PM',
+    ttcAssigned: 'TTC002',
+  },
+  {
+    id: 'IDEA-003',
+    validationId: 'VALID-003-001',
+    title: 'Gamified Language Learning App',
+    description: 'An app that makes learning new languages fun through gamification.',
+    collegeId: 'COL002',
+    collegeName: 'Vanguard College of Engineering',
+    domain: 'EdTech',
+    innovatorId: 'INV003',
+    innovatorName: 'Alisha Khan',
+    innovatorEmail: 'alisha.khan@example.com',
+    status: 'Needs Refinement',
+    dateSubmitted: '2024-07-15',
+    version: 'V1.0',
+    report: { ...MOCK_SAMPLE_REPORT, ideaName: 'Gamified Language Learning App', overallScore: 4.5, outcome: 'Needs Refinement' },
+    clusterWeights: { "Core Idea & Innovation": 30, "Market & Commercial Opportunity": 20, "Execution & Operations": 20, "Business Model & Strategy": 10, "Team & Organizational Health": 10, "External Environment & Compliance": 5, "Risk & Future Outlook": 5 },
+    feedback: null,
+    consultationStatus: 'Not Requested',
+    consultationDate: null,
+    consultationTime: null,
+    ttcAssigned: 'TTC003',
+  },
+   {
+    id: 'IDEA-004',
+    validationId: 'VALID-004-001',
+    title: 'AR Furniture Placement App',
+    description: 'An augmented reality app to visualize furniture in your home before buying.',
+    collegeId: 'COL001',
+    collegeName: 'Pragati Institute of Technology',
+    domain: 'Smart Cities',
+    innovatorId: 'INV001',
+    innovatorName: 'Jane Doe',
+    innovatorEmail: 'jane.doe@example.com',
+    status: 'Developing',
+    dateSubmitted: '2024-06-10',
+    version: 'V1.0',
+    report: { ...MOCK_SAMPLE_REPORT, ideaName: 'AR Furniture Placement App', overallScore: 6.8, outcome: 'Developing' },
+    clusterWeights: { "Core Idea & Innovation": 20, "Market & Commercial Opportunity": 30, "Execution & Operations": 20, "Business Model & Strategy": 15, "Team & Organizational Health": 5, "External Environment & Compliance": 5, "Risk & Future Outlook": 5 },
+    feedback: null,
+    consultationStatus: 'Completed',
+    consultationDate: '2024-06-25',
+    consultationTime: '03:00 PM',
+    ttcAssigned: 'TTC001',
+  },
+];
