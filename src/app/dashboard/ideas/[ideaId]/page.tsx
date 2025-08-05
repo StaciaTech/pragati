@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useRef } from 'react';
@@ -7,7 +6,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { MOCK_IDEAS } from '@/lib/mock-data';
 import { 
-  Check, X, Shield, Users, Clock, Leaf, DollarSign, Target, Briefcase, TrendingUp, Search, Info, Loader2, Download, ArrowLeft,
+  Check, X, Shield, Users, Clock, DollarSign, Target, Briefcase, TrendingUp, Search, Info, Loader2, Download, ArrowLeft,
   FileText, Lightbulb, TrendingDown, Layers, Rocket, Factory, AlignJustify, Handshake, Sun, Globe, Zap, Award, Star, Activity, HardHat, GitFork, Link2, Sprout, Building, PieChart
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -30,15 +29,16 @@ const Section = ({ title, icon, children }: { title: string, icon: React.ReactNo
       <div className="border-b-2 border-gray-100 mb-4"></div>
       {children}
     </motion.div>
-  );
+);
 
 const DetailedScoringBlock = ({ parameter }: { parameter: any }) => {
+    // Check if the current parameter has sub_parameters (nested structure)
     if (parameter.sub_parameters && parameter.sub_parameters.length > 0) {
       return (
         <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 shadow-sm mb-6">
           <h4 className="flex items-center text-lg font-bold text-gray-800 mb-4">
-            {parameter.icon}
-            <span className="ml-2">{parameter.parameter_name}</span>
+            {parameter.icon && <span className="mr-2">{parameter.icon}</span>}
+            {parameter.parameter_name}
           </h4>
           <div className="pl-4 border-l border-gray-300 space-y-4">
             {parameter.sub_parameters.map((subParam: any, index: number) => (
@@ -49,6 +49,7 @@ const DetailedScoringBlock = ({ parameter }: { parameter: any }) => {
       );
     }
   
+    // This is the final leaf node with a score and analysis
     const userInput = parameter.user_input;
     const isNotGiven = userInput && userInput.user_input === "not given";
     
@@ -62,9 +63,9 @@ const DetailedScoringBlock = ({ parameter }: { parameter: any }) => {
             <p className="text-sm text-yellow-700">Not given</p>
           ) : (
             <ul className="list-disc list-inside space-y-1 text-sm text-yellow-700">
-              {userInput && Object.entries(userInput).map(([key, value], i) => (
+              {userInput && Object.entries(userInput).map(([key, value]: [string, any], i: number) => (
                 <li key={i}>
-                  <span className="font-medium">{key.replace(/_/g, ' ').replace('user provided', '')}:</span> {value as string}
+                  <span className="font-medium">{key.replace(/_/g, ' ').replace('user provided', '')}:</span> {value}
                 </li>
               ))}
             </ul>
@@ -120,28 +121,28 @@ const DetailedScoringBlock = ({ parameter }: { parameter: any }) => {
 
 const CompetitiveAnalysisTable = ({ competitors }: { competitors: any[] }) => (
     <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
+      <table className="min-w-full divide-y divide-gray-200">
         <thead>
-            <tr className="bg-gray-50">
+          <tr className="bg-gray-50">
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Competitor</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Key Features</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price Range</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Strengths</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Weaknesses</th>
-            </tr>
+          </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-            {competitors.map((comp, index) => (
+          {competitors.map((comp, index) => (
             <tr key={index}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{comp.name}</td>
-                <td className="px-6 py-4 text-sm text-gray-500">{comp.features}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{comp.price_range}</td>
-                <td className="px-6 py-4 text-sm text-green-600">{comp.strengths}</td>
-                <td className="px-6 py-4 text-sm text-red-600">{comp.weaknesses}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{comp.name}</td>
+              <td className="px-6 py-4 text-sm text-gray-500">{comp.features}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{comp.price_range}</td>
+              <td className="px-6 py-4 text-sm text-green-600">{comp.strengths}</td>
+              <td className="px-6 py-4 text-sm text-red-600">{comp.weaknesses}</td>
             </tr>
-            ))}
+          ))}
         </tbody>
-        </table>
+      </table>
     </div>
 );
 
@@ -224,12 +225,12 @@ const ReportPage = ({ idea }: { idea: (typeof MOCK_IDEAS)[0] }) => {
         });
         console.error(err);
     });
-};
+  };
 
 
   return (
     <div className="p-4 md:p-8 bg-gray-50 min-h-screen font-sans antialiased text-gray-900">
-      <div className="max-w-7xl mx-auto space-y-4">
+      <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex justify-between items-center mb-4">
             <Button variant="outline" onClick={() => router.back()}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -240,7 +241,7 @@ const ReportPage = ({ idea }: { idea: (typeof MOCK_IDEAS)[0] }) => {
                 Export as PDF
             </Button>
         </div>
-        <div ref={reportRef} className="bg-gray-50 p-4 md:p-8 space-y-8">
+        <div ref={reportRef} className="bg-gray-50 p-4 md:p-8 space-y-12">
             <motion.header
                 className="text-center py-8 bg-white rounded-xl shadow-md border border-gray-200"
                 initial={{ opacity: 0, y: -20 }}
@@ -345,7 +346,7 @@ const ReportPage = ({ idea }: { idea: (typeof MOCK_IDEAS)[0] }) => {
             </Section>
             
             <Section title="6. Detailed Pricing & Financials" icon={<DollarSign className="text-green-500" />}>
-                 <div className="p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg mb-6">
+                <div className="p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg mb-6">
                     <h5 className="font-semibold text-yellow-800 mb-2">User Provided Financials:</h5>
                     <ul className="list-disc list-inside space-y-1 text-sm text-yellow-700">
                     <li><span className="font-medium">Pricing Model:</span> {report.detailedPricingAndFinancials.user_provided_pricing_model}</li>
@@ -357,14 +358,14 @@ const ReportPage = ({ idea }: { idea: (typeof MOCK_IDEAS)[0] }) => {
                 <div className="grid md:grid-cols-2 gap-4 text-gray-700 mb-6">
                     <div>
                     <p><span className="font-semibold">Recommended Pricing Model:</span> {report.detailedPricingAndFinancials.recommended_pricing_model}</p>
-                    <p><span className="font-semibold">Estimated Premium Price:</span> ₹{report.detailedPricingAndFinancials.estimated_premium_price}</p>
-                    <p><span className="font-semibold">Estimated COGS/User:</span> ₹{report.detailedPricingAndFinancials.estimated_cogs_per_user}</p>
+                    <p><span className="font-semibold">Estimated Premium Price:</span> ₹{report.detailedPricingAndFinancials.estimated_premium_price.toFixed(2)}</p>
+                    <p><span className="font-semibold">Estimated COGS/User:</span> ₹{report.detailedPricingAndFinancials.estimated_cogs_per_user.toFixed(2)}</p>
                     </div>
                     <div>
                     <p className="font-semibold">Cost Breakdown:</p>
                     <ul className="list-disc list-inside">
                         {report.detailedPricingAndFinancials.cost_breakdown.map((item, i) => (
-                        <li key={i}>{item.item}: ₹{item.cost}</li>
+                        <li key={i}>{item.item}: ₹{item.cost.toFixed(2)}</li>
                         ))}
                     </ul>
                     </div>
