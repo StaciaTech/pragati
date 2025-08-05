@@ -462,128 +462,91 @@ export const MOCK_NOTIFICATIONS = {
 };
 
 export const MOCK_SAMPLE_REPORT: any = {
-  ideaName: "Economical AI Project Management Tool",
-  preparedFor: "Innovator Name",
-  date: "August 4, 2025",
-  overallScore: 8.7,
-  input: {
-    user_idea: "Ai project management tools for startup at economical cost with AI feature.",
-    ai_understanding: "The user's core idea is to develop a B2B SaaS platform specifically for startups. The key value propositions are its affordable price point ('economical') and the integration of artificial intelligence features to differentiate it from existing solutions."
-  },
-  executiveSummary: {
-    outcome: "High Potential. The idea has a strong, defensible niche in a large and growing market. Success hinges on a robust execution strategy, particularly in a highly competitive landscape.",
-    summary: "The 'Economical AI Project Management Tool' addresses a critical gap in the market for startups and small businesses. By leveraging AI for automation and insights at an accessible price point, it creates a differentiated offering that moves beyond basic task management. The overall viability score of 8.7/10 indicates high potential. Key opportunities lie in a massive, underserved target market, while the primary challenges involve competing with established players and maintaining profitability with a low-cost model. A key risk is the operational cost of providing powerful AI features at a low price. The path to success requires a clear focus on a stellar user experience and a highly scalable, automated operational model."
-  },
-  keyStrengthsWeaknesses: {
-    strengths: [
-      { title: "Strong Value Proposition", description: "The combination of affordability and AI features fills a clear market gap." },
-      { title: "Scalable SaaS Model", description: "The business model allows for rapid growth with controlled costs." },
-      { title: "Target Market Growth", description: "The global and Indian startup ecosystems are expanding rapidly, providing a large customer base." }
-    ],
-    weaknesses: [
-      { title: "High Competition", description: "The market is crowded with well-funded and established players like Jira and Asana." },
-      { title: "Operational Costs", description: "Maintaining powerful AI features at a low price point poses a significant challenge to profitability." },
-      { title: "Brand Recognition", description: "As a new entrant, building trust and brand loyalty will be a key hurdle." }
-    ]
-  },
-  criticalRisksAndMitigation: [
-    {
-      risk: "Intense Competition",
-      description: "The project management software market is mature and saturated with well-established players.",
-      impact: "Medium to High",
-      mitigation: "Focus on a niche (e.g., startups), differentiate with a unique 'economical + AI' value proposition, and build a strong community to create brand loyalty."
+    ideaName: "Economical AI Project Management Tool",
+    preparedFor: "Innovator Name",
+    date: "August 4, 2025",
+    overallScore: 8.7,
+    input: {
+      user_idea: "Ai project management tools for startup at economical cost with AI feature.",
+      ai_understanding: "The user's core idea is to develop a B2B SaaS platform specifically for startups. The key value propositions are its affordable price point ('economical') and the integration of artificial intelligence features to differentiate it from existing solutions."
     },
-    {
-      risk: "Operational Costs of AI",
-      description: "Providing powerful AI features at a low price point can lead to high operational costs (e.g., GPU usage, API licenses) that erode profitability.",
-      impact: "High",
-      mitigation: "Optimize AI models for efficiency, use cost-effective cloud solutions, and carefully manage usage-based costs. Consider a tiered AI feature model where advanced features are exclusive to higher-priced plans."
+    executiveSummary: {
+      outcome: "High Potential. The idea has a strong, defensible niche in a large and growing market. Success hinges on a robust execution strategy, particularly in a highly competitive landscape.",
+      summary: "The 'Economical AI Project Management Tool' addresses a critical gap in the market for startups and small businesses. By leveraging AI for automation and insights at an accessible price point, it creates a differentiated offering that moves beyond basic task management. The overall viability score of 8.7/10 indicates high potential. Key opportunities lie in a massive, underserved target market, while the primary challenges involve competing with established players and maintaining profitability with a low-cost model. A key risk is the operational cost of providing powerful AI features at a low price. The path to success requires a clear focus on a stellar user experience and a highly scalable, automated operational model."
     },
-    {
-      risk: "User Experience Debt",
-      description: "The pressure to ship quickly to compete can lead to a subpar user experience and technical debt.",
-      impact: "Medium",
-      mitigation: "Adopt an MVP-first strategy with a clear focus on core, high-value features. Implement continuous user feedback loops and allocate dedicated time for refactoring and bug fixes in every sprint."
-    }
-  ],
-  competitiveAnalysis: {
-    user_provided_competitors: "Jira, Asana, Trello.",
-    ai_inference: "The user's identified competitors (Jira, Asana, Trello) are accurate and represent the primary threats. The AI's analysis confirms that the user's proposed 'economical and AI-driven' USP is a valid strategy to compete against these established players.",
-    competitors: [
+    keyStrengthsWeaknesses: {
+      strengths: [
+        { title: "Strong Value Proposition", description: "The combination of affordability and AI features fills a clear market gap." },
+        { title: "Scalable SaaS Model", description: "The business model allows for rapid growth with controlled costs." },
+        { title: "Target Market Growth", description: "The global and Indian startup ecosystems are expanding rapidly, providing a large customer base." }
+      ],
+      weaknesses: [
+        { title: "High Competition", description: "The market is crowded with well-funded and established players like Jira and Asana." },
+        { title: "Operational Costs", description: "Maintaining powerful AI features at a low price point poses a significant challenge to profitability." },
+        { title: "Brand Recognition", description: "As a new entrant, building trust and brand loyalty will be a key hurdle." }
+      ]
+    },
+    criticalRisksAndMitigation: [
       {
-        name: "Jira",
-        features: "Task tracking, agile project management, workflow automation.",
-        price_range: "Starts free, then ~$700/user/month.",
-        strengths: "Market leader for software development teams, highly customizable, strong integrations.",
-        weaknesses: "Can be complex and expensive for startups, steep learning curve."
+        risk: "Intense Competition",
+        description: "The project management software market is mature and saturated with well-established players.",
+        impact: "Medium to High",
+        mitigation: "Focus on a niche (e.g., startups), differentiate with a unique 'economical + AI' value proposition, and build a strong community to create brand loyalty."
       },
       {
-        name: "Asana",
-        features: "Project tracking, goal setting, visual timelines, workflow builder.",
-        price_range: "Starts free, then ~$900/user/month.",
-        strengths: "Excellent user interface, flexible for various team types, strong collaboration features.",
-        weaknesses: "Expensive premium tiers, lacks deep AI automation compared to future-proof tools."
+        risk: "Operational Costs of AI",
+        description: "Providing powerful AI features at a low price point can lead to high operational costs (e.g., GPU usage, API licenses) that erode profitability.",
+        impact: "High",
+        mitigation: "Optimize AI models for efficiency, use cost-effective cloud solutions, and carefully manage usage-based costs. Consider a tiered AI feature model where advanced features are exclusive to higher-priced plans."
       },
       {
-        name: "Trello",
-        features: "Kanban boards, checklists, integrations.",
-        price_range: "Starts free, then ~$450/user/month.",
-        strengths: "Intuitive and simple to use, great for visual thinkers and small projects.",
-        weaknesses: "Lacks advanced features for scaling teams, not AI-focused."
+        risk: "User Experience Debt",
+        description: "The pressure to ship quickly to compete can lead to a subpar user experience and technical debt.",
+        impact: "Medium",
+        mitigation: "Adopt an MVP-first strategy with a clear focus on core, high-value features. Implement continuous user feedback loops and allocate dedicated time for refactoring and bug fixes in every sprint."
       }
     ],
-    recommendations: [
-      "Beyond just price, clearly articulate how the AI features provide a superior experience compared to the competitors.",
-      "Build a comparison table on the website to highlight the value proposition against competitors."
-    ]
-  },
-  detailedPricingAndFinancials: {
-    user_provided_pricing_model: "Freemium with a tiered subscription model.",
-    user_provided_estimated_price: "₹500 per user/month for the premium tier.",
-    ai_pricing_inference: "The user's suggested freemium model with a tiered subscription is a viable strategy. Our analysis confirms a price point around ₹700/month is competitive and allows for a healthy gross margin. The user's provided price of ₹500 is a good starting point but may need to be slightly adjusted to ensure profitability.",
-    recommended_pricing_model: "Freemium with a Tiered Subscription for premium features.",
-    estimated_premium_price: 699.00,
-    estimated_cogs_per_user: 275,
-    cost_breakdown: [
-      { item: "AI Compute & GPU usage", cost: 150 },
-      { item: "Cloud Hosting & Storage", cost: 75 },
-      { item: "Third-party APIs & Licenses", cost: 50 },
-    ],
-    suggestions: [
-      "Test different pricing models early to find the optimal balance between user acquisition and revenue generation.",
-      "Carefully analyze customer acquisition cost (CAC) and lifetime value (LTV) to ensure the business model is profitable at scale."
-    ]
-  },
-  actionPlan: {
-    urgent: [
-      "Conduct a detailed market segmentation study to pinpoint the most lucrative sub-niche of startups.",
-      "Develop a minimum viable product (MVP) with a core set of AI features for a closed beta with 10-20 startups.",
-      "Define key performance indicators (KPIs) and a clear go-to-market strategy for the initial launch."
-    ],
-    highPriority: [
-      "Finalize the pricing tiers and model based on beta test feedback and competitor analysis.",
-      "Begin building a brand identity and content marketing strategy targeting the startup community.",
-      "Explore partnerships with startup incubators and accelerators to gain early access to customers."
-    ],
-    midPriority: [
-      "Scale the marketing and sales efforts to reach a broader audience.",
-      "Develop a robust customer support and feedback loop system.",
-      "Begin planning for international expansion based on early traction."
-    ]
-  },
-  detailedIdeaValidationAndScoring: [],
-  swotAnalysis: {
-    strengths: [],
-    weaknesses: [],
-    opportunities: [],
-    threats: []
-  },
-  ipAndResearchPaperAnalysis: {
-    ip_summary: "",
-    papers: []
-  },
-  sources: [],
-  disclaimer: ""
+    competitiveAnalysis: {
+      user_provided_competitors: "Jira, Asana, Trello.",
+      ai_inference: "The user's identified competitors (Jira, Asana, Trello) are accurate and represent the primary threats. The AI's analysis confirms that the user's proposed 'economical and AI-driven' USP is a valid strategy to compete against these established players.",
+      competitors: [
+        { name: "Jira", features: "Task tracking, agile project management, workflow automation.", price_range: "Starts free, then ~$700/user/month.", strengths: "Market leader for software development teams, highly customizable, strong integrations.", weaknesses: "Can be complex and expensive for startups, steep learning curve." },
+        { name: "Asana", features: "Project tracking, goal setting, visual timelines, workflow builder.", price_range: "Starts free, then ~$900/user/month.", strengths: "Excellent user interface, flexible for various team types, strong collaboration features.", weaknesses: "Expensive premium tiers, lacks deep AI automation compared to future-proof tools." },
+        { name: "Trello", features: "Kanban boards, checklists, integrations.", price_range: "Starts free, then ~$450/user/month.", strengths: "Intuitive and simple to use, great for visual thinkers and small projects.", weaknesses: "Lacks advanced features for scaling teams, not AI-focused." }
+      ],
+      recommendations: [
+        "Beyond just price, clearly articulate how the AI features provide a superior experience compared to the competitors.",
+        "Build a comparison table on the website to highlight the value proposition against competitors."
+      ]
+    },
+    detailedPricingAndFinancials: {
+      user_provided_pricing_model: "Freemium with a tiered subscription model.",
+      user_provided_estimated_price: "₹500 per user/month for the premium tier.",
+      ai_pricing_inference: "The user's suggested freemium model with a tiered subscription is a viable strategy. Our analysis confirms a price point around ₹700/month is competitive and allows for a healthy gross margin. The user's provided price of ₹500 is a good starting point but may need to be slightly adjusted to ensure profitability.",
+      recommended_pricing_model: "Freemium with a Tiered Subscription for premium features.",
+      estimated_premium_price: 699.00,
+      estimated_cogs_per_user: 275,
+      cost_breakdown: [
+        { item: "AI Compute & GPU usage", cost: 150 },
+        { item: "Cloud Hosting & Storage", cost: 75 },
+        { item: "Third-party APIs & Licenses", cost: 50 },
+      ],
+      suggestions: [
+        "Test different pricing models early to find the optimal balance between user acquisition and revenue generation.",
+        "Carefully analyze customer acquisition cost (CAC) and lifetime value (LTV) to ensure the business model is profitable at scale."
+      ]
+    },
+    actionPlan: {
+      urgent: ["Conduct a detailed market segmentation study to pinpoint the most lucrative sub-niche of startups.","Develop a minimum viable product (MVP) with a core set of AI features for a closed beta with 10-20 startups.","Define key performance indicators (KPIs) and a clear go-to-market strategy for the initial launch."],
+      highPriority: ["Finalize the pricing tiers and model based on beta test feedback and competitor analysis.","Begin building a brand identity and content marketing strategy targeting the startup community.","Explore partnerships with startup incubators and accelerators to gain early access to customers."],
+      midPriority: ["Scale the marketing and sales efforts to reach a broader audience.","Develop a robust customer support and feedback loop system.","Begin planning for international expansion based on early traction."]
+    },
+    detailedIdeaValidationAndScoring: [],
+    swotAnalysis: { strengths: [], weaknesses: [], opportunities: [], threats: [] },
+    aiResearchAgentFindings: { summary: "", findings: [] },
+    ipAndResearchPaperAnalysis: { summary: "", papers: [] },
+    sources: [],
+    disclaimer: `This report is an automated assessment and does not constitute professional business, legal, or financial advice. The analysis is based on information available at the time of generation and is intended for informational and illustrative purposes only. All scores and recommendations are indicative and should be independently validated.`,
 };
 
 export const MOCK_IDEAS = [
