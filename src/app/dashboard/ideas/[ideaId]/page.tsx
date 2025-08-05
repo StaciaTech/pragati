@@ -271,7 +271,7 @@ const ReportPage = ({ idea }: { idea: (typeof MOCK_IDEAS)[0] }) => {
             {/* 4. Critical Risks & Mitigation Strategies */}
             <Section title="4. Critical Risks & Mitigation Strategies" icon={<Shield className="text-red-500" />}>
             <div className="space-y-4">
-                {report.criticalRisksAndMitigation.map((risk, index) => (
+                {report.criticalRisksAndMitigation.risks.map((risk, index) => (
                 <div key={index} className="p-4 bg-gray-100 rounded-lg">
                     <p className="font-bold text-lg text-gray-800 mb-1">{risk.risk}</p>
                     <p className="text-gray-600 text-sm mb-2">{risk.description}</p>
