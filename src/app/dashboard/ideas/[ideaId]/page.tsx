@@ -44,7 +44,7 @@ const DetailedScoringBlock = ({ parameter }: { parameter: any }) => {
       return (
         <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 shadow-sm mb-6">
           <h4 className="flex items-center text-lg font-bold text-gray-800 mb-4">
-            {parameter.icon && <span className="mr-2">{getIcon(parameter.icon)}</span>}
+            {parameter.icon && <span className="mr-2">{parameter.icon}</span>}
             {parameter.parameter_name}
           </h4>
           <div className="pl-4 border-l border-gray-300 space-y-4">
@@ -63,20 +63,22 @@ const DetailedScoringBlock = ({ parameter }: { parameter: any }) => {
         <div className="p-4 bg-white rounded-lg border border-gray-200">
           <h5 className="text-md font-bold text-gray-800 mb-2">{parameter.parameter_name}</h5>
           
-          <div className="mb-3 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg">
-            <h6 className="font-semibold text-yellow-800 mb-1">User Provided Data:</h6>
-            {isNotGiven ? (
-              <p className="text-sm text-yellow-700">Not given</p>
-            ) : (
-              <ul className="list-disc list-inside space-y-1 text-sm text-yellow-700">
-                {userInput && Object.entries(userInput).map(([key, value]: [string, any], i: number) => (
-                  <li key={i}>
-                    <span className="font-medium">{key.replace(/_/g, ' ').replace('user provided', '')}:</span> {value}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          {userInput && (
+            <div className="mb-3 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg">
+                <h6 className="font-semibold text-yellow-800 mb-1">User Provided Data:</h6>
+                {isNotGiven ? (
+                <p className="text-sm text-yellow-700">Not given</p>
+                ) : (
+                <ul className="list-disc list-inside space-y-1 text-sm text-yellow-700">
+                    {Object.entries(userInput).map(([key, value]: [string, any], i: number) => (
+                    <li key={i}>
+                        <span className="font-medium">{key.replace(/_/g, ' ').replace('user provided', '')}:</span> {value}
+                    </li>
+                    ))}
+                </ul>
+                )}
+            </div>
+          )}
           
           <div className="space-y-3">
             <div className="flex items-center space-x-3">
@@ -102,7 +104,6 @@ const DetailedScoringBlock = ({ parameter }: { parameter: any }) => {
               </div>
             )}
             
-            {/* New Sources Used Section */}
             {parameter.sourcesUsed && parameter.sourcesUsed.length > 0 && (
               <div className="mt-4">
                 <p className="text-sm font-semibold text-gray-600">Sources Used:</p>
@@ -183,7 +184,20 @@ const iconMap: { [key: string]: React.ElementType } = {
   Check,
   X,
   Search,
-  TrendingUp
+  TrendingUp,
+  Factory,
+  Leaf,
+  User,
+  BriefcaseMedical,
+  Landmark,
+  GitFork,
+  Link2,
+  Sprout,
+  Building,
+  PieChart,
+  Star,
+  Activity,
+  HardHat
 };
 
 const getIcon = (iconName: string) => {
@@ -197,11 +211,22 @@ const ReportPage = ({ idea }: { idea: (typeof MOCK_IDEAS)[0] }) => {
   const reportRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  const report = idea.report;
-
-  if (!report) {
-    return <div>Report not available</div>
+  if (!idea || !idea.report) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+        <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+        <h2 className="text-2xl font-bold mb-2">Generating Report...</h2>
+        <p className="text-muted-foreground">
+            The report for this idea is not yet available. Please check back shortly.
+        </p>
+         <Button asChild className="mt-6">
+            <Link href={`/dashboard/ideas?role=${ROLES.INNOVATOR}`}>Go to My Ideas</Link>
+        </Button>
+      </div>
+    );
   }
+
+  const report = idea.report;
   
   const scoreColor = report.overallScore > 8 ? 'text-green-500' : report.overallScore > 6 ? 'text-yellow-500' : 'text-red-500';
 
@@ -481,17 +506,20 @@ export default function IdeaReportPageWrapper() {
   const { ideaId } = useParams() as { ideaId: string };
   const idea = MOCK_IDEAS.find((i) => i.id === ideaId);
 
-  if (!idea || !idea.report) {
+  if (!idea) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-8 text-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Generating Report</h2>
+        <h2 className="text-2xl font-bold mb-2">Finding Idea...</h2>
         <p className="text-muted-foreground">
-            {idea ? "The report for this idea is not yet available." : "Idea not found."}
+            The requested idea could not be found. It may have been removed or the ID is incorrect.
         </p>
-         <Button asChild className="mt-6">
+        <Button asChild className="mt-6">
             <Link href={`/dashboard/ideas?role=${ROLES.INNOVATOR}`}>Go to My Ideas</Link>
         </Button>
       </div>
     );
-  
+  }
+
+  return <ReportPage idea={idea} />;
+}

@@ -573,64 +573,64 @@ export const MOCK_SAMPLE_REPORT: ValidationReport = {
     },
     detailedIdeaValidationAndScoring: [
         {
-        parameter_name: "1. Core Idea",
-        icon: "Lightbulb",
-        sub_parameters: [
+          parameter_name: "1. Core Idea",
+          icon: "Lightbulb",
+          sub_parameters: [
             { parameter_name: "1.1. Novelty & Uniqueness", sub_parameters: [
-            { 
+              { 
                 parameter_name: "1.1.1. Originality", 
                 score: 8.5, 
                 inference: "The core idea is not entirely new, but the combination of 'economical' pricing and 'AI-powered' features is a strong, original value proposition that sets it apart.", 
                 recommendations: ["Focus marketing on this unique combination.", "Highlight the AI's smart features over competitors' basic task automation."], 
                 user_input: { "user_input": "not given" },
                 sourcesUsed: [{ text: "Not provided in this analysis." }]
-            },
-            { 
+              },
+              { 
                 parameter_name: "1.1.2. Differentiation", 
                 score: 9.0, 
                 inference: "The product is highly differentiated from expensive enterprise tools and free, basic tools. This gives it a clear 'blue ocean' strategy in a crowded market.", 
                 recommendations: ["Build a public-facing comparison matrix on the website to show differentiation.", "Gather testimonials from users who have switched from competitors."], 
                 user_input: { "user_input": "not given" },
                 sourcesUsed: [{ text: "Analysis of the project management software market." }]
-            },
+              },
             ]},
             { parameter_name: "1.2. Problem-Solution Fit", sub_parameters: [
-            { 
+              { 
                 parameter_name: "1.2.1. Problem Severity", 
                 score: 9.5, 
                 inference: "Startups have a severe problem finding powerful and affordable project management tools. The pain point is high, which is a great foundation for a product.", 
                 recommendations: ["Conduct user interviews to deeply understand the pain points.", "Validate the problem with a landing page and email sign-ups."], 
                 user_input: { "user_input": "not given" },
                 sourcesUsed: [{ text: "AI-driven market research on startup pain points." }]
-            },
-            { 
+              },
+              { 
                 parameter_name: "1.2.2. Solution Effectiveness", 
                 score: 9.0, 
                 inference: "The proposed AI features (e.g., automated reporting, resource allocation) directly address the core problems faced by time and resource-constrained startups.", 
                 recommendations: ["Develop a proof-of-concept for the most critical AI feature.", "Run a small closed beta to test the solution's effectiveness."], 
                 user_input: { "user_input": "not given" },
                 sourcesUsed: [{ text: "Not provided in this analysis." }]
-            },
+              },
             ]},
             { parameter_name: "1.3. UX/Usability Potential", sub_parameters: [
-            { 
+              { 
                 parameter_name: "1.3.1. Intuitive Design", 
                 score: 8.5, 
                 inference: "A simple, clean UI is crucial for startups. The design should be intuitive and require minimal onboarding, a key differentiator from complex enterprise tools.", 
                 recommendations: ["Hire an experienced UX/UI designer with a focus on SaaS products.", "Conduct user testing with low-fidelity prototypes before writing any code."], 
                 user_input: { "user_input": "not given" },
                 sourcesUsed: [{ text: "Not provided in this analysis." }]
-            },
-            { 
+              },
+              { 
                 parameter_name: "1.3.2. Accessibility Compliance", 
                 score: 8.0, 
                 inference: "Accessibility is a key consideration for a modern SaaS product, though often overlooked. It broadens the market and demonstrates a commitment to inclusive design.", 
                 recommendations: ["Ensure the UI is built with WCAG 2.1 guidelines in mind.", "Perform an accessibility audit before the public launch."], 
                 user_input: { "user_input": "not given" },
                 sourcesUsed: [{ text: "Not provided in this analysis." }]
-            },
+              },
             ]},
-        ]
+          ]
         },
     ],
     swotAnalysis: {
@@ -681,6 +681,7 @@ export const MOCK_SAMPLE_REPORT: ValidationReport = {
     disclaimer: `This report is an automated assessment and does not constitute professional business, legal, or financial advice. The analysis is based on information available at the time of generation and is intended for informational and illustrative purposes only. All scores and recommendations are indicative and should be independently validated.`,
 };
 
+
 export const MOCK_IDEAS: any[] = [
   {
     id: 'IDEA-001',
@@ -718,7 +719,7 @@ export const MOCK_IDEAS: any[] = [
     status: 'Developing',
     dateSubmitted: '2024-07-18',
     version: 'V1.0',
-    report: { ...MOCK_SAMPLE_REPORT, ideaName: 'Blockchain-Based Voting System', overallScore: 7.2, outcome: 'Developing', input: { user_idea: 'A secure and transparent voting system using blockchain technology.', ai_understanding: 'AI understands this as a high-security voting platform leveraging blockchain.' } },
+    report: { ...MOCK_SAMPLE_REPORT, ideaName: 'Blockchain-Based Voting System', overallScore: 7.2, validationOutcome: 'Developing', input: { user_idea: 'A secure and transparent voting system using blockchain technology.', ai_understanding: 'AI understands this as a high-security voting platform leveraging blockchain.' } },
     clusterWeights: { "Core Idea & Innovation": 25, "Market & Commercial Opportunity": 15, "Execution & Operations": 25, "Business Model & Strategy": 10, "Team & Organizational Health": 10, "External Environment & Compliance": 10, "Risk & Future Outlook": 5 },
     feedback: null,
     consultationStatus: 'Pending',
@@ -740,7 +741,7 @@ export const MOCK_IDEAS: any[] = [
     status: 'Needs Refinement',
     dateSubmitted: '2024-07-15',
     version: 'V1.0',
-    report: { ...MOCK_SAMPLE_REPORT, ideaName: 'Gamified Language Learning App', overallScore: 4.5, outcome: 'Needs Refinement', input: { user_idea: 'An app that makes learning new languages fun through gamification.', ai_understanding: 'AI understands this as a mobile education app using game mechanics.' } },
+    report: { ...MOCK_SAMPLE_REPORT, ideaName: 'Gamified Language Learning App', overallScore: 4.5, validationOutcome: 'Needs Refinement', input: { user_idea: 'An app that makes learning new languages fun through gamification.', ai_understanding: 'AI understands this as a mobile education app using game mechanics.' } },
     clusterWeights: { "Core Idea & Innovation": 30, "Market & Commercial Opportunity": 20, "Execution & Operations": 20, "Business Model & Strategy": 10, "Team & Organizational Health": 10, "External Environment & Compliance": 5, "Risk & Future Outlook": 5 },
     feedback: null,
     consultationStatus: 'Not Requested',
@@ -762,7 +763,7 @@ export const MOCK_IDEAS: any[] = [
     status: 'Developing',
     dateSubmitted: '2024-06-10',
     version: 'V1.0',
-    report: { ...MOCK_SAMPLE_REPORT, ideaName: 'AR Furniture Placement App', overallScore: 6.8, outcome: 'Developing', input: { user_idea: 'An augmented reality app to visualize furniture in your home before buying.', ai_understanding: 'AI understands this as an e-commerce tool using AR for product visualization.' } },
+    report: { ...MOCK_SAMPLE_REPORT, ideaName: 'AR Furniture Placement App', overallScore: 6.8, validationOutcome: 'Developing', input: { user_idea: 'An augmented reality app to visualize furniture in your home before buying.', ai_understanding: 'AI understands this as an e-commerce tool using AR for product visualization.' } },
     clusterWeights: { "Core Idea & Innovation": 20, "Market & Commercial Opportunity": 30, "Execution & Operations": 20, "Business Model & Strategy": 15, "Team & Organizational Health": 5, "External Environment & Compliance": 5, "Risk & Future Outlook": 5 },
     feedback: null,
     consultationStatus: 'Completed',
