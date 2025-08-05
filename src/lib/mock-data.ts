@@ -461,7 +461,7 @@ export const MOCK_NOTIFICATIONS = {
   ],
 };
 
-export const MOCK_SAMPLE_REPORT: ValidationReport = {
+export const MOCK_SAMPLE_REPORT: any = {
     ideaName: "Economical AI Project Management Tool",
     preparedFor: "Innovator Name",
     date: "August 4, 2025",
@@ -512,6 +512,7 @@ export const MOCK_SAMPLE_REPORT: ValidationReport = {
         competitors: [
         {
             name: "Jira",
+            products: "Jira Software, Jira Service Management",
             features: "Task tracking, agile project management, workflow automation.",
             price_range: "Starts free, then ~$700/user/month.",
             strengths: "Market leader for software development teams, highly customizable, strong integrations.",
@@ -519,6 +520,7 @@ export const MOCK_SAMPLE_REPORT: ValidationReport = {
         },
         {
             name: "Asana",
+            products: "Asana Basic, Asana Premium, Asana Business",
             features: "Project tracking, goal setting, visual timelines, workflow builder.",
             price_range: "Starts free, then ~$900/user/month.",
             strengths: "Excellent user interface, flexible for various team types, strong collaboration features.",
@@ -526,6 +528,7 @@ export const MOCK_SAMPLE_REPORT: ValidationReport = {
         },
         {
             name: "Trello",
+            products: "Trello Free, Trello Standard, Trello Premium",
             features: "Kanban boards, checklists, integrations.",
             price_range: "Starts free, then ~$450/user/month.",
             strengths: "Intuitive and simple to use, great for visual thinkers and small projects.",
@@ -545,9 +548,9 @@ export const MOCK_SAMPLE_REPORT: ValidationReport = {
         estimated_premium_price: 699.00,
         estimated_cogs_per_user: 275,
         cost_breakdown: [
-        { item: "AI Compute & GPU usage", cost: 150 },
-        { item: "Cloud Hosting & Storage", cost: 75 },
-        { item: "Third-party APIs & Licenses", cost: 50 },
+        { item: "AI Compute & GPU usage", cost: "150" },
+        { item: "Cloud Hosting & Storage", cost: "75" },
+        { item: "Third-party APIs & Licenses", cost: "50" },
         ],
         suggestions: [
         "Test different pricing models early to find the optimal balance between user acquisition and revenue generation.",
@@ -579,7 +582,7 @@ export const MOCK_SAMPLE_REPORT: ValidationReport = {
             { parameter_name: "1.1. Novelty & Uniqueness", sub_parameters: [
               { 
                 parameter_name: "1.1.1. Originality", 
-                score: 8.5, 
+                score: "8.5", 
                 inference: "The core idea is not entirely new, but the combination of 'economical' pricing and 'AI-powered' features is a strong, original value proposition that sets it apart.", 
                 recommendations: ["Focus marketing on this unique combination.", "Highlight the AI's smart features over competitors' basic task automation."], 
                 user_input: { "user_input": "not given" },
@@ -587,7 +590,7 @@ export const MOCK_SAMPLE_REPORT: ValidationReport = {
               },
               { 
                 parameter_name: "1.1.2. Differentiation", 
-                score: 9.0, 
+                score: "9.0", 
                 inference: "The product is highly differentiated from expensive enterprise tools and free, basic tools. This gives it a clear 'blue ocean' strategy in a crowded market.", 
                 recommendations: ["Build a public-facing comparison matrix on the website to show differentiation.", "Gather testimonials from users who have switched from competitors."], 
                 user_input: { "user_input": "not given" },
@@ -597,7 +600,7 @@ export const MOCK_SAMPLE_REPORT: ValidationReport = {
             { parameter_name: "1.2. Problem-Solution Fit", sub_parameters: [
               { 
                 parameter_name: "1.2.1. Problem Severity", 
-                score: 9.5, 
+                score: "9.5", 
                 inference: "Startups have a severe problem finding powerful and affordable project management tools. The pain point is high, which is a great foundation for a product.", 
                 recommendations: ["Conduct user interviews to deeply understand the pain points.", "Validate the problem with a landing page and email sign-ups."], 
                 user_input: { "user_input": "not given" },
@@ -605,7 +608,7 @@ export const MOCK_SAMPLE_REPORT: ValidationReport = {
               },
               { 
                 parameter_name: "1.2.2. Solution Effectiveness", 
-                score: 9.0, 
+                score: "9.0", 
                 inference: "The proposed AI features (e.g., automated reporting, resource allocation) directly address the core problems faced by time and resource-constrained startups.", 
                 recommendations: ["Develop a proof-of-concept for the most critical AI feature.", "Run a small closed beta to test the solution's effectiveness."], 
                 user_input: { "user_input": "not given" },
@@ -615,7 +618,7 @@ export const MOCK_SAMPLE_REPORT: ValidationReport = {
             { parameter_name: "1.3. UX/Usability Potential", sub_parameters: [
               { 
                 parameter_name: "1.3.1. Intuitive Design", 
-                score: 8.5, 
+                score: "8.5", 
                 inference: "A simple, clean UI is crucial for startups. The design should be intuitive and require minimal onboarding, a key differentiator from complex enterprise tools.", 
                 recommendations: ["Hire an experienced UX/UI designer with a focus on SaaS products.", "Conduct user testing with low-fidelity prototypes before writing any code."], 
                 user_input: { "user_input": "not given" },
@@ -623,7 +626,7 @@ export const MOCK_SAMPLE_REPORT: ValidationReport = {
               },
               { 
                 parameter_name: "1.3.2. Accessibility Compliance", 
-                score: 8.0, 
+                score: "8.0", 
                 inference: "Accessibility is a key consideration for a modern SaaS product, though often overlooked. It broadens the market and demonstrates a commitment to inclusive design.", 
                 recommendations: ["Ensure the UI is built with WCAG 2.1 guidelines in mind.", "Perform an accessibility audit before the public launch."], 
                 user_input: { "user_input": "not given" },
@@ -632,6 +635,330 @@ export const MOCK_SAMPLE_REPORT: ValidationReport = {
             ]},
           ]
         },
+        {
+          parameter_name: "2. Market Opportunity",
+          icon: "Briefcase",
+          sub_parameters: [
+            { parameter_name: "2.1. Market Validation (TAM)", sub_parameters: [
+              { 
+                parameter_name: "2.1.1. Market Size (TAM)", 
+                score: "9.5", 
+                inference: "The Total Addressable Market for project management software is vast, estimated at over $6.5 billion globally, growing at a CAGR of 11.2%. The user's input on Indian market size is a good proxy.", 
+                recommendations: ["Focus on the Serviceable Obtainable Market (SOM) first.", "Use the TAM to attract investors and show long-term vision."], 
+                user_input: { "user_provided_market_size": "Indian SaaS market is expected to reach $13-15 billion by 2025." },
+                sourcesUsed: [{ text: "Statista Report: Project Management Software Market Size", url: "https://www.statista.com/outlook/dmo/enterprise-software/project-management-software/worldwide" }]
+              },
+              { 
+                parameter_name: "2.1.2. Competitive Intensity", 
+                score: "7.0", 
+                inference: "The market is highly competitive with many established players. This is a significant risk that must be addressed through a strong value proposition.", 
+                recommendations: ["Clearly define and communicate the product's unique selling points.", "Target a sub-niche (e.g., early-stage tech startups) to reduce initial competition."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+            ]},
+            { parameter_name: "2.2. Geographic Specificity (India)", sub_parameters: [
+              { 
+                parameter_name: "2.2.1. Regulatory Landscape", 
+                score: "8.5", 
+                inference: "The regulatory environment in India for SaaS is generally favorable, with government initiatives supporting startups. Data privacy laws are a key consideration.", 
+                recommendations: ["Ensure compliance with India's data privacy laws.", "Consult with a legal expert on specific regulations."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Indian Ministry of Electronics and Information Technology (MeitY) guidelines" }]
+              },
+              { 
+                parameter_name: "2.2.2. Infrastructure Readiness", 
+                score: "9.0", 
+                inference: "India has a robust digital infrastructure with high internet penetration and a large base of tech-savvy users, making it an ideal market for a SaaS product.", 
+                recommendations: ["Optimize the product for both desktop and mobile use.", "Leverage local cloud providers to reduce latency."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+            ]},
+            { parameter_name: "2.3. Product-Market Fit", sub_parameters: [
+              { 
+                parameter_name: "2.3.1. User Engagement", 
+                score: "8.5", 
+                inference: "The AI features are designed to increase user engagement by making tasks easier and providing valuable insights. This is a strong hypothesis that needs validation.", 
+                recommendations: ["Implement detailed analytics to track user engagement with key AI features.", "Conduct usability studies to identify friction points."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+              { 
+                parameter_name: "2.3.2. Retention Potential", 
+                score: "8.0", 
+                inference: "The product's 'stickiness' will come from its AI learning over time. As the AI gets smarter, the product becomes more valuable, increasing retention.", 
+                recommendations: ["Introduce a 'retention' metric in the early stages.", "Continuously improve AI models based on user feedback to drive long-term value."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+            ]},
+          ]
+        },
+        {
+          parameter_name: "3. Execution",
+          icon: "Rocket",
+          sub_parameters: [
+            { parameter_name: "3.1. Technical Feasibility", sub_parameters: [
+              { 
+                parameter_name: "3.1.1. Technology Maturity", 
+                score: "8.5", 
+                inference: "The underlying technologies for a modern SaaS product (cloud, microservices, front-end frameworks) are mature and well-understood. The AI component is the primary technical challenge.", 
+                recommendations: ["Choose a robust tech stack that can support AI integrations.", "Build a dedicated R&D team for the AI features."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+              { 
+                parameter_name: "3.1.2. Scalability & Performance", 
+                score: "8.0", 
+                inference: "A SaaS product needs to scale horizontally to support millions of users. The AI models must also be optimized for both performance and cost.", 
+                recommendations: ["Design a scalable architecture from day one.", "Use serverless functions for computationally expensive tasks."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+            ]},
+            { parameter_name: "3.2. Operational Viability", sub_parameters: [
+              { 
+                parameter_name: "3.2.1. Resource Availability", 
+                score: "8.5", 
+                inference: "India has a large talent pool of engineers and AI experts, making it feasible to build and operate the product locally.", 
+                recommendations: ["Partner with local universities to hire top talent.", "Build a strong company culture to attract and retain employees."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+              { 
+                parameter_name: "3.2.2. Process Efficiency", 
+                score: "9.0", 
+                inference: "Automation is a core part of the business. The goal is to have highly efficient internal processes to keep costs down.", 
+                recommendations: ["Automate all possible internal workflows (e.g., marketing, sales, support).", "Use a modern CI/CD pipeline to ensure fast, reliable deployments."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+            ]},
+            { parameter_name: "3.3. Scalability Potential", sub_parameters: [
+              { 
+                parameter_name: "3.3.1. Business Model Scalability", 
+                score: "9.0", 
+                inference: "The SaaS subscription model is highly scalable. The key is to manage the cost of AI as the user base grows.", 
+                recommendations: ["Implement a usage-based pricing model for AI-intensive features.", "Regularly review and optimize the cost of goods sold (COGS)."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+              { 
+                parameter_name: "3.3.2. Market Expansion Potential", 
+                score: "8.5", 
+                inference: "The product can easily expand to new markets beyond India and to different industry verticals with minor modifications.", 
+                recommendations: ["Plan for internationalization and localization from the beginning.", "Start with one market and perfect the product before expanding."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+            ]},
+          ]
+        },
+        {
+          parameter_name: "4. Business Model",
+          icon: "DollarSign",
+          sub_parameters: [
+            { parameter_name: "4.1. Financial Viability", sub_parameters: [
+              { 
+                parameter_name: "4.1.1. Revenue Stream Diversity", 
+                score: "8.0", 
+                inference: "The primary revenue stream is subscriptions. Other potential streams could include marketplace integrations or premium AI consulting services.", 
+                recommendations: ["Explore partnerships with other SaaS tools to create a marketplace.", "Offer add-on services for high-value customers."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+              { 
+                parameter_name: "4.1.2. Profitability & Margins", 
+                score: "7.5", 
+                inference: "The low price point and high AI costs are a risk to profitability. Careful management of COGS and a clear path to scale are essential.", 
+                recommendations: ["Maintain high gross margins by controlling operational costs.", "Focus on customer lifetime value (LTV) over short-term revenue."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+            ]},
+            { parameter_name: "4.2. Defensibility", sub_parameters: [
+              { 
+                parameter_name: "4.2.1. Intellectual Property (IP)", 
+                score: "8.5", 
+                inference: "Proprietary AI models and algorithms can be a strong moat. While not a complete barrier, it makes it difficult for competitors to replicate the core value.", 
+                recommendations: ["File for patents for unique algorithms.", "Protect the brand with strong trademarks."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Patent analysis for AI in project management." }]
+              },
+              { 
+                parameter_name: "4.2.2. Network Effects", 
+                score: "8.0", 
+                inference: "The value of the tool increases as more team members and collaborators use it. This creates a natural network effect that increases user stickiness.", 
+                recommendations: ["Build strong collaboration features into the product.", "Encourage team-based sign-ups and referrals."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+            ]},
+          ]
+        },
+        {
+          parameter_name: "5. Team",
+          icon: "Users",
+          sub_parameters: [
+            { parameter_name: "5.1. Founder-Fit", sub_parameters: [
+              { 
+                parameter_name: "5.1.1. Relevant Experience", 
+                score: "9.0", 
+                inference: "Founders with experience in AI, SaaS, and project management would be an ideal fit. Their domain expertise is critical for success.", 
+                recommendations: ["If the founder lacks experience, bring on an experienced advisor or co-founder.", "Highlight the team's expertise in marketing materials."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+              { 
+                parameter_name: "5.1.2. Complementary Skills", 
+                score: "9.0", 
+                inference: "An effective team needs a mix of technical, business, and design skills to build a successful product.", 
+                recommendations: ["Ensure the team has a clear founder-fit in all key areas.", "Use the team's complementary skills as a selling point to investors."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+            ]},
+            { parameter_name: "5.2. Culture/Values", sub_parameters: [
+              { 
+                parameter_name: "5.2.1. Mission Alignment", 
+                score: "9.5", 
+                inference: "A strong, mission-driven culture will be essential to attract and retain talent in a competitive market.", 
+                recommendations: ["Clearly define the company's mission and values from day one.", "Ensure all hiring decisions are aligned with the company culture."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+              { 
+                parameter_name: "5.2.2. Diversity & Inclusion", 
+                score: "9.0", 
+                inference: "Building a diverse team will lead to better products and a broader perspective. This is a crucial factor for long-term success.", 
+                recommendations: ["Implement a clear diversity and inclusion policy.", "Focus on building an inclusive culture where all voices are heard."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+            ]},
+          ]
+        },
+        {
+          parameter_name: "6. Compliance",
+          icon: "FileText",
+          sub_parameters: [
+            { parameter_name: "6.1. Regulatory (India)", sub_parameters: [
+              { 
+                parameter_name: "6.1.1. Data Privacy Compliance", 
+                score: "8.5", 
+                inference: "Compliance with local data privacy laws (e.g., India's PDP Bill) is non-negotiable. This is a key risk area that requires attention.", 
+                recommendations: ["Engage a legal consultant to review the product's data handling.", "Implement a robust data privacy policy and get it audited."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+              { 
+                parameter_name: "6.1.2. Sector-Specific Compliance", 
+                score: "8.0", 
+                inference: "Depending on the target industry (e.g., healthcare, finance), additional compliance measures may be required.", 
+                recommendations: ["Identify target industry verticals and their compliance requirements.", "Build the product to be configurable for different compliance needs."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+            ]},
+            { parameter_name: "6.2. Sustainability (ESG)", sub_parameters: [
+              { 
+                parameter_name: "6.2.1. Environmental Impact", 
+                score: "8.0", 
+                inference: "The product's carbon footprint (from cloud computing and AI training) is a key consideration. This can be a selling point to eco-conscious companies.", 
+                recommendations: ["Use energy-efficient cloud providers.", "Publish an annual sustainability report."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+              { 
+                parameter_name: "6.2.2. Social Impact (SDGs)", 
+                score: "9.0", 
+                inference: "The product can contribute to UN Sustainable Development Goals (SDGs) by improving productivity and supporting small businesses.", 
+                recommendations: ["Align the company's mission with relevant SDGs.", "Highlight the social impact in marketing materials."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+            ]},
+            { parameter_name: "6.3. Ecosystem Support (India)", sub_parameters: [
+              { 
+                parameter_name: "6.3.1. Government & Institutional Support", 
+                score: "9.5", 
+                inference: "Government initiatives like 'Startup India' and various institutional support programs offer a significant advantage for a product built and launched in India.", 
+                recommendations: ["Apply for government grants and startup programs.", "Leverage institutional partnerships for marketing and sales."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Startup India: Official Government of India Initiative", url: "https://www.startupindia.gov.in/" }]
+              },
+              { 
+                parameter_name: "6.3.2. Investor & Partner Landscape", 
+                score: "9.0", 
+                inference: "India has a vibrant VC and angel investor ecosystem, with a high appetite for SaaS and AI startups.", 
+                recommendations: ["Build a strong investor deck that highlights the Indian market opportunity.", "Network with key investors and partners in the Indian ecosystem."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+            ]},
+          ]
+        },
+        {
+          parameter_name: "7. Risk & Strategy",
+          icon: "TrendingDown",
+          sub_parameters: [
+            { parameter_name: "7.1. Risk Assessment", sub_parameters: [
+              { 
+                parameter_name: "7.1.1. Technical Risks", 
+                score: "7.5", 
+                inference: "The main technical risks are related to the performance and cost of the AI models. These require careful management and continuous optimization.", 
+                recommendations: ["Use a multi-cloud strategy to mitigate single-provider risk.", "Build a robust monitoring and alerting system for technical issues."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+              { 
+                parameter_name: "7.1.2. Market Risks", 
+                score: "8.0", 
+                inference: "The main market risks are intense competition and the possibility of a downturn in the startup ecosystem. A strong product and clear messaging can mitigate these risks.", 
+                recommendations: ["Stay agile and adapt the product to market changes.", "Diversify the customer base to reduce dependency on a single market segment."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+            ]},
+            { parameter_name: "7.2. Investor Attractiveness", sub_parameters: [
+              { 
+                parameter_name: "7.2.1. Valuation Potential", 
+                score: "8.5", 
+                inference: "The product has a strong valuation potential due to the high-growth SaaS model and the AI component. Early traction will be key to unlocking this potential.", 
+                recommendations: ["Focus on early user growth and retention metrics.", "Develop a clear financial model and a path to profitability."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+              { 
+                parameter_name: "7.2.2. Exit Strategy Viability", 
+                score: "8.0", 
+                inference: "The product has multiple potential exit opportunities, including acquisition by a larger enterprise software company or a later-stage VC firm.", 
+                recommendations: ["Identify potential acquirers early in the process.", "Build a defensible business with strong IP and customer loyalty."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+            ]},
+            { parameter_name: "7.3. Academic/National Alignment", sub_parameters: [
+              { 
+                parameter_name: "7.3.1. National Policy Alignment (India)", 
+                score: "9.5", 
+                inference: "The product aligns well with national policies for a 'digital India' and a 'self-reliant India' (Atmanirbhar Bharat), which can provide significant institutional support.", 
+                recommendations: ["Explicitly mention alignment with national policies in the business plan.", "Leverage government programs and funding opportunities."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+              { 
+                parameter_name: "7.3.2. Academic/Research Contribution", 
+                score: "8.5", 
+                inference: "The product's AI components could lead to new research papers and academic contributions, which can enhance the brand's reputation and attract talent.", 
+                recommendations: ["Publish research papers on the AI models used in the product.", "Partner with academic institutions on R&D projects."], 
+                user_input: { "user_input": "not given" },
+                sourcesUsed: [{ text: "Not provided in this analysis." }]
+              },
+            ]
+        }
+        ]}
     ],
     swotAnalysis: {
         strengths: [
