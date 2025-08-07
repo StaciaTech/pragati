@@ -31,11 +31,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
+import axios from "axios";
+import { useColleges } from "@/hooks/useColleges";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useUpdateUser } from "@/hooks/useUpdateUser";
+
+type CreatePrincipalPayload = {
+  collegeName: string;
+  email: string;
+  ttcCoordinatorLimit: number;
+  creditQuota: number;
+};
 
 export default function InstitutionManagementPage() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const token = localStorage.getItem("token");
-  const [collegeData, setCollegeData] = React.useState<CollegeAdmin[]>([]);
 
   const { toast } = useToast();
   const [colleges, setColleges] = React.useState(MOCK_COLLEGES);
@@ -54,84 +64,84 @@ export default function InstitutionManagementPage() {
     setIsModalOpen(true);
   };
 
-  const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+  const queryClient = useQueryClient();
 
-    const collegeName = formData.get("name") as string;
-    const email = formData.get("principalEmail") as string;
-    const ttcCoordinatorLimit = Number(formData.get("ttcLimit"));
-    const creditQuota = Number(formData.get("creditsAvailable"));
-
-    try {
-      const res = await axios.post(
+  const createPrincipal = useMutation({
+    mutationFn: async (data: CreatePrincipalPayload) => {
+      const { data: res } = await axios.post(
         `${apiUrl}/api/admin/create-principal`,
-        { collegeName, email, ttcCoordinatorLimit, creditQuota },
-        { headers: { Authorization: `Bearer ${token}` } } // <— include super-admin JWT
+        data,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log(res.data);
-      setCollegeData([
-        ...collegeData,
-        {
-          _id: Date.now().toString(),
-          collegeName,
-          email,
-          ttcCoordinatorLimit,
-          creditQuota,
-          isActive: true,
-        },
-      ]);
+      return res;
+    },
+    onSuccess: (res) => {
       toast({
         title: "Institution Added",
-        description: `${collegeName} has been successfully saved.`,
+        description: `${res.collegeName} has been successfully saved.`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["all-colleges"] });
+      setIsModalOpen(false);
+    },
+    onError: () => {
+      toast({ title: "Server Error", description: "Please try again later." });
+    },
+  });
+
+  const updateUser = useUpdateUser();
+
+  const handleSave = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const fd = new FormData(event.currentTarget);
+
+    const payload: CreatePrincipalPayload = {
+      collegeName: fd.get("name") as string,
+      email: fd.get("principalEmail") as string,
+      ttcCoordinatorLimit: Number(fd.get("ttcLimit")),
+      creditQuota: Number(fd.get("creditsAvailable")),
+    };
+
+    if (modalType === "edit" && currentCollege?._id) {
+      // Invalidate the 'all-colleges' query key dynamically
+      updateUser.mutate({
+        uid: currentCollege._id,
+        data: payload,
+        queryKey: ["all-colleges"],
       });
       setIsModalOpen(false);
-    } catch (error) {
-      console.log(error);
-      toast({
-        title: "Server Error",
-        description: "Please try again later.",
-      });
-    }
-    toast({
-      title: `Institution ${modalType === "add" ? "Added" : "Updated"}`,
-      description: `${name} has been successfully saved.`,
-    });
-    setIsModalOpen(false);
-  };
-
-  const handleToggleStatus = (id: string) => {
-    setColleges((prev) =>
-      prev.map((college) =>
-        college.id === id
-          ? ({
-              ...college,
-              status: college.status === "Active" ? "Inactive" : "Active",
-            } as any)
-          : college
-      )
-    );
-    toast({
-      title: "Status Updated",
-      description: "College status has been toggled.",
-    });
-  };
-
-  const fetchColleges = async () => {
-    try {
-      const res = await axios.get(`${apiUrl}/api/users?role=college_admin`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      console.log(res.data);
-      setCollegeData(res.data.docs);
-    } catch (error) {
-      console.log(error);
+    } else {
+      createPrincipal.mutate(payload);
     }
   };
 
-  React.useEffect(() => {
-    fetchColleges();
-  }, [apiUrl, token]);
+  /* ---- TOGGLE STATUS ---- */
+  const toggleStatusMutation = useMutation({
+    mutationFn: async (id: string) => {
+      if (!token) throw new Error("No token");
+      return axios.put(
+        `${apiUrl}/api/users/${id}/toggle-active`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+    },
+    // inside saveTtcMutation & toggleStatusMutation
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["all-colleges"] });
+    },
+    onError: () => toast({ title: "Failed to toggle status" }),
+  });
+
+  const handleToggleStatus = (id: string) => toggleStatusMutation.mutate(id);
+
+  const {
+    data: collegeData,
+    isLoading: collegeLoading,
+    error: collegeErroe,
+  } = useColleges();
+
+  console.log(collegeData);
 
   return (
     <>
@@ -161,30 +171,26 @@ export default function InstitutionManagementPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {colleges.map((college) => (
-                  <TableRow key={college.id}>
-                    <TableCell>{college.id}</TableCell>
+                {collegeData?.map((college) => (
+                  <TableRow key={college._id}>
+                    <TableCell>{college._id}</TableCell>
                     <TableCell className="font-medium">
                       <Link
-                        href={`/dashboard/admin/institutions/${college.id}?role=Super Admin`}
+                        href={`/dashboard/admin/institutions/${college._id}?role=Super Admin`}
                         className="hover:underline text-primary"
                       >
-                        {college.name}
+                        {college.collegeName}
                       </Link>
                     </TableCell>
-                    <TableCell>{college.principalEmail}</TableCell>
+                    <TableCell>{college.email}</TableCell>
                     <TableCell>
                       <Badge
-                        variant={
-                          college.status === "Active"
-                            ? "default"
-                            : "destructive"
-                        }
+                        variant={college.isActive ? "default" : "destructive"}
                       >
-                        {college.status}
+                        {college.isActive ? "Active" : "Inactive"}
                       </Badge>
                     </TableCell>
-                    <TableCell>{college.creditsAvailable}</TableCell>
+                    <TableCell>{college.creditQuota}</TableCell>
                     <TableCell className="text-right space-x-2 whitespace-nowrap">
                       <Button
                         variant="outline"
@@ -200,11 +206,9 @@ export default function InstitutionManagementPage() {
                             : "default"
                         }
                         size="sm"
-                        onClick={() => handleToggleStatus(college.id)}
+                        onClick={() => handleToggleStatus(college._id)}
                       >
-                        {college.status === "Active"
-                          ? "Deactivate"
-                          : "Activate"}
+                        {college.isActive ? "Deactivate" : "Activate"}
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -229,7 +233,7 @@ export default function InstitutionManagementPage() {
                 <Input
                   id="name"
                   name="name"
-                  defaultValue={currentCollege?.name}
+                  defaultValue={currentCollege?.collegeName}
                   required
                 />
               </div>
@@ -239,7 +243,7 @@ export default function InstitutionManagementPage() {
                   id="principalEmail"
                   name="principalEmail"
                   type="email"
-                  defaultValue={currentCollege?.principalEmail}
+                  defaultValue={currentCollege?.email}
                   required
                 />
               </div>
@@ -250,7 +254,7 @@ export default function InstitutionManagementPage() {
                     id="ttcLimit"
                     name="ttcLimit"
                     type="number"
-                    defaultValue={currentCollege?.ttcLimit}
+                    defaultValue={currentCollege?.ttcCoordinatorLimit}
                     required
                   />
                 </div>
@@ -260,7 +264,7 @@ export default function InstitutionManagementPage() {
                     id="creditsAvailable"
                     name="creditsAvailable"
                     type="number"
-                    defaultValue={currentCollege?.creditsAvailable}
+                    defaultValue={currentCollege?.creditQuota}
                     required
                   />
                 </div>

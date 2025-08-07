@@ -1,6 +1,4 @@
-
-
-'use client';
+"use client";
 
 import {
   Card,
@@ -17,13 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  MOCK_COLLEGES,
-  MOCK_IDEAS,
-  MOCK_PLANS,
-  MOCK_TTCS,
-  MOCK_INNOVATORS,
-} from "@/lib/mock-data";
 import {
   ChartContainer,
   ChartTooltip,
@@ -43,29 +34,94 @@ import {
 } from "recharts";
 import { Badge } from "@/components/ui/badge";
 
-export default function AdminDashboardPage() {
-  const totalColleges = MOCK_COLLEGES.length;
-  const totalIdeas = MOCK_IDEAS.length;
-  const totalTTCs = MOCK_TTCS.length;
-  const totalInnovators = MOCK_INNOVATORS.length;
+import {
+  MOCK_COLLEGES,
+  MOCK_IDEAS,
+  MOCK_PLANS,
+  MOCK_TTCS,
+  MOCK_INNOVATORS,
+} from "@/lib/mock-data";
+import { useUserIdeas } from "@/hooks/useUserIdeas";
+import { useAllInnovators } from "@/hooks/useAllInnovators";
+import { useColleges } from "@/hooks/useColleges";
 
-  const revenueByPlan = MOCK_COLLEGES.reduce((acc, college) => {
-    const plan = MOCK_PLANS.find((p) => p.id === college.currentPlanId);
-    if (plan && plan.enabled) {
-      const planName = plan.name.replace(/ Monthly| Yearly/, "");
-      acc[planName] = (acc[planName] || 0) + plan.totalAmount;
-    }
-    return acc;
-  }, {} as Record<string, number>);
+/* ---------- TYPE DEFINITIONS ---------- */
+interface Idea {
+  id: string;
+  collegeId: string;
+  status: string;
+  report?: { validationOutcome: string };
+}
+
+interface Plan {
+  id: string;
+  name: string;
+  enabled: boolean;
+  totalAmount: number;
+}
+
+interface College {
+  id: string;
+  name: string;
+  currentPlanId: string;
+}
+
+/* ---------- MAIN COMPONENT ---------- */
+export default function AdminDashboardPage() {
+  /* --- counts --- */
+
+  const {
+    data: ideas,
+    isLoading: ideaLoading,
+    error: ideaErrors,
+  } = useUserIdeas();
+
+  const {
+    data: innovators,
+    isLoading: innovatorsLoading,
+    error: innovatorsErrors,
+  } = useAllInnovators();
+
+  const {
+    data: collegeData,
+    isLoading: collegeLoading,
+    error: collegeErroe,
+  } = useColleges();
+
+  const totalColleges = collegeData?.length;
+  const totalIdeas = ideas?.length;
+  const totalTTCs = MOCK_TTCS.length;
+  const totalInnovators = innovators?.length;
+
+  /* --- revenue by plan --- */
+  const revenueByPlan = MOCK_COLLEGES.reduce<Record<string, number>>(
+    (acc, college) => {
+      const plan = (MOCK_PLANS as Plan[]).find(
+        (p) => p.id === college.currentPlanId
+      );
+      if (plan?.enabled) {
+        const planName = plan.name.replace(/ Monthly| Yearly/, "");
+        acc[planName] = (acc[planName] || 0) + plan.totalAmount;
+      }
+      return acc;
+    },
+    {}
+  );
   const revenueChartData = Object.entries(revenueByPlan).map(
-    ([name, revenue]) => ({ name, revenue })
+    ([name, revenue]) => ({
+      name,
+      revenue,
+    })
   );
 
-  const ideaStatusCounts = MOCK_IDEAS.reduce((acc, idea) => {
+  /* --- idea status counts --- */
+  const ideaStatusCounts = (MOCK_IDEAS as Idea[]).reduce<
+    Record<string, number>
+  >((acc, idea) => {
     const status = idea.report?.validationOutcome || idea.status;
     acc[status] = (acc[status] || 0) + 1;
     return acc;
-  }, {} as Record<string, number>);
+  }, {});
 
   const ideaStatusData = [
     {
@@ -85,24 +141,31 @@ export default function AdminDashboardPage() {
     },
   ];
 
-  const collegePerformance = MOCK_COLLEGES.map((college) => {
-    const collegeIdeas = MOCK_IDEAS.filter(
-      (idea) => idea.collegeId === college.id
-    );
-    const approved = collegeIdeas.filter((i) => i.status === "Approved").length;
-    const approvalRate =
-      collegeIdeas.length > 0 ? (approved / collegeIdeas.length) * 100 : 0;
-    return {
-      name: college.name,
-      ideas: collegeIdeas.length,
-      approvalRate: approvalRate.toFixed(1) + "%",
-    };
-  }).sort((a, b) => b.ideas - a.ideas);
+  /* --- college performance --- */
+  const collegePerformance = (MOCK_COLLEGES as College[])
+    .map((college) => {
+      const collegeIdeas = (MOCK_IDEAS as Idea[]).filter(
+        (idea) => idea.collegeId === college.id
+      );
+      const approved = collegeIdeas.filter(
+        (i) => (i.report?.validationOutcome || i.status) === "Approved"
+      ).length;
+      const approvalRate =
+        collegeIdeas.length > 0
+          ? ((approved / collegeIdeas.length) * 100).toFixed(1) + "%"
+          : "0.0%";
+      return {
+        name: college.name,
+        ideas: collegeIdeas.length,
+        approvalRate,
+      };
+    })
+    .sort((a, b) => b.ideas - a.ideas);
 
-  // console.log(localStorage.getItem("token"));
-
+  /* ---------- RENDER ---------- */
   return (
     <div className="flex flex-col gap-6">
+      {/* KPI cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="pb-2">
@@ -142,6 +205,7 @@ export default function AdminDashboardPage() {
         </Card>
       </div>
 
+      {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         <Card className="lg:col-span-3">
           <CardHeader>
@@ -168,21 +232,12 @@ export default function AdminDashboardPage() {
                     width={80}
                   />
                   <Tooltip
-                    cursor={true}
-                    content={
-                      <ChartTooltipContent
-                        contentStyle={{
-                          background: "hsl(var(--background))",
-                          border: "1px solid hsl(var(--border))",
-                        }}
-                        labelClassName="font-bold"
-                        formatter={(value) => [`${value} Ideas`, ""]}
-                      />
-                    }
+                    cursor={{ fill: "transparent" }}
+                    content={<ChartTooltipContent />}
                   />
                   <Bar dataKey="value" radius={5}>
-                    {ideaStatusData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    {ideaStatusData.map((entry, idx) => (
+                      <Cell key={`cell-${idx}`} fill={entry.fill} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -190,6 +245,7 @@ export default function AdminDashboardPage() {
             </ChartContainer>
           </CardContent>
         </Card>
+
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Revenue by Plan</CardTitle>
@@ -201,22 +257,7 @@ export default function AdminDashboardPage() {
             <ChartContainer config={{}} className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Tooltip
-                    cursor={true}
-                    content={
-                      <ChartTooltipContent
-                        contentStyle={{
-                          background: "hsl(var(--background))",
-                          border: "1px solid hsl(var(--border))",
-                        }}
-                        labelClassName="font-bold"
-                        formatter={(value) => [
-                          `₹${(value as number).toLocaleString()}`,
-                          "",
-                        ]}
-                      />
-                    }
-                  />
+                  <Tooltip content={<ChartTooltipContent />} />
                   <Pie
                     data={revenueChartData}
                     dataKey="revenue"
@@ -227,20 +268,21 @@ export default function AdminDashboardPage() {
                     outerRadius={80}
                     label
                   >
-                    {revenueChartData.map((entry, index) => (
+                    {revenueChartData.map((_, idx) => (
                       <Cell
-                        key={`cell-${index}`}
-                        fill={`hsl(var(--chart-${index + 1}))`}
+                        key={`cell-${idx}`}
+                        fill={`hsl(var(--chart-${idx + 1}))`}
                       />
                     ))}
                   </Pie>
                 </PieChart>
               </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        
+            </ChartContainer>
+          </CardContent>
+        </Card>
       </div>
 
+      {/* Top performing institutions table */}
       <Card>
         <CardHeader>
           <CardTitle>Top Performing Institutions</CardTitle>
@@ -259,13 +301,13 @@ export default function AdminDashboardPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {collegePerformance.map((college, index) => (
-                <TableRow key={college.name}>
-                  <TableCell className="font-bold">{index + 1}</TableCell>
-                  <TableCell>{college.name}</TableCell>
-                  <TableCell>{college.ideas}</TableCell>
+              {collegePerformance.map((c, idx) => (
+                <TableRow key={c.name}>
+                  <TableCell className="font-bold">{idx + 1}</TableCell>
+                  <TableCell>{c.name}</TableCell>
+                  <TableCell>{c.ideas}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary">{college.approvalRate}</Badge>
+                    <Badge variant="secondary">{c.approvalRate}</Badge>
                   </TableCell>
                 </TableRow>
               ))}

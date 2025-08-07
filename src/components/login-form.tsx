@@ -58,6 +58,7 @@ export function LoginForm() {
       if (res.data.success) {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("collegeId", res.data.user.collegeId);
+        localStorage.setItem("UserId", res.data.user.uid);
 
         toast({
           title: "Login Successful",

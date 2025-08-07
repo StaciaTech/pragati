@@ -1,5 +1,4 @@
-
-'use client';
+"use client";
 
 import * as React from "react";
 import {
@@ -14,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { MOCK_INNOVATOR_USER, MOCK_CREDIT_REQUESTS } from "@/lib/mock-data";
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -26,255 +24,185 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { Progress } from '@/components/ui/progress';
+} from "@/components/ui/alert-dialog";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-
+import axios from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMyPendingRequest } from "@/hooks/useAllCreditRequest";
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export default function RequestCreditsPage() {
   const { toast } = useToast();
-  const user = MOCK_INNOVATOR_USER;
-  const [requests, setRequests] = React.useState(MOCK_CREDIT_REQUESTS);
+  const queryClient = useQueryClient();
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  const token = localStorage.getItem("token");
+  // live pending request
+  const { data: pending, isLoading, error } = useMyPendingRequest();
+  const deleteRequest = useMyPendingRequest().deleteRequest;
 
-  const pendingRequest = requests.find(
-    (req) =>
-      req.requesterId === user.id &&
-      req.status === "Pending" &&
-      req.requesterType === "Innovator"
-  );
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (pendingRequest) {
+  // mutation to create request
+  const createRequest = useMutation({
+    mutationFn: async ({
+      amount,
+      reason,
+    }: {
+      amount: number;
+      reason: string;
+    }) => {
+      const { data } = await axios.post(
+        `${apiUrl}/api/credits/request-from-ttc`,
+        { amount, reason },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["myPendingRequest"] });
+      toast({ title: "Request Submitted" });
+    },
+    onError: (err: any) =>
       toast({
         variant: "destructive",
-        title: "Request Already Pending",
-        description:
-          "You already have a credit request awaiting approval. Please wait for it to be resolved.",
-      });
+        title: "Failed",
+        description: err?.response?.data?.error,
+      }),
+  });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const amount = Number(fd.get("amount"));
+    const reason = fd.get("purpose") as string;
+
+    if (!amount || amount <= 0 || !reason) {
+      toast({ variant: "destructive", title: "Invalid input" });
       return;
     }
 
-    const formData = new FormData(event.currentTarget);
-    const amount = formData.get("amount");
-    const purpose = formData.get("purpose");
-    const reason = formData.get("purpose");
-
-    if (!amount || !purpose || Number(amount) <= 0) {
-      toast({
-        variant: "destructive",
-        title: "Missing Information",
-        description:
-          "Please enter a valid amount and purpose for your credit request.",
-      });
-      return;
-    }
-
-    const res = await axios.post(
-      `${apiUrl}/api/credits/request-from-ttc`,
-      {
-        amount,
-        reason,
-      },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-
-    console.log(res.data);
-
-    // Simulate adding to mock data
-    // const newRequest = {
-    //   id: `CR-INV-${Date.now()}`,
-    //   requesterType: "Innovator" as const,
-    //   requesterId: user.id,
-    //   requesterName: user.name,
-    //   amount: Number(amount),
-    //   status: "Pending" as const,
-    //   date: new Date().toISOString().split("T")[0],
-    //   purpose: purpose as string,
-    // };
-    // setRequests((prev) => [...prev, newRequest]);
-    // MOCK_CREDIT_REQUESTS.push(newRequest);
-
-    if (res.data.success) {
-      toast({
-        title: "Request Submitted",
-        description: `Your request for ${amount} credits has been submitted to your TTC Coordinator.`,
-      });
-    }
-    event.currentTarget.reset();
+    createRequest.mutate({ amount, reason });
+    e.currentTarget.reset();
   };
 
-  const handleCancelRequest = (requestId: string) => {
-    setRequests((prev) => prev.filter((req) => req.id !== requestId));
-    const index = MOCK_CREDIT_REQUESTS.findIndex((req) => req.id === requestId);
-    if (index > -1) {
-      MOCK_CREDIT_REQUESTS.splice(index, 1);
-    }
-    toast({
-      title: "Request Cancelled",
-      description: "Your credit request has been successfully cancelled.",
-    });
+  const handleCancel = () => {
+    if (!pending) return;
+    deleteRequest.mutate(pending._id);
   };
 
   const creditFaqs = [
     {
       question: "How are credits used?",
-      answer: "One credit is used for each idea submission that you send for AI validation. Resubmitting an idea also costs one credit.",
+      answer: "One credit per idea submission.",
     },
     {
-      question: "How long does it take for a credit request to be approved?",
-      answer: "Credit requests are sent to your assigned TTC Coordinator. Approval times may vary, but you will be notified once a decision is made.",
+      question: "How long for approval?",
+      answer: "Handled by your TTC Coordinator.",
     },
     {
-      question: "What happens if my request is rejected?",
-      answer: "If your request is rejected, you may need to speak with your TTC Coordinator to understand the reason. You can submit a new request once the previous one is resolved.",
+      question: "What if rejected?",
+      answer: "Speak to your TTC and resubmit.",
     },
   ];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-            {pendingRequest && (
-                <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
-                <CardHeader>
-                    <CardTitle>Pending Request</CardTitle>
-                    <CardDescription>
-                    You have a credit request awaiting approval from your TTC Coordinator.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-2 text-sm">
-                    <p>
-                    <span className="font-semibold text-muted-foreground">
-                        Amount:{' '}
-                    </span>
-                    {pendingRequest.amount} credits
-                    </p>
-                    <p>
-                    <span className="font-semibold text-muted-foreground">
-                        Date:{' '}
-                    </span>
-                    {pendingRequest.date}
-                    </p>
-                    <p>
-                    <span className="font-semibold text-muted-foreground">
-                        Purpose:{' '}
-                    </span>
-                    {pendingRequest.purpose}
-                    </p>
-                </CardContent>
-                <CardFooter>
-                    <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                        <Button variant="destructive">Cancel Request</Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This will permanently cancel your credit request. This
-                            action cannot be undone.
-                        </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                        <AlertDialogCancel>Back</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={() => handleCancelRequest(pendingRequest.id)}
-                        >
-                            Yes, cancel it
-                        </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                    </AlertDialog>
-                </CardFooter>
-                </Card>
-            )}
+      <div className="lg:col-span-2 space-y-6">
+        {isLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
+        {error && <p className="text-sm text-red-500">Error loading request</p>}
+        {pending && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Pending Request</CardTitle>
+              <CardDescription>Awaiting TTC approval</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>Amount: {pending.amount}</p>
+              <p>Reason: {pending.reason}</p>
+              <p>Date: {new Date(pending.createdAt).toLocaleDateString()}</p>
+            </CardContent>
+            <CardFooter>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive">Cancel</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Cancel request?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Back</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleCancel}>
+                      Yes, cancel
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </CardFooter>
+          </Card>
+        )}
 
-            <Card>
-                <form onSubmit={handleSubmit}>
-                <CardHeader>
-                    <CardTitle>Request Credits from TTC Coordinator</CardTitle>
-                    <CardDescription>
-                    You currently have{' '}
-                    <span className="font-bold text-primary">{user.credits}</span>{' '}
-                    credits available. Use this form to request additional credits from your TTC.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                    <Label htmlFor="amount">Amount of Credits Needed</Label>
-                    <Input
-                        id="amount"
-                        name="amount"
-                        type="number"
-                        min="1"
-                        placeholder="e.g., 5"
-                        required
-                        disabled={!!pendingRequest}
-                    />
-                    </div>
-                    <div className="space-y-2">
-                    <Label htmlFor="purpose">Purpose of Request</Label>
-                    <Textarea
-                        id="purpose"
-                        name="purpose"
-                        placeholder="Briefly explain why you need more credits (e.g., for new project, resubmission)."
-                        required
-                        disabled={!!pendingRequest}
-                    />
-                    </div>
-                </CardContent>
-                <CardFooter>
-                    <Button type="submit" disabled={!!pendingRequest}>
-                    Submit Request to TTC
-                    </Button>
-                </CardFooter>
-                </form>
-            </Card>
-        </div>
-        
-        <div className="lg:col-span-1 space-y-6">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Credit Information</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="text-center">
-                        <p className="text-4xl font-bold text-primary">{user.credits}</p>
-                        <p className="text-muted-foreground">Credits Available</p>
-                    </div>
-                    <div>
-                        <Label>Usage (This Month)</Label>
-                        <Progress value={33} className="mt-2" />
-                        <p className="text-xs text-muted-foreground mt-1 text-right">5 / 15 credits used</p>
-                    </div>
-                </CardContent>
-            </Card>
+        <Card>
+          <form onSubmit={handleSubmit}>
+            <CardHeader>
+              <CardTitle>Request Credits</CardTitle>
+              <CardDescription>
+                You currently have{" "}
+                <span className="font-bold text-primary">0</span> credits.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label>Amount</Label>
+                <Input
+                  name="amount"
+                  type="number"
+                  min="1"
+                  required
+                  disabled={Boolean(pending)}
+                />
+              </div>
+              <div>
+                <Label>Reason</Label>
+                <Textarea name="purpose" required disabled={Boolean(pending)} />
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button
+                type="submit"
+                disabled={Boolean(pending) || createRequest.isPending}
+              >
+                {createRequest.isPending ? "Sending…" : "Submit"}
+              </Button>
+            </CardFooter>
+          </form>
+        </Card>
+      </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>FAQs</CardTitle>
-                </CardHeader>
-                <CardContent>
-                     <Accordion type="single" collapsible className="w-full">
-                        {creditFaqs.map((faq, i) => (
-                            <AccordionItem value={`item-${i}`} key={i}>
-                                <AccordionTrigger>{faq.question}</AccordionTrigger>
-                                <AccordionContent>{faq.answer}</AccordionContent>
-                            </AccordionItem>
-                        ))}
-                    </Accordion>
-                </CardContent>
-            </Card>
-        </div>
+      <div className="lg:col-span-1 space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>FAQs</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Accordion type="single" collapsible>
+              {creditFaqs.map((faq, i) => (
+                <AccordionItem key={i} value={`item-${i}`}>
+                  <AccordionTrigger>{faq.question}</AccordionTrigger>
+                  <AccordionContent>{faq.answer}</AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

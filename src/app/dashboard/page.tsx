@@ -1,123 +1,213 @@
-'use client';
+"use client";
 
-import { Suspense, useState, useEffect, useCallback } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { Suspense, useState, useEffect, useCallback } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import {
-  TrendingUp, Award, Clock, MoreVertical, Loader2, PlusCircle,
-  Lightbulb, CreditCard, BarChart3, Star, MessageSquare
-} from 'lucide-react';
+  TrendingUp,
+  Award,
+  Clock,
+  MoreVertical,
+  Loader2,
+  PlusCircle,
+  Lightbulb,
+  CreditCard,
+  BarChart3,
+  Star,
+  MessageSquare,
+} from "lucide-react";
 import {
-  Card, CardContent, CardDescription, CardHeader, CardTitle
-} from '@/components/ui/card';
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow
-} from '@/components/ui/table';
-import ProtectedRoute from '@/components/ProtectedRoute';
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
-  Dialog, DialogClose, DialogContent, DialogDescription,
-  DialogFooter, DialogHeader, DialogTitle
-} from '@/components/ui/dialog';
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle
-} from '@/components/ui/alert-dialog';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { ROLES, type Role } from '@/lib/constants';
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ROLES, type Role } from "@/lib/constants";
 import {
-  MOCK_INNOVATOR_USER, MOCK_IDEAS, STATUS_COLORS, MOCK_CONSULTATIONS
-} from '@/lib/mock-data';
-import { useToast } from '@/hooks/use-toast';
-import { ChartContainer } from '@/components/ui/chart';
-import { ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-import { cn } from '@/lib/utils';
+  MOCK_INNOVATOR_USER,
+  MOCK_IDEAS,
+  STATUS_COLORS,
+  MOCK_CONSULTATIONS,
+} from "@/lib/mock-data";
+import { useToast } from "@/hooks/use-toast";
+import { ChartContainer } from "@/components/ui/chart";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+} from "recharts";
+import { cn } from "@/lib/utils";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useUserIdeas } from "@/hooks/useUserIdeas";
 
 /* ----------  TYPES  ---------- */
 type Idea = (typeof MOCK_IDEAS)[0];
 
 /* ----------  CONSTANTS  ---------- */
 const chartConfig = {
-  ideas: { label: 'Ideas', color: 'hsl(var(--chart-1))' },
-  approved: { label: 'Slay', color: 'hsl(var(--color-approved))' },
-  moderate: { label: 'Mid', color: 'hsl(var(--color-moderate))' },
-  rejected: { label: 'Flop', color: 'hsl(var(--color-rejected))' }
+  ideas: { label: "Ideas", color: "hsl(var(--chart-1))" },
+  approved: { label: "Slay", color: "hsl(var(--color-approved))" },
+  moderate: { label: "Mid", color: "hsl(var(--color-moderate))" },
+  rejected: { label: "Flop", color: "hsl(var(--color-rejected))" },
 };
 
 const mockHistory = [
-  { version: 'V1.0', date: '2024-01-15', status: 'Slay', score: 88 },
-  { version: 'V0.9', date: '2024-01-10', status: 'Mid', score: 72 },
-  { version: 'V0.8', date: '2024-01-05', status: 'Flop', score: 45 }
+  { version: "V1.0", date: "2024-01-15", status: "Slay", score: 88 },
+  { version: "V0.9", date: "2024-01-10", status: "Mid", score: 72 },
+  { version: "V0.8", date: "2024-01-05", status: "Flop", score: 45 },
 ];
 
 const quotes = [
-  { text: 'The secret of getting ahead is getting started.', author: 'Mark Twain' },
-  { text: 'The best way to predict the future is to create it.', author: 'Peter Drucker' },
-  { text: 'Innovation distinguishes between a leader and a follower.', author: 'Steve Jobs' },
-  { text: 'Don\'t be afraid to give up the good to go for the great.', author: 'John D. Rockefeller' }
+  {
+    text: "The secret of getting ahead is getting started.",
+    author: "Mark Twain",
+  },
+  {
+    text: "The best way to predict the future is to create it.",
+    author: "Peter Drucker",
+  },
+  {
+    text: "Innovation distinguishes between a leader and a follower.",
+    author: "Steve Jobs",
+  },
+  {
+    text: "Don't be afraid to give up the good to go for the great.",
+    author: "John D. Rockefeller",
+  },
 ];
 
 /* ----------  HELPERS  ---------- */
 function getDashboardPath(role: Role) {
   switch (role) {
-    case ROLES.INNOVATOR: return '/dashboard';
-    case ROLES.COORDINATOR: return '/dashboard/coordinator';
-    case ROLES.PRINCIPAL: return '/dashboard/principal';
-    case ROLES.SUPER_ADMIN: return '/dashboard/admin';
-    default: return '/dashboard';
+    case ROLES.INNOVATOR:
+      return "/dashboard";
+    case ROLES.COORDINATOR:
+      return "/dashboard/coordinator";
+    case ROLES.PRINCIPAL:
+      return "/dashboard/principal";
+    case ROLES.SUPER_ADMIN:
+      return "/dashboard/admin";
+    default:
+      return "/dashboard";
   }
 }
 
 /* ----------  MAIN CONTENT  ---------- */
 function DashboardPageContent() {
   const searchParams = useSearchParams();
-  const role = (searchParams.get('role') as Role) || ROLES.INNOVATOR;
+  const role = (searchParams.get("role") as Role) || ROLES.INNOVATOR;
   const router = useRouter();
   const { toast } = useToast();
 
   /* state */
-  const [ideas, setIdeas] = useState<Idea[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [greeting, setGreeting] = useState('Welcome back');
+  // const [ideas, setIdeas] = useState<Idea[]>([]);
+  // const [isLoading, setIsLoading] = useState(true);
+  const [greeting, setGreeting] = useState("Welcome back");
   const [quote, setQuote] = useState(quotes[0]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
-  const [selectedIdeaForHistory, setSelectedIdeaForHistory] = useState<Idea | null>(null);
-  const [selectedAction, setSelectedAction] = useState<{ action?: () => void; title?: string; description?: string }>({});
+  const [selectedIdeaForHistory, setSelectedIdeaForHistory] =
+    useState<Idea | null>(null);
+  const [selectedAction, setSelectedAction] = useState<{
+    action?: () => void;
+    title?: string;
+    description?: string;
+  }>({});
 
   /* data init */
   useEffect(() => {
-    setIdeas(MOCK_IDEAS.filter(i => i.innovatorEmail === MOCK_INNOVATOR_USER.email));
-    setIsLoading(false);
+    // setIdeas(
+    //   MOCK_IDEAS.filter((i) => i.innovatorEmail === MOCK_INNOVATOR_USER.email)
+    // );
+    // setIsLoading(false);
 
     const h = new Date().getHours();
-    if (h < 12) setGreeting('Good morning');
-    else if (h < 18) setGreeting('Good afternoon');
-    else setGreeting('Good evening');
+    if (h < 12) setGreeting("Good morning");
+    else if (h < 18) setGreeting("Good afternoon");
+    else setGreeting("Good evening");
 
     setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
   }, []);
 
+  const { data: userData, isLoading, error: userError } = useUserProfile();
+  const {
+    data: ideas,
+    isLoading: ideasLoading,
+    error: ideasError,
+  } = useUserIdeas();
+  console.log(userData);
   /* derived values */
-  const totalIdeas = ideas.length;
-  const validatedIdeas = ideas.filter(i => i.report?.overallScore);
-  const avgScore = validatedIdeas.length ? validatedIdeas.reduce((a, i) => a + i.report!.overallScore, 0) / validatedIdeas.length : 0;
-  const approvedCount = ideas.filter(i => (i.report?.validationOutcome || i.status) === 'Slay').length;
-  const approvalRate = totalIdeas ? (approvedCount / totalIdeas) * 100 : 0;
+  const totalIdeas = ideas?.length;
+  // const validatedIdeas = ideas?.filter((i) => i.report?.overallScore);
+  const avgScore =
+    ideas && ideas.length > 0
+      ? Math.round(
+          ideas.reduce((acc, idea) => acc + Number(idea.overallScore), 0) /
+            ideas.length
+        )
+      : 0;
 
-  const submissionTrendData = useCallback(() => {
-    const trends: Record<string, number> = {};
-    [...ideas]
-      .sort((a, b) => new Date(a.dateSubmitted).getTime() - new Date(b.dateSubmitted).getTime())
-      .forEach(i => {
-        const m = new Date(i.dateSubmitted).toLocaleString('default', { month: 'short', year: '2-digit' });
-        trends[m] = (trends[m] || 0) + 1;
-      });
-    return Object.entries(trends).map(([name, ideas]) => ({ name, ideas }));
-  }, [ideas])();
+  const approvedCount = 0;
+  const approvalRate = 0;
+
+  // const submissionTrendData = useCallback(() => {
+  //   const trends: Record<string, number> = {};
+  //   [...ideas]
+  //     .sort(
+  //       (a, b) =>
+  //         new Date(a.dateSubmitted).getTime() -
+  //         new Date(b.dateSubmitted).getTime()
+  //     )
+  //     .forEach((i) => {
+  //       const m = new Date(i.dateSubmitted).toLocaleString("default", {
+  //         month: "short",
+  //         year: "2-digit",
+  //       });
+  //       trends[m] = (trends[m] || 0) + 1;
+  //     });
+  //   return Object.entries(trends).map(([name, ideas]) => ({ name, ideas }));
+  // }, [ideas])();
 
   /* handlers */
   const handleActionConfirm = useCallback(() => {
@@ -125,27 +215,42 @@ function DashboardPageContent() {
     setDialogOpen(false);
   }, [selectedAction]);
 
-  const openConfirmationDialog = useCallback((action: () => void, title: string, description: string) => {
-    setSelectedAction({ action, title, description });
-    setDialogOpen(true);
-  }, []);
+  const openConfirmationDialog = useCallback(
+    (action: () => void, title: string, description: string) => {
+      setSelectedAction({ action, title, description });
+      setDialogOpen(true);
+    },
+    []
+  );
 
-  const handleDownload = useCallback((id: string) => {
-    openConfirmationDialog(
-      () => toast({ title: 'Feature In Development', description: `Downloading for idea ${id} not yet implemented.` }),
-      'Confirm Download',
-      'Download the report for this idea?'
-    );
-  }, [openConfirmationDialog, toast]);
+  const handleDownload = useCallback(
+    (id: string) => {
+      openConfirmationDialog(
+        () =>
+          toast({
+            title: "Feature In Development",
+            description: `Downloading for idea ${id} not yet implemented.`,
+          }),
+        "Confirm Download",
+        "Download the report for this idea?"
+      );
+    },
+    [openConfirmationDialog, toast]
+  );
 
   const handleTrackHistory = useCallback((idea: Idea) => {
     setSelectedIdeaForHistory(idea);
     setHistoryDialogOpen(true);
   }, []);
 
-  const handleResubmit = useCallback((idea: Idea) => {
-    router.push(`/dashboard/submit?idea=${encodeURIComponent(JSON.stringify(idea))}`);
-  }, [router]);
+  const handleResubmit = useCallback(
+    (idea: Idea) => {
+      router.push(
+        `/dashboard/submit?idea=${encodeURIComponent(JSON.stringify(idea))}`
+      );
+    },
+    [router]
+  );
 
   /* role guard */
   if (role !== ROLES.INNOVATOR) {
@@ -153,30 +258,37 @@ function DashboardPageContent() {
       <Card>
         <CardHeader>
           <CardTitle>Dashboard</CardTitle>
-          <CardDescription>Please use your role-specific dashboard via the sidebar.</CardDescription>
+          <CardDescription>
+            Please use your role-specific dashboard via the sidebar.
+          </CardDescription>
         </CardHeader>
       </Card>
     );
   }
 
   /* loading */
-  if (isLoading) return (
-    <div className="flex justify-center items-center h-full">
-      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-    </div>
-  );
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-full">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
 
   /* render */
-  const recentIdeas = ideas.slice(0, 3);
-  const getOverallScore = (i: Idea) => i.report?.overallScore?.toFixed(1) ?? 'N/A';
+  const recentIdeas = ideasLoading ? [] : ideas.slice(0, 3);
+
+  const getOverallScore = (i: Idea) =>
+    i.report?.overallScore?.toFixed(1) ?? "N/A";
   const getStatus = (i: Idea) => i.report?.validationOutcome || i.status;
   const getScoreColor = (s: number | string) => {
     const n = Number(s);
-    if (isNaN(n)) return 'text-muted-foreground';
-    if (n >= 85) return 'text-green-600';
-    if (n >= 50) return 'text-orange-600';
-    return 'text-red-600';
+    if (isNaN(n)) return "text-muted-foreground";
+    if (n >= 85) return "text-green-600";
+    if (n >= 50) return "text-orange-600";
+    return "text-red-600";
   };
+
+  console.log(ideas);
 
   return (
     <>
@@ -187,7 +299,9 @@ function DashboardPageContent() {
           <div className="absolute -bottom-1/4 -right-1/2 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-[#F472B6] to-[#06B6D4] opacity-20 blur-3xl filter" />
           <div className="relative z-10">
             <CardHeader>
-              <CardTitle className="text-3xl">{greeting}, {MOCK_INNOVATOR_USER.name}!</CardTitle>
+              <CardTitle className="text-3xl">
+                {greeting}, {userData.name}!
+              </CardTitle>
               <CardDescription className="text-primary-foreground/80 italic">
                 "{quote.text}" — {quote.author}
               </CardDescription>
@@ -197,10 +311,26 @@ function DashboardPageContent() {
 
         {/* KPIs */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {[{ label: 'Total Submissions', value: totalIdeas, icon: TrendingUp },
-            { label: 'Average Score', value: avgScore.toFixed(2), icon: Star },
-            { label: 'Approval Rate', value: `${approvalRate.toFixed(1)}%`, icon: Clock }].map(k => (
-            <Card key={k.label} className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan cursor-pointer" onClick={() => router.push(`/dashboard/analytics?role=${ROLES.INNOVATOR}`)}>
+          {[
+            {
+              label: "Total Submissions",
+              value: totalIdeas,
+              icon: TrendingUp,
+            },
+            { label: "Average Score", value: avgScore.toFixed(2), icon: Star },
+            {
+              label: "Approval Rate",
+              value: `${approvalRate.toFixed(1)}%`,
+              icon: Clock,
+            },
+          ].map((k) => (
+            <Card
+              key={k.label}
+              className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan cursor-pointer"
+              onClick={() =>
+                router.push(`/dashboard/analytics?role=${ROLES.INNOVATOR}`)
+              }
+            >
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">{k.label}</CardTitle>
                 <k.icon className="w-4 h-4 text-muted-foreground" />
@@ -215,13 +345,32 @@ function DashboardPageContent() {
         {/* Quick Actions */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: 'Submit New Idea', icon: PlusCircle, href: `/dashboard/submit?role=${ROLES.INNOVATOR}` },
-            { label: 'View All Ideas', icon: Lightbulb, href: `/dashboard/ideas?role=${ROLES.INNOVATOR}` },
-            { label: 'Request Credits', icon: CreditCard, href: `/dashboard/request-credits?role=${ROLES.INNOVATOR}` },
-            { label: 'Schedule Consultation', icon: MessageSquare, href: `/dashboard/consultations?role=${ROLES.INNOVATOR}` }
-          ].map(a => (
+            {
+              label: "Submit New Idea",
+              icon: PlusCircle,
+              href: `/dashboard/submit?role=${ROLES.INNOVATOR}`,
+            },
+            {
+              label: "View All Ideas",
+              icon: Lightbulb,
+              href: `/dashboard/ideas?role=${ROLES.INNOVATOR}`,
+            },
+            {
+              label: "Request Credits",
+              icon: CreditCard,
+              href: `/dashboard/request-credits?role=${ROLES.INNOVATOR}`,
+            },
+            {
+              label: "Consultation",
+              icon: MessageSquare,
+              href: `/dashboard/consultations?role=${ROLES.INNOVATOR}`,
+            },
+          ].map((a) => (
             <Button key={a.label} asChild className="w-full">
-              <Link href={a.href}><a.icon className="mr-2 h-4 w-4" />{a.label}</Link>
+              <Link href={a.href}>
+                <a.icon className="mr-2 h-4 w-4" />
+                {a.label}
+              </Link>
             </Button>
           ))}
         </div>
@@ -231,17 +380,23 @@ function DashboardPageContent() {
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle>My Recent Ideas</CardTitle>
-              {ideas.length > 3 && (
+              {ideas?.length > 3 && (
                 <Button variant="link" asChild>
-                  <Link href={`/dashboard/ideas?role=${ROLES.INNOVATOR}`}>View All</Link>
+                  <Link href={`/dashboard/ideas?role=${ROLES.INNOVATOR}`}>
+                    View All
+                  </Link>
                 </Button>
               )}
             </div>
-            <CardDescription>A quick look at your most recent ideas.</CardDescription>
+            <CardDescription>
+              A quick look at your most recent ideas.
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            {ideas.length === 0 ? (
-              <p className="text-center text-muted-foreground">No ideas yet. Submit your first!</p>
+            {ideas?.length === 0 ? (
+              <p className="text-center text-muted-foreground">
+                No ideas yet. Submit your first!
+              </p>
             ) : (
               <Table>
                 <TableHeader>
@@ -254,24 +409,57 @@ function DashboardPageContent() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {recentIdeas.map(idea => (
-                    <TableRow key={idea.id}>
-                      <TableCell className="font-medium">{idea.title}</TableCell>
-                      <TableCell>{idea.dateSubmitted}</TableCell>
-                      <TableCell>
-                        <Badge className={STATUS_COLORS[getStatus(idea)]}>{getStatus(idea)}</Badge>
+                  {recentIdeas.map((idea) => (
+                    <TableRow key={idea._id}>
+                      <TableCell className="font-medium">
+                        {idea.ideaName}
                       </TableCell>
-                      <TableCell className={cn('font-semibold', getScoreColor(getOverallScore(idea)))}>{getOverallScore(idea)}</TableCell>
+                      <TableCell>{idea.createdAt}</TableCell>
+                      <TableCell>
+                        <Badge className={STATUS_COLORS[getStatus(idea)]}>
+                          {getStatus(idea)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell
+                        className={cn(
+                          "font-semibold",
+                          getScoreColor(getOverallScore(idea))
+                        )}
+                      >
+                        {getOverallScore(idea)}
+                      </TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm"><MoreVertical className="h-4 w-4" /></Button>
+                            <Button variant="ghost" size="sm">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
-                            <DropdownMenuItem onSelect={() => router.push(`/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`)}>View Report</DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => handleResubmit(idea)}>Resubmit</DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => handleDownload(idea.id)}>Download</DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => handleTrackHistory(idea)}>Track History</DropdownMenuItem>
+                            <DropdownMenuItem
+                              onSelect={() =>
+                                router.push(
+                                  `/dashboard/ideas/${idea.id}?role=${ROLES.INNOVATOR}`
+                                )
+                              }
+                            >
+                              View Report
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onSelect={() => handleResubmit(idea)}
+                            >
+                              Resubmit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onSelect={() => handleDownload(idea.id)}
+                            >
+                              Download
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onSelect={() => handleTrackHistory(idea)}
+                            >
+                              Track History
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -289,11 +477,15 @@ function DashboardPageContent() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{selectedAction.title}</AlertDialogTitle>
-            <AlertDialogDescription>{selectedAction.description}</AlertDialogDescription>
+            <AlertDialogDescription>
+              {selectedAction.description}
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleActionConfirm}>Yes, continue</AlertDialogAction>
+            <AlertDialogAction onClick={handleActionConfirm}>
+              Yes, continue
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -301,7 +493,9 @@ function DashboardPageContent() {
       <Dialog open={historyDialogOpen} onOpenChange={setHistoryDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>History for: {selectedIdeaForHistory?.title}</DialogTitle>
+            <DialogTitle>
+              History for: {selectedIdeaForHistory?.title}
+            </DialogTitle>
             <DialogDescription>Version history and outcomes.</DialogDescription>
           </DialogHeader>
           <Table>
@@ -318,14 +512,20 @@ function DashboardPageContent() {
                 <TableRow key={i}>
                   <TableCell>{h.version}</TableCell>
                   <TableCell>{h.date}</TableCell>
-                  <TableCell><Badge className={STATUS_COLORS[h.status]}>{h.status}</Badge></TableCell>
+                  <TableCell>
+                    <Badge className={STATUS_COLORS[h.status]}>
+                      {h.status}
+                    </Badge>
+                  </TableCell>
                   <TableCell>{h.score.toFixed(1)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
           <DialogFooter>
-            <DialogClose asChild><Button variant="outline">Close</Button></DialogClose>
+            <DialogClose asChild>
+              <Button variant="outline">Close</Button>
+            </DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -337,11 +537,13 @@ function DashboardPageContent() {
 export default function DashboardPage() {
   return (
     <ProtectedRoute>
-      <Suspense fallback={
-        <div className="flex justify-center items-center h-full">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
-      }>
+      <Suspense
+        fallback={
+          <div className="flex justify-center items-center h-full">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        }
+      >
         <DashboardPageContent />
       </Suspense>
     </ProtectedRoute>
