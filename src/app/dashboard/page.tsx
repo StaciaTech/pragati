@@ -86,10 +86,22 @@ type Idea = (typeof MOCK_IDEAS)[0];
 
 /* ----------  CONSTANTS  ---------- */
 const chartConfig = {
-  ideas: { label: "Ideas", color: "hsl(var(--chart-1))" },
-  approved: { label: "Slay", color: "hsl(var(--color-approved))" },
-  moderate: { label: "Mid", color: "hsl(var(--color-moderate))" },
-  rejected: { label: "Flop", color: "hsl(var(--color-rejected))" },
+  ideas: {
+    label: "Ideas",
+    color: "hsl(var(--chart-1))",
+  },
+  approved: {
+    label: "Slay",
+    color: "hsl(var(--color-approved))",
+  },
+  moderate: {
+    label: "Mid",
+    color: "hsl(var(--color-moderate))",
+  },
+  rejected: {
+    label: "Flop",
+    color: "hsl(var(--color-rejected))",
+  },
 };
 
 const mockHistory = [
@@ -170,44 +182,37 @@ function DashboardPageContent() {
     setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
   }, []);
 
-  const { data: userData, isLoading, error: userError } = useUserProfile();
-  const {
-    data: ideas,
-    isLoading: ideasLoading,
-    error: ideasError,
-  } = useUserIdeas();
-  console.log(userData);
-  /* derived values */
-  const totalIdeas = ideas?.length;
-  // const validatedIdeas = ideas?.filter((i) => i.report?.overallScore);
-  const avgScore =
-    ideas && ideas.length > 0
-      ? Math.round(
-          ideas.reduce((acc, idea) => acc + Number(idea.overallScore), 0) /
-            ideas.length
-        )
+  const totalIdeas = ideas.length;
+  const validatedIdeas = ideas.filter((idea) => idea.report?.overallScore);
+  const averageScore =
+    validatedIdeas.length > 0
+      ? validatedIdeas.reduce(
+          (acc, item) => acc + item.report!.overallScore,
+          0
+        ) / validatedIdeas.length
       : 0;
+  const approvedCount = ideas.filter(
+    (idea) => (idea.report?.validationOutcome || idea.status) === "Slay"
+  ).length;
+  const approvalRate = totalIdeas > 0 ? (approvedCount / totalIdeas) * 100 : 0;
 
-  const approvedCount = 0;
-  const approvalRate = 0;
+  const submissionTrendData = React.useMemo(() => {
+    const trends: { [key: string]: number } = {};
+    const sortedIdeas = [...ideas].sort(
+      (a, b) =>
+        new Date(a.dateSubmitted).getTime() -
+        new Date(b.dateSubmitted).getTime()
+    );
 
-  // const submissionTrendData = useCallback(() => {
-  //   const trends: Record<string, number> = {};
-  //   [...ideas]
-  //     .sort(
-  //       (a, b) =>
-  //         new Date(a.dateSubmitted).getTime() -
-  //         new Date(b.dateSubmitted).getTime()
-  //     )
-  //     .forEach((i) => {
-  //       const m = new Date(i.dateSubmitted).toLocaleString("default", {
-  //         month: "short",
-  //         year: "2-digit",
-  //       });
-  //       trends[m] = (trends[m] || 0) + 1;
-  //     });
-  //   return Object.entries(trends).map(([name, ideas]) => ({ name, ideas }));
-  // }, [ideas])();
+    sortedIdeas.forEach((idea) => {
+      const month = new Date(idea.dateSubmitted).toLocaleString("default", {
+        month: "short",
+        year: "2-digit",
+      });
+      trends[month] = (trends[month] || 0) + 1;
+    });
+    return Object.entries(trends).map(([name, ideas]) => ({ name, ideas }));
+  }, [ideas]);
 
   /* handlers */
   const handleActionConfirm = useCallback(() => {
@@ -293,17 +298,16 @@ function DashboardPageContent() {
   return (
     <>
       <div className="flex flex-col gap-6">
-        {/* Hero Card */}
         <Card className="w-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg border-0 relative overflow-hidden">
           <div className="absolute -top-1/4 -left-1/4 h-full w-full animate-wavy-bounce-1 rounded-full bg-gradient-to-br from-[#FF00CC] to-[#333399] opacity-30 blur-3xl filter" />
           <div className="absolute -bottom-1/4 -right-1/2 h-full w-full animate-wavy-bounce-2 rounded-full bg-gradient-to-tl from-[#F472B6] to-[#06B6D4] opacity-20 blur-3xl filter" />
           <div className="relative z-10">
             <CardHeader>
-              <CardTitle className="text-3xl">
-                {greeting}, {userData.name}!
+              <CardTitle className="text-3xl text-white">
+                {greeting}, {user.name}!
               </CardTitle>
               <CardDescription className="text-primary-foreground/80 italic">
-                "{quote.text}" — {quote.author}
+                "{quote.text}" - {quote.author}
               </CardDescription>
             </CardHeader>
           </div>

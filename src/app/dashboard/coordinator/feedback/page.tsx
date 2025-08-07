@@ -35,13 +35,6 @@ export default function IdeaFeedbackPage() {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [filterStatus, setFilterStatus] = React.useState("all");
 
-  const {
-    data: ideas,
-    isLoading: ideasLoading,
-    error: ideasError,
-  } = useUserIdeas();
-  console.log(ideas);
-
   const assignedIdeasWithFeedback = MOCK_IDEAS.filter(
     (idea) => idea.ttcAssigned === userTTC.id && idea.feedback
   );
@@ -61,6 +54,10 @@ export default function IdeaFeedbackPage() {
         <CardTitle>Idea Feedback</CardTitle>
         <CardDescription>
           Review ideas you have provided feedback for.
+        </CardDescription>
+        <CardTitle>Idea Management</CardTitle>
+        <CardDescription>
+          Review and manage ideas submitted by your innovators.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -119,6 +116,13 @@ export default function IdeaFeedbackPage() {
               <TableRow>
                 <TableCell colSpan={5} className="text-center">
                   No ideas with feedback found.
+                </TableCell>
+              </TableRow>
+            )}
+            {filteredIdeas.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center">
+                  No ideas found.
                 </TableCell>
               </TableRow>
             )}

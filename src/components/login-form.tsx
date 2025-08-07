@@ -136,7 +136,7 @@ export function LoginForm() {
             />
           </div>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex flex-col items-center gap-4">
           <Button type="submit" className="w-full">
             <span>Login</span>
             <ArrowRight className="ml-2 h-4 w-4" />
@@ -144,5 +144,6 @@ export function LoginForm() {
         </CardFooter>
       </form>
     </Card>
+  );
   );
 }

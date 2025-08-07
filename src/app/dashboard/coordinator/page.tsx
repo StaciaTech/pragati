@@ -1,5 +1,4 @@
 
-
 'use client';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -9,12 +8,15 @@ import { Lightbulb, ListChecks, Users, MessageSquare } from "lucide-react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 
 export default function CoordinatorDashboardPage() {
     // This is a mock implementation. In a real app, you'd get the logged-in user's ID.
     const userTTC = MOCK_TTCS[0]; 
     const college = MOCK_COLLEGES.find(c => c.id === userTTC.collegeId);
+    const router = useRouter();
 
     const assignedIdeas = MOCK_IDEAS.filter(idea => idea.ttcAssigned === userTTC.id);
     const pendingEvaluations = assignedIdeas.filter(idea => idea.status === 'Pending' || !idea.report);
@@ -51,46 +53,54 @@ export default function CoordinatorDashboardPage() {
     return (
         <div className="flex flex-col gap-6">
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Total Innovators</CardTitle>
-                        <Users className="w-4 h-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-2xl font-bold">{collegeInnovators.length}</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Total Assigned Ideas</CardTitle>
-                        <Lightbulb className="w-4 h-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-2xl font-bold">{assignedIdeas.length}</p>
-                    </CardContent>
-                </Card>
-                 <Card>
-                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Pending Evaluations</CardTitle>
-                        <ListChecks className="w-4 h-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-2xl font-bold">{pendingEvaluations.length}</p>
-                    </CardContent>
-                </Card>
-                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Upcoming Consultations</CardTitle>
-                        <MessageSquare className="w-4 h-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-2xl font-bold">{scheduledConsultations.length}</p>
-                    </CardContent>
-                </Card>
+                <Link href={`/dashboard/coordinator/innovator-management?role=TTC Coordinator`}>
+                    <Card className="hover:shadow-lg transition-shadow">
+                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                            <CardTitle className="text-sm font-medium">Total Innovators</CardTitle>
+                            <Users className="w-4 h-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-2xl font-bold">{collegeInnovators.length}</p>
+                        </CardContent>
+                    </Card>
+                </Link>
+                <Link href={`/dashboard/coordinator/manage-ideas?role=TTC Coordinator`}>
+                    <Card className="hover:shadow-lg transition-shadow">
+                         <CardHeader className="flex flex-row items-center justify-between pb-2">
+                            <CardTitle className="text-sm font-medium">Total Assigned Ideas</CardTitle>
+                            <Lightbulb className="w-4 h-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-2xl font-bold">{assignedIdeas.length}</p>
+                        </CardContent>
+                    </Card>
+                </Link>
+                 <Link href={`/dashboard/coordinator/manage-ideas?role=TTC Coordinator`}>
+                    <Card className="hover:shadow-lg transition-shadow">
+                         <CardHeader className="flex flex-row items-center justify-between pb-2">
+                            <CardTitle className="text-sm font-medium">Pending Evaluations</CardTitle>
+                            <ListChecks className="w-4 h-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-2xl font-bold">{pendingEvaluations.length}</p>
+                        </CardContent>
+                    </Card>
+                 </Link>
+                 <Link href={`/dashboard/coordinator/consultations?role=TTC Coordinator`}>
+                    <Card className="hover:shadow-lg transition-shadow">
+                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                            <CardTitle className="text-sm font-medium">Upcoming Consultations</CardTitle>
+                            <MessageSquare className="w-4 h-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-2xl font-bold">{scheduledConsultations.length}</p>
+                        </CardContent>
+                    </Card>
+                 </Link>
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                 <Card className="lg:col-span-3">
+                 <Card className="lg:col-span-3 cursor-pointer hover:shadow-lg transition-shadow" onClick={() => router.push(`/dashboard/coordinator/analytics?role=TTC Coordinator`)}>
                     <CardHeader>
                         <CardTitle>Top Performing Innovators</CardTitle>
                         <CardDescription>Innovators you manage, ranked by average idea score.</CardDescription>
@@ -116,7 +126,7 @@ export default function CoordinatorDashboardPage() {
                        </ChartContainer>
                     </CardContent>
                 </Card>
-                <Card className="lg:col-span-2">
+                <Card className="lg:col-span-2 cursor-pointer hover:shadow-lg transition-shadow" onClick={() => router.push(`/dashboard/coordinator/analytics?role=TTC Coordinator`)}>
                     <CardHeader>
                         <CardTitle>Idea Status Distribution</CardTitle>
                          <CardDescription>Breakdown of outcomes for ideas you've been assigned.</CardDescription>
@@ -160,7 +170,7 @@ export default function CoordinatorDashboardPage() {
                         </TableHeader>
                         <TableBody>
                             {scheduledConsultations.length > 0 ? scheduledConsultations.map(idea => (
-                                <TableRow key={idea.id}>
+                                <TableRow key={idea.id} className="cursor-pointer" onClick={() => router.push(`/dashboard/ideas/${idea.id}?role=TTC Coordinator`)}>
                                     <TableCell>{idea.title}</TableCell>
                                     <TableCell>{idea.innovatorName}</TableCell>
                                     <TableCell>{idea.consultationDate} at {idea.consultationTime}</TableCell>

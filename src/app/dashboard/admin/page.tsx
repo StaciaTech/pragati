@@ -1,5 +1,7 @@
 "use client";
 
+"use client";
+
 import {
   Card,
   CardHeader,
@@ -139,6 +141,21 @@ export default function AdminDashboardPage() {
       value: ideaStatusCounts.Rejected || 0,
       fill: "hsl(var(--color-rejected))",
     },
+    {
+      name: "Slay",
+      value: ideaStatusCounts["Slay"] || 0,
+      fill: "hsl(var(--color-approved))",
+    },
+    {
+      name: "Mid",
+      value: ideaStatusCounts["Mid"] || 0,
+      fill: "hsl(var(--color-moderate))",
+    },
+    {
+      name: "Flop",
+      value: ideaStatusCounts["Flop"] || 0,
+      fill: "hsl(var(--color-rejected))",
+    },
   ];
 
   /* --- college performance --- */
@@ -157,7 +174,7 @@ export default function AdminDashboardPage() {
       return {
         name: college.name,
         ideas: collegeIdeas.length,
-        approvalRate,
+        approvalRate: approvalRate,
       };
     })
     .sort((a, b) => b.ideas - a.ideas);
@@ -301,13 +318,15 @@ export default function AdminDashboardPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {collegePerformance.map((c, idx) => (
-                <TableRow key={c.name}>
-                  <TableCell className="font-bold">{idx + 1}</TableCell>
-                  <TableCell>{c.name}</TableCell>
-                  <TableCell>{c.ideas}</TableCell>
+              {collegePerformance.map((college, index) => (
+                <TableRow key={college.name}>
+                  <TableCell className="font-bold">{index + 1}</TableCell>
+                  <TableCell>{college.name}</TableCell>
+                  <TableCell>{college.ideas}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary">{c.approvalRate}</Badge>
+                    <Badge variant="secondary">
+                      {college.approvalRate.toFixed(1)}%
+                    </Badge>
                   </TableCell>
                 </TableRow>
               ))}

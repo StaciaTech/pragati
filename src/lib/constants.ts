@@ -111,7 +111,7 @@ export const NAV_LINKS: Record<
       href: `/dashboard/coordinator?role=${ROLES.COORDINATOR}`,
     },
     {
-      title: "Innovator Management",
+      title: "Manage Innovators",
       icon: Users,
       href: `/dashboard/coordinator/innovator-management?role=${ROLES.COORDINATOR}`,
     },
@@ -121,9 +121,9 @@ export const NAV_LINKS: Record<
       href: `/dashboard/coordinator/consultations?role=${ROLES.COORDINATOR}`,
     },
     {
-      title: "Idea Feedback",
+      title: "Manage Ideas",
       icon: Lightbulb,
-      href: `/dashboard/coordinator/feedback?role=${ROLES.COORDINATOR}`,
+      href: `/dashboard/coordinator/manage-ideas?role=${ROLES.COORDINATOR}`,
     },
     {
       title: "Analytics",
