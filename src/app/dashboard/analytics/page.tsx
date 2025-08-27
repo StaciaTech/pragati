@@ -1,57 +1,79 @@
+"use client";
 
-
-'use client';
-
-import * as React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Bar, BarChart, CartesianGrid, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Label, Cell, Sector } from 'recharts';
-import { MOCK_IDEAS } from '@/lib/mock-data';
-import { TrendingUp, Award, Clock } from 'lucide-react';
-import type { PieSectorDataItem } from 'recharts/types/polar/Pie';
+import * as React from "react";
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  Cell,
+  Sector,
+} from "recharts";
+import { MOCK_IDEAS } from "@/lib/mock-data";
+import { TrendingUp, Award, Clock } from "lucide-react";
+import { useUserIdeas } from "@/hooks/useUserIdeas";
+import axios from "axios";
 
 const chartConfig = {
-  ideas: {
-    label: 'Ideas',
-    color: 'hsl(var(--chart-1))',
-  },
-  score: {
-    label: 'Score',
-    color: 'hsl(var(--chart-1))',
-  },
-  approved: {
-    label: 'Approved',
-    color: 'hsl(var(--color-approved))',
-  },
-  moderate: {
-    label: 'Moderate',
-    color: 'hsl(var(--color-moderate))',
-  },
-  rejected: {
-    label: 'Rejected',
-    color: 'hsl(var(--color-rejected))',
-  },
+  ideas: { label: "Ideas", color: "hsl(var(--chart-1))" },
+  score: { label: "Score", color: "hsl(var(--chart-1))" },
+  approved: { label: "Approved", color: "hsl(var(--color-approved))" },
+  moderate: { label: "Moderate", color: "hsl(var(--color-moderate))" },
+  rejected: { label: "Rejected", color: "hsl(var(--color-rejected))" },
 };
 
 const ActiveShape = (props: any) => {
-  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload, value } = props;
-
+  const {
+    cx,
+    cy,
+    innerRadius,
+    outerRadius,
+    startAngle,
+    endAngle,
+    fill,
+    payload,
+    value,
+  } = props;
   return (
     <g>
-      <text x={cx} y={cy} dy={-4} textAnchor="middle" fill={fill} className="text-2xl font-bold">
+      <text
+        x={cx}
+        y={cy}
+        dy={-4}
+        textAnchor="middle"
+        fill={fill}
+        className="text-2xl font-bold"
+      >
         {value}
       </text>
-       <text x={cx} y={cy} dy={16} textAnchor="middle" fill="hsl(var(--muted-foreground))" className="text-sm">
+      <text
+        x={cx}
+        y={cy}
+        dy={16}
+        textAnchor="middle"
+        fill="hsl(var(--muted-foreground))"
+        className="text-sm"
+      >
         {payload.name}
       </text>
       <Sector
-        cx={cx}
-        cy={cy}
-        innerRadius={innerRadius}
-        outerRadius={outerRadius}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        fill={fill}
+        {...{ cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill }}
       />
       <Sector
         cx={cx}
@@ -66,101 +88,127 @@ const ActiveShape = (props: any) => {
   );
 };
 
-
 export default function AnalyticsPage() {
   const [activeIndex, setActiveIndex] = React.useState(0);
-  const onPieEnter = React.useCallback(
-    (_: any, index: number) => {
-      setActiveIndex(index);
-    },
-    [setActiveIndex]
+  const { data: ideasFromApi } = useUserIdeas();
+
+  const [submissionTrendData, setSubmissionTrendData] = useState();
+
+  const ideas = ideasFromApi?.length ? ideasFromApi : MOCK_IDEAS;
+
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const token = localStorage.getItem("token");
+
+  const fetchSumissionTrend = async () => {
+    try {
+      const { data } = await axios.get(`${apiUrl}/api/analytics/domain-trend`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setSubmissionTrendData(data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    fetchSumissionTrend();
+  }, []);
+
+  // --- Metrics ---
+  const totalIdeas = ideas.length;
+  const approvedCount = ideas.filter(
+    (i) => i.status?.toLowerCase() === "approved"
+  ).length;
+  const approvalRate = totalIdeas > 0 ? (approvedCount / totalIdeas) * 100 : 0;
+
+  // const validatedIdeas = ideas.filter((i) => i.report?.overallScore);
+  const totalScoreSum = ideas.reduce(
+    (sum, i) => sum + (i?.overallScore || 0),
+    0
   );
-  
-  const ideaStatusData = React.useMemo(() => {
-    const statuses: Record<string, number> = { Approved: 0, Moderate: 0, Rejected: 0 };
-    MOCK_IDEAS.forEach((idea) => {
-      const status = idea.report?.validationOutcome || idea.status;
-      if (status in statuses) {
-        statuses[status as keyof typeof statuses]++;
-      }
-    });
-    return [
-      { name: 'Approved', value: statuses.Approved, fill: 'hsl(var(--color-approved))' },
-      { name: 'Moderate', value: statuses.Moderate, fill: 'hsl(var(--color-moderate))' },
-      { name: 'Rejected', value: statuses.Rejected, fill: 'hsl(var(--color-rejected))' },
-    ];
-  }, []);
+  const averageScore = ideas?.length > 0 ? totalScoreSum / totalIdeas : 0;
 
-  const submissionTrendData = React.useMemo(() => {
-    const trends: { [key: string]: number } = {};
-    const sortedIdeas = [...MOCK_IDEAS].sort((a,b) => new Date(a.dateSubmitted).getTime() - new Date(b.dateSubmitted).getTime());
-    
-    sortedIdeas.forEach((idea) => {
-      const month = new Date(idea.dateSubmitted).toLocaleString('default', { month: 'short', year: '2-digit' });
-      trends[month] = (trends[month] || 0) + 1;
-    });
-    return Object.entries(trends).map(([name, ideas]) => ({ name, ideas }));
-  }, []);
+  const ideaStatusData = [
+    {
+      name: "Approved",
+      value: approvedCount,
+      fill: "hsl(var(--color-approved))",
+    },
+    {
+      name: "Moderate",
+      value: ideas.filter((i) => i.status?.toLowerCase() === "moderate").length,
+      fill: "hsl(var(--color-moderate))",
+    },
+    {
+      name: "Rejected",
+      value: ideas.filter((i) => i.status?.toLowerCase() === "rejected").length,
+      fill: "hsl(var(--color-rejected))",
+    },
+  ];
 
-  const scoreTrendData = React.useMemo(() => {
-     return MOCK_IDEAS.filter(idea => idea.report?.overallScore)
-      .map(idea => ({
-        name: idea.title.length > 15 ? `${idea.title.substring(0, 15)}...` : idea.title,
-        score: idea.report!.overallScore,
-      }))
-      .sort((a,b) => MOCK_IDEAS.findIndex(idea => idea.title === a.name) - MOCK_IDEAS.findIndex(idea => idea.title === b.name));
-  }, []);
-
-  const totalIdeas = MOCK_IDEAS.length;
-  const averageScore = scoreTrendData.length > 0 ? (scoreTrendData.reduce((acc, item) => acc + item.score, 0) / scoreTrendData.length) : 0;
-  const approvalRate = totalIdeas > 0 ? (ideaStatusData.find(d => d.name === 'Approved')!.value / totalIdeas * 100) : 0;
-
+  const scoreTrendData = ideas?.map((idea) => ({
+    name:
+      idea?.ideaName?.length > 15
+        ? `${idea?.ideaName?.slice(0, 15)}...`
+        : idea?.ideaName,
+    score: idea?.overallScore,
+  }));
+  // const scoreTrendData = [];
 
   return (
     <div className="space-y-6">
-       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
-            <TrendingUp className="w-4 h-4 text-muted-foreground" />
+            <CardTitle>Total Submissions</CardTitle>
+            <TrendingUp />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalIdeas}</div>
-            <p className="text-xs text-muted-foreground">ideas submitted all time</p>
+            <p className="text-xs text-muted-foreground">
+              ideas submitted all time
+            </p>
           </CardContent>
         </Card>
-        <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Average Score</CardTitle>
-            <Award className="w-4 h-4 text-muted-foreground" />
+            <CardTitle>Average Score</CardTitle>
+            <Award />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{averageScore.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">across all validated ideas</p>
+            <p className="text-xs text-muted-foreground">
+              across all validated ideas
+            </p>
           </CardContent>
         </Card>
-        <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Approval Rate</CardTitle>
-            <Clock className="w-4 h-4 text-muted-foreground" />
+            <CardTitle>Approval Rate</CardTitle>
+            <Clock />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{approvalRate.toFixed(1)}%</div>
-             <p className="text-xs text-muted-foreground">of ideas have been approved</p>
+            <p className="text-xs text-muted-foreground">
+              of ideas have been approved
+            </p>
           </CardContent>
         </Card>
       </div>
 
-
+      {/* Pie Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <Card className="lg:col-span-2 border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
+        <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Idea Status Distribution</CardTitle>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+            <ChartContainer
+              config={chartConfig}
+              className="min-h-[200px] w-full"
+            >
               <ResponsiveContainer width="100%" height={250}>
-                 <PieChart>
+                <PieChart>
                   <Pie
                     activeIndex={activeIndex}
                     activeShape={ActiveShape}
@@ -170,40 +218,34 @@ export default function AnalyticsPage() {
                     innerRadius={60}
                     outerRadius={80}
                     dataKey="value"
-                    onMouseEnter={onPieEnter}
+                    onMouseEnter={(_, i) => setActiveIndex(i)}
                   >
-                     {ideaStatusData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.fill} />
-                      ))}
+                    {ideaStatusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
                   </Pie>
                 </PieChart>
               </ResponsiveContainer>
             </ChartContainer>
           </CardContent>
         </Card>
-        <Card className="lg:col-span-3 border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
+
+        {/* Submission Trend */}
+        <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle>Submission Trend</CardTitle>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+            <ChartContainer
+              config={chartConfig}
+              className="min-h-[200px] w-full"
+            >
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={submissionTrendData}>
                   <CartesianGrid vertical={false} />
-                  <XAxis
-                    dataKey="name"
-                    tickLine={false}
-                    tickMargin={10}
-                    axisLine={false}
-                  />
-                   <YAxis />
-                  <Tooltip
-                    cursor={true}
-                    content={<ChartTooltipContent 
-                        contentStyle={{background: "hsl(var(--background))", border: "1px solid hsl(var(--border))"}}
-                        labelClassName="font-bold"
-                    />}
-                  />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip content={<ChartTooltipContent />} />
                   <Bar dataKey="ideas" fill="hsl(var(--chart-1))" radius={8} />
                 </BarChart>
               </ResponsiveContainer>
@@ -212,37 +254,44 @@ export default function AnalyticsPage() {
         </Card>
       </div>
 
-       <Card className="border-purple-500 border-indigo-500 bg-[length:200%_auto] animate-background-pan">
-          <CardHeader>
-            <CardTitle>Overall Score Trend</CardTitle>
-             <CardDescription>Shows the evaluation score for each idea you've submitted.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-[350px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={scoreTrendData} margin={{ top: 5, right: 20, left: -10, bottom: 60 }}>
-                        <defs>
-                            <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.8}/>
-                                <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0.1}/>
-                            </linearGradient>
-                        </defs>
-                        <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                        <XAxis dataKey="name" tick={{ fontSize: 12 }} angle={-45} textAnchor="end" interval={0} />
-                        <YAxis domain={[0, 100]} />
-                        <Tooltip 
-                            content={<ChartTooltipContent 
-                                contentStyle={{background: "hsl(var(--background))", border: "1px solid hsl(var(--border))"}}
-                                labelClassName="font-bold"
-                            />}
-                        />
-                        <Line type="monotone" dataKey="score" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{r: 4}} activeDot={{r: 8}} fillOpacity={1} fill="url(#colorScore)" />
-                    </LineChart>
-                </ResponsiveContainer>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-
+      {/* Score Trend */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Overall Score Trend</CardTitle>
+          <CardDescription>
+            Shows the evaluation score for each idea you've submitted.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ChartContainer config={chartConfig} className="h-[350px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={scoreTrendData}
+                margin={{ top: 5, right: 20, left: -10, bottom: 60 }}
+              >
+                <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: 12 }}
+                  angle={-45}
+                  textAnchor="end"
+                  interval={0}
+                />
+                <YAxis domain={[0, 100]} />
+                <Tooltip content={<ChartTooltipContent />} />
+                <Line
+                  type="monotone"
+                  dataKey="score"
+                  stroke="hsl(var(--chart-1))"
+                  strokeWidth={2}
+                  dot={{ r: 4 }}
+                  activeDot={{ r: 8 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </ChartContainer>
+        </CardContent>
+      </Card>
     </div>
   );
 }

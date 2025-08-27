@@ -55,6 +55,7 @@ export default function ProfilePage() {
     isLoading,
     error: userError,
     updateUser,
+    uploadAvatar,
   } = useUserProfile();
 
   /* ---------- password-change mutation ---------- */
@@ -149,11 +150,10 @@ export default function ProfilePage() {
     }
   };
   const handleSaveAvatar = () => {
-    toast({
-      title: "Avatar Updated",
-      description: "Your new profile picture has been saved.",
+    if (!fileInputRef.current?.files?.[0]) return;
+    uploadAvatar.mutate(fileInputRef.current.files[0], {
+      onSuccess: () => toast({ title: "Avatar updated" }),
     });
-    setAvatarPreview(null);
   };
 
   return (
@@ -167,10 +167,7 @@ export default function ProfilePage() {
               <div className="relative group">
                 <Avatar className="h-24 w-24 border-4 border-primary-foreground/50">
                   <AvatarImage
-                    src={
-                      avatarPreview ||
-                      `https://avatar.vercel.sh/${user?.name}.png`
-                    }
+                    src={user?.profileImageUrl || undefined}
                     alt={user?.name}
                   />
                   <AvatarFallback className="text-3xl">

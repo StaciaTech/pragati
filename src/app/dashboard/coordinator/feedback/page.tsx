@@ -35,26 +35,20 @@ export default function IdeaFeedbackPage() {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [filterStatus, setFilterStatus] = React.useState("all");
 
-  const assignedIdeasWithFeedback = MOCK_IDEAS.filter(
-    (idea) => idea.ttcAssigned === userTTC.id && idea.feedback
-  );
+  const { data: ideas, isLoading, error } = useUserIdeas();
 
-  const filteredIdeas = assignedIdeasWithFeedback.filter((idea) => {
-    const matchesSearch =
-      idea.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      idea.innovatorName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus =
-      filterStatus === "all" || idea.status === filterStatus;
-    return matchesSearch && matchesStatus;
-  });
+  // const filteredIdeas = assignedIdeasWithFeedback.filter((idea) => {
+  //   const matchesSearch =
+  //     idea.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     idea.innovatorName.toLowerCase().includes(searchTerm.toLowerCase());
+  //   const matchesStatus =
+  //     filterStatus === "all" || idea.status === filterStatus;
+  //   return matchesSearch && matchesStatus;
+  // });
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Idea Feedback</CardTitle>
-        <CardDescription>
-          Review ideas you have provided feedback for.
-        </CardDescription>
         <CardTitle>Idea Management</CardTitle>
         <CardDescription>
           Review and manage ideas submitted by your innovators.
@@ -91,20 +85,20 @@ export default function IdeaFeedbackPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredIdeas.map((idea) => (
-              <TableRow key={idea.id}>
-                <TableCell className="font-medium">{idea.id}</TableCell>
-                <TableCell>{idea.title}</TableCell>
-                <TableCell>{idea.innovatorName}</TableCell>
+            {ideas.map((idea) => (
+              <TableRow key={idea?._id}>
+                <TableCell className="font-medium">{idea?._id}</TableCell>
+                <TableCell>{idea?.useUserIdeas}</TableCell>
+                <TableCell>{}</TableCell>
                 <TableCell>
-                  <Badge className={STATUS_COLORS[idea.status]}>
+                  {/* <Badge className={STATUS_COLORS[idea.status]}>
                     {idea.status}
-                  </Badge>
+                  </Badge> */}
                 </TableCell>
                 <TableCell className="text-right">
                   <Button variant="link" size="sm" asChild>
                     <Link
-                      href={`/dashboard/ideas/${idea.id}?role=TTC Coordinator`}
+                      href={`/dashboard/ideas/${idea._id}?role=TTC Coordinator`}
                     >
                       View Report
                     </Link>
@@ -112,14 +106,14 @@ export default function IdeaFeedbackPage() {
                 </TableCell>
               </TableRow>
             ))}
-            {filteredIdeas.length === 0 && (
+            {ideas?.length === 0 && (
               <TableRow>
                 <TableCell colSpan={5} className="text-center">
                   No ideas with feedback found.
                 </TableCell>
               </TableRow>
             )}
-            {filteredIdeas.length === 0 && (
+            {ideas?.length === 0 && (
               <TableRow>
                 <TableCell colSpan={5} className="text-center">
                   No ideas found.

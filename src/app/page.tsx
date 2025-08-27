@@ -4,6 +4,7 @@ import * as React from "react";
 import { Logo } from "@/components/icons";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LoginForm } from "@/components/login-form";
+import Lottie from "lottie-react";
 
 // console.log(process.env.NEXT_PUBLIC_API_URL);
 
@@ -42,14 +43,14 @@ export default function LoginPage() {
       </div>
       <div className="relative hidden h-full flex-col bg-primary/10 p-10 text-white dark:border-r lg:flex">
         <div className="absolute inset-0 bg-primary" />
-        {animationData && (
+        {/* {animationData && (
           <Lottie
             animationData={animationData}
             loop={true}
             autoplay={true}
             className="absolute inset-0 w-full h-full"
           />
-        )}
+        )} */}
         <div className="relative z-10 m-auto flex flex-col items-center text-center">
           <h2 className="text-4xl font-bold">Catalyze Innovation</h2>
           <p className="mt-4 text-lg text-primary-foreground/80 max-w-md text-balance">

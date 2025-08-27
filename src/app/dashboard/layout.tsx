@@ -92,6 +92,16 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     (c) => c.status === "Scheduled"
   ).length;
 
+  const handleLogout = () => {
+    // Clear auth data
+    localStorage.setItem("token", "");
+    localStorage.setItem("collegeId", "");
+    localStorage.setItem("UserId", "");
+
+    // Replace current history entry so back button doesn't go to previous
+    router.replace("/");
+  };
+
   return (
     <SidebarProvider defaultOpen={false}>
       <Sidebar collapsible="icon" className="group/sidebar">
@@ -158,7 +168,10 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link href="/" className="flex items-center gap-3">
+                <div
+                  onClick={handleLogout}
+                  className="flex cursor-pointer items-center gap-3"
+                >
                   <LogOut className="w-5 h-5" />
                   <span
                     className="transition-all duration-300 group-data-[state=collapsed]/sidebar:w-0
@@ -166,7 +179,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                   >
                     Log Out
                   </span>
-                </Link>
+                </div>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

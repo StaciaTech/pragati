@@ -215,6 +215,13 @@ export default function IdeasPage() {
     updatedAt: string; // ISO-8601 date-time string
     isDeleted: boolean;
   }
+
+  const {
+    data: ideas,
+    isLoading: ideaLoading,
+    error: ideaErrors,
+  } = useUserIdeas();
+
   const [allIdeas, setAllIdeas] = React.useState<Idea[]>([]);
   const [filteredIdeas, setFilteredIdeas] = React.useState<Idea[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -260,25 +267,6 @@ export default function IdeasPage() {
 
     fetchIdeas();
   }, []);
-
-  // React.useEffect(() => {
-  //   let ideas = allIdeas;
-  //   if (searchTerm) {
-  //     ideas = ideas.filter((idea) =>
-  //       idea.title.toLowerCase().includes(searchTerm.toLowerCase())
-  //     );
-  //   }
-  //   if (statusFilter !== "all") {
-  //     ideas = ideas.filter(
-  //       (idea) =>
-  //         (idea.report?.validationOutcome || idea.status) === statusFilter
-  //     );
-  //   }
-  //   if (domainFilter !== "all") {
-  //     ideas = ideas.filter((idea) => idea.domain === domainFilter);
-  //   }
-  //   setFilteredIdeas(ideas);
-  // }, [searchTerm, statusFilter, domainFilter, allIdeas]);
 
   const handleShareClick = (idea: Idea) => {
     setSelectedIdea(idea);
@@ -337,19 +325,28 @@ export default function IdeasPage() {
   const uniqueDomains = [...new Set(allIdeas.map((idea) => idea.domain))];
   const uniqueStatuses = [...new Set(allIdeas.map((idea) => getStatus(idea)))];
 
-  const totalIdeas = allIdeas.length;
+  const totalIdeas = ideas?.length;
   const approvedIdeas = allIdeas.filter(
     (i) => getStatus(i) === "Exemplary"
   ).length;
-  const approvalRate = totalIdeas > 0 ? (approvedIdeas / totalIdeas) * 100 : 0;
+
+  // const totalIdeas = ideas?.length;
+  const approvedCount = ideas?.filter(
+    (item) => item.status.toLowerCase() === "approved"
+  ).length;
+
+  const approvalRate = totalIdeas > 0 ? (approvedCount / totalIdeas) * 100 : 0;
   const validatedIdeas = allIdeas.filter((i) => i.report?.overallScore);
-  const averageScore =
-    validatedIdeas.length > 0
-      ? validatedIdeas.reduce(
-          (acc, item) => acc + item.report!.overallScore,
-          0
-        ) / validatedIdeas.length
-      : 0;
+
+  // const totalIdeas = ideas.length;/
+  const totalScoreSum = ideas?.reduce(
+    (sum, item) => sum + item.overallScore,
+    0
+  );
+
+  const averageScore = totalIdeas > 0 ? totalScoreSum / totalIdeas : 0;
+
+  console.log(averageScore.toFixed(2)); // average score with 2 decimal places
 
   const statusCounts = allIdeas.reduce((acc, idea) => {
     const status = getStatus(idea);
@@ -374,12 +371,6 @@ export default function IdeasPage() {
       fill: "hsl(var(--color-rejected))",
     },
   ];
-
-  const {
-    data: ideas,
-    isLoading: ideaLoading,
-    error: ideaErrors,
-  } = useUserIdeas();
 
   const renderContent = () => {
     if (ideaLoading) {
@@ -450,7 +441,7 @@ export default function IdeasPage() {
                     )
                   }
                 >
-                  {idea.ideas}
+                  {idea.ideaName}
                 </TableCell>
                 <TableCell
                   className="cursor-pointer"
@@ -460,7 +451,7 @@ export default function IdeasPage() {
                     )
                   }
                 >
-                  {idea.createdAt}
+                  {new Date(idea.createdAt).toLocaleDateString()}
                 </TableCell>
                 <TableCell
                   className="cursor-pointer"
@@ -470,7 +461,9 @@ export default function IdeasPage() {
                     )
                   }
                 >
-                  <Badge className={STATUS_COLORS[status]}>{status}</Badge>
+                  <Badge className={STATUS_COLORS[idea.status]}>
+                    {idea.status}
+                  </Badge>
                 </TableCell>
                 <TableCell
                   className="cursor-pointer"
@@ -586,7 +579,7 @@ export default function IdeasPage() {
               <PieChartIcon className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{totalIdeas}</div>
+              <div className="text-2xl font-bold">{ideas?.length}</div>
             </CardContent>
           </Card>
           <Card>

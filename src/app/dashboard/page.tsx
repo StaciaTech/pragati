@@ -1,5 +1,5 @@
 "use client";
-
+import React from "react";
 import { Suspense, useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -151,6 +151,8 @@ function DashboardPageContent() {
   const role = (searchParams.get("role") as Role) || ROLES.INNOVATOR;
   const router = useRouter();
   const { toast } = useToast();
+  const { data: ideas, isLoading: ideasLoading, error } = useUserIdeas();
+  const { data: user } = useUserProfile();
 
   /* state */
   // const [ideas, setIdeas] = useState<Idea[]>([]);
@@ -166,6 +168,7 @@ function DashboardPageContent() {
     title?: string;
     description?: string;
   }>({});
+  console.log(ideas);
 
   /* data init */
   useEffect(() => {
@@ -179,24 +182,41 @@ function DashboardPageContent() {
     else if (h < 18) setGreeting("Good afternoon");
     else setGreeting("Good evening");
 
-    setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
+    setQuote(quotes[Math.floor(Math.random() * quotes?.length)]);
   }, []);
 
-  const totalIdeas = ideas.length;
-  const validatedIdeas = ideas.filter((idea) => idea.report?.overallScore);
+  const totalIdeas = ideas?.length;
+  const validatedIdeas = ideas?.filter((idea) => idea.report?.overallScore);
   const averageScore =
-    validatedIdeas.length > 0
-      ? validatedIdeas.reduce(
-          (acc, item) => acc + item.report!.overallScore,
-          0
-        ) / validatedIdeas.length
+    ideas?.length > 0
+      ? ideas.reduce((acc, item) => acc + item.overallScore, 0) / ideas?.length
       : 0;
-  const approvedCount = ideas.filter(
-    (idea) => (idea.report?.validationOutcome || idea.status) === "Slay"
+  const approvedCount = ideas?.filter(
+    (item) => item.status?.toLowerCase() === "approved"
   ).length;
+
   const approvalRate = totalIdeas > 0 ? (approvedCount / totalIdeas) * 100 : 0;
 
+  // const submissionTrendData = React.useMemo(() => {
+  //   const trends: { [key: string]: number } = {};
+  //   const sortedIdeas = [...ideas].sort(
+  //     (a, b) =>
+  //       new Date(a.dateSubmitted).getTime() -
+  //       new Date(b.dateSubmitted).getTime()
+  //   );
+
+  //   sortedIdeas.forEach((idea) => {
+  //     const month = new Date(idea.dateSubmitted).toLocaleString("default", {
+  //       month: "short",
+  //       year: "2-digit",
+  //     });
+  //     trends[month] = (trends[month] || 0) + 1;
+  //   });
+  //   return Object.entries(trends).map(([name, ideas]) => ({ name, ideas }));
+  // }, [ideas]);
   const submissionTrendData = React.useMemo(() => {
+    if (!Array.isArray(ideas)) return []; // prevent runtime crash
+
     const trends: { [key: string]: number } = {};
     const sortedIdeas = [...ideas].sort(
       (a, b) =>
@@ -211,6 +231,7 @@ function DashboardPageContent() {
       });
       trends[month] = (trends[month] || 0) + 1;
     });
+
     return Object.entries(trends).map(([name, ideas]) => ({ name, ideas }));
   }, [ideas]);
 
@@ -272,7 +293,7 @@ function DashboardPageContent() {
   }
 
   /* loading */
-  if (isLoading)
+  if (ideasLoading)
     return (
       <div className="flex justify-center items-center h-full">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -304,7 +325,7 @@ function DashboardPageContent() {
           <div className="relative z-10">
             <CardHeader>
               <CardTitle className="text-3xl text-white">
-                {greeting}, {user.name}!
+                {greeting}, {user?.name}!
               </CardTitle>
               <CardDescription className="text-primary-foreground/80 italic">
                 "{quote.text}" - {quote.author}
@@ -321,7 +342,11 @@ function DashboardPageContent() {
               value: totalIdeas,
               icon: TrendingUp,
             },
-            { label: "Average Score", value: avgScore.toFixed(2), icon: Star },
+            {
+              label: "Average Score",
+              value: averageScore.toFixed(2),
+              icon: Star,
+            },
             {
               label: "Approval Rate",
               value: `${approvalRate.toFixed(1)}%`,
@@ -418,7 +443,9 @@ function DashboardPageContent() {
                       <TableCell className="font-medium">
                         {idea.ideaName}
                       </TableCell>
-                      <TableCell>{idea.createdAt}</TableCell>
+                      <TableCell>
+                        {new Date(idea.createdAt).toLocaleDateString()}
+                      </TableCell>
                       <TableCell>
                         <Badge className={STATUS_COLORS[getStatus(idea)]}>
                           {getStatus(idea)}
@@ -430,7 +457,7 @@ function DashboardPageContent() {
                           getScoreColor(getOverallScore(idea))
                         )}
                       >
-                        {getOverallScore(idea)}
+                        {idea.overallScore.toFixed(2)}
                       </TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>

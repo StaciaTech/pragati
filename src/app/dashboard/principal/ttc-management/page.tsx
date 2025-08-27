@@ -241,6 +241,7 @@ export default function TTCManagementPage() {
       }),
   });
   const updateUser = useUpdateUser();
+
   const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
@@ -254,17 +255,16 @@ export default function TTCManagementPage() {
     };
 
     if (modalType === "edit" && currentTtc?._id) {
-      console.log(currentTtc._id, payload);
-
       updateUser.mutate({
         uid: currentTtc._id,
         data: payload,
-        queryKey: ["all-ttcs"],
+        queryKey: ["all-ttcs", collegeId],
       });
     } else {
-      // Handle adding a new TTC (if needed)
-      // You can keep your existing logic for adding a new TTC here
+      // This was missing
+      saveTtcMutation.mutate(payload);
     }
+
     setIsModalOpen(false);
   };
 

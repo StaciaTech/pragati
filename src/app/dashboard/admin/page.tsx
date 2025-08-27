@@ -325,7 +325,7 @@ export default function AdminDashboardPage() {
                   <TableCell>{college.ideas}</TableCell>
                   <TableCell>
                     <Badge variant="secondary">
-                      {college.approvalRate.toFixed(1)}%
+                      {/* {college?.approvalRate?.toFixed(1)}% */}
                     </Badge>
                   </TableCell>
                 </TableRow>

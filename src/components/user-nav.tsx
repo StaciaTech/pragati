@@ -22,6 +22,7 @@ import {
   MOCK_TTCS,
 } from "@/lib/mock-data";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import { useRouter } from "next/navigation";
 
 const getInitials = (name: string) => {
   return (
@@ -43,25 +44,36 @@ export function UserNav() {
     email: "guest@example.com",
     role: "Guest",
   };
+  const router = useRouter();
 
-  switch (role) {
-    case ROLES.INNOVATOR:
-      user = MOCK_INNOVATOR_USER;
-      break;
-    case ROLES.COORDINATOR:
-      user = MOCK_TTCS[0];
-      break;
-    case ROLES.PRINCIPAL:
-      user = MOCK_PRINCIPAL_USERS[0];
-      break;
-    case ROLES.SUPER_ADMIN:
-      user = {
-        name: "Super Admin",
-        email: "admin@pragati.ai",
-        role: "Super Admin",
-      };
-      break;
-  }
+  const handleLogout = () => {
+    // Clear auth data
+    localStorage.setItem("token", "");
+    localStorage.setItem("collegeId", "");
+    localStorage.setItem("UserId", "");
+
+    // Replace current history entry so back button doesn't go to previous
+    router.replace("/");
+  };
+
+  // switch (role) {
+  //   case ROLES.INNOVATOR:
+  //     user = MOCK_INNOVATOR_USER;
+  //     break;
+  //   case ROLES.COORDINATOR:
+  //     user = MOCK_TTCS[0];
+  //     break;
+  //   case ROLES.PRINCIPAL:
+  //     user = MOCK_PRINCIPAL_USERS[0];
+  //     break;
+  //   case ROLES.SUPER_ADMIN:
+  //     user = {
+  //       name: "Super Admin",
+  //       email: "admin@pragati.ai",
+  //       role: "Super Admin",
+  //     };
+  //     break;
+  // }
 
   return (
     <DropdownMenu>
@@ -69,8 +81,8 @@ export function UserNav() {
         <Button variant="ghost" className="relative h-10 w-10 rounded-full">
           <Avatar className="h-10 w-10">
             <AvatarImage
-              src={`https://avatar.vercel.sh/${userData?.name}.png`}
-              alt={`@${user.name}`}
+              src={userData?.profileImageUrl || undefined}
+              alt={userData?.name}
             />
             <AvatarFallback>{getInitials(userData?.name)}</AvatarFallback>
           </Avatar>
@@ -95,12 +107,12 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <Link href="/">
+        <div onClick={handleLogout}>
           <DropdownMenuItem>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
           </DropdownMenuItem>
-        </Link>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );
